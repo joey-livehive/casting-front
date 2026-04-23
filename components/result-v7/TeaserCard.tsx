@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Candidate } from '@/lib/report/types';
 import { Section, SectionLabel, SectionTitle, HL } from './SectionFrame';
 import { useSheet } from './sheetContext';
@@ -22,7 +23,33 @@ export function TeaserCard({ candidate }: TeaserCardProps) {
       </Section>
 
       <div className="person-card">
-        <div className="person-photo">
+        <div
+          className="person-photo"
+          onContextMenu={(e) => e.preventDefault()}
+        >
+          {candidate.teaserPhoto && (
+            <Image
+              src={candidate.teaserPhoto}
+              alt=""
+              fill
+              priority
+              sizes="(max-width: 480px) 100vw, 480px"
+              draggable={false}
+              className="person-photo-img"
+              style={
+                {
+                  objectFit: 'cover',
+                  filter: 'blur(32px) saturate(1.05)',
+                  transform: 'scale(1.2)',
+                  pointerEvents: 'none',
+                  WebkitUserSelect: 'none',
+                  WebkitTouchCallout: 'none',
+                  WebkitUserDrag: 'none',
+                  zIndex: 0,
+                } as React.CSSProperties
+              }
+            />
+          )}
           <div className="person-no">PORTRAIT · CONCEALED</div>
           <div className="person-count">01 / 05</div>
           <div className="person-overlay">

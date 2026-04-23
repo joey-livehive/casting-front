@@ -277,10 +277,15 @@
 .v7-root .person-photo::after {
   content: '';
   position: absolute; inset: 0;
-  backdrop-filter: blur(32px);
-  -webkit-backdrop-filter: blur(32px);
-  background: rgba(10,10,10,0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(10,10,10,0.35);
+  z-index: 1;
 }
+/* 실사진 위에 라벨/오버레이가 올라오도록 z-index 보강 */
+.v7-root .person-photo .person-no,
+.v7-root .person-photo .person-count { z-index: 3; }
+.v7-root .person-photo .person-overlay { z-index: 5; }
 .v7-root .person-no {
   position: absolute;
   top: 20px; left: 20px;
@@ -623,10 +628,12 @@
 .v7-root .p-card.photo::after {
   content: '';
   position: absolute; inset: 0;
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  background: rgba(10,10,10,0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(10,10,10,0.25);
+  z-index: 1;
 }
+.v7-root .p-card.photo .photo-badge { z-index: 3; }
 .v7-root .p-card.photo .photo-badge {
   position: absolute;
   top: 50%; left: 50%;

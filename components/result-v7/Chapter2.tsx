@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { Candidate } from '@/lib/report/types';
 import { ChapterCard } from './ChapterCard';
 import { Section, SectionLabel, SectionTitle, HL, SectionSub } from './SectionFrame';
@@ -63,7 +64,30 @@ export function Chapter2({ candidate }: { userName: string; candidate: Candidate
         sub="의뢰인님의 기준과 교차되는 지점을 중심으로 정리했습니다."
       >
         <div className="person-grid">
-          <div className="p-card photo">
+          <div className="p-card photo" onContextMenu={(e) => e.preventDefault()}>
+            {candidate.chapter2Photo && (
+              <Image
+                src={candidate.chapter2Photo}
+                alt=""
+                fill
+                sizes="(max-width: 480px) 100vw, 480px"
+                draggable={false}
+                className="chapter2-photo-img"
+                style={
+                  {
+                    objectFit: 'cover',
+                    objectPosition: '50% 25%',
+                    filter: 'blur(30px) saturate(1.05)',
+                    transform: 'scale(1.2)',
+                    pointerEvents: 'none',
+                    WebkitUserSelect: 'none',
+                    WebkitTouchCallout: 'none',
+                    WebkitUserDrag: 'none',
+                    zIndex: 0,
+                  } as React.CSSProperties
+                }
+              />
+            )}
             <div className="photo-badge">PORTRAIT · CONCEALED</div>
           </div>
 
