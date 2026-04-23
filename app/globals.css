@@ -56,6 +56,31 @@
   user-select: none;
 }
 
+/* 개인화 도입 문장 스타일 — 골드 좌측 보더 + 인용 톤 */
+/* [LLM_GENERATED] 영역 공통 스타일, brief §3.3/§4.3 */
+.trait-personal-intro {
+  margin-left: 30px;
+  margin-bottom: 12px;
+  padding-left: 12px;
+  border-left: 2px solid var(--mustard-deep);
+  font-weight: 600;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.letter-personal-opening {
+  padding-left: 12px;
+  border-left: 2px solid var(--mustard-deep);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--ink);
+  margin-bottom: 10px;
+  letter-spacing: -0.015em;
+}
+
 /* Scroll reveal base */
 .reveal-base {
   opacity: 0;

@@ -1,30 +1,31 @@
+import Image from 'next/image';
 import { Section, SectionLabel, SectionTitle, HL } from './SectionFrame';
 
 interface Couple {
   names: string;
   meta: string;
-  placeholder: string;
+  photo: string;
   quote: string;
 }
 
 const couples: Couple[] = [
   {
-    names: 'J님 & S님',
-    meta: '강남 헬스장에서 찾음 · 매칭 5일',
-    placeholder: '[뒷모습 사진\nplaceholder]',
-    quote: '소개팅앱 6개월 써도 못 만나던 사람, 여기서 딱 2주 만에 만났어요.',
+    names: 'J & S 커플',
+    meta: '강남 헬스장에서 발견',
+    photo: '/images/couples/couple1.webp',
+    quote: '소개팅앱 몇 개월 써도 허탕만 쳤는데, 여긴 2주 만에 진짜 맞는 사람 만났어요! 서로 등산이라는 취향도 같아서 신기할 정도네요 알콩달콩 잘만나겠습니다 감사합니다!',
   },
   {
-    names: 'K님 & H님',
-    meta: 'Instagram 캐스팅 · 매칭 7일',
-    placeholder: '[손만 보이는 사진\nplaceholder]',
-    quote: '이렇게까지 내 성향 파악해서 데려올 줄 몰랐어요. 결혼 얘기 중이에요.',
+    names: 'K & H 커플',
+    meta: 'Instagram 캐스팅',
+    photo: '/images/couples/couple2.webp',
+    quote: '제 요청사항만 보고 이 정도로 저랑 맞는 사람 데려올 줄 몰랐어요. 지금 동거 얘기 중이고 결혼도 진지하게 얘기 중입니다 ㅎㅎㅎ',
   },
   {
-    names: 'M님 & Y님',
-    meta: 'LinkedIn 캐스팅 · 매칭 4일',
-    placeholder: '[그림자 사진\nplaceholder]',
-    quote: '가벼운 만남이 지긋지긋했는데, 여긴 시작부터 진지해서 편했어요.',
+    names: 'M & Y 커플',
+    meta: 'LinkedIn 캐스팅',
+    photo: '/images/couples/couple3.webp',
+    quote: '저도 남자친구도 둘 다 소개팅앱 쓰긴 싫고 더이상 사람 만날 곳도 없었는데 정말로 흔치 않은 기회로 잘 만난 것 같아요. 결정사보다 훨씬 합리적이고 소개팅앱보다 훨씬 좋은 사람들이 많은 것 같습니다!',
   },
 ];
 
@@ -46,11 +47,15 @@ export function CoupleTestimonials() {
             className="shrink-0 w-[260px] snap-start bg-brand-cream border-[1.5px] border-brand-line
                        rounded-[18px] overflow-hidden shadow-[4px_5px_0_var(--line)]"
           >
-            <div className="relative aspect-[4/3] bg-[linear-gradient(135deg,#D4B896_0%,#8A7C60_100%)] flex items-center justify-center text-white/60 font-hand text-[13px] text-center p-5 whitespace-pre-line">
-              <div className="absolute top-2.5 left-2.5 bg-brand-ink text-brand-cream font-hand text-[11px] px-2 py-0.5 rounded-[10px]">
-                💑 real couple
-              </div>
-              {c.placeholder}
+            <div className="relative aspect-[4/3] bg-brand-ink/10 overflow-hidden">
+              <Image
+                src={c.photo}
+                alt=""
+                fill
+                sizes="260px"
+                className="object-cover"
+                draggable={false}
+              />
             </div>
             <div className="p-4 pb-[18px]">
               <div className="font-display font-bold text-[14px] mb-1 text-brand-ink">{c.names}</div>

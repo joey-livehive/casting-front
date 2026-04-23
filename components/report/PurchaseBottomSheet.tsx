@@ -40,7 +40,7 @@ function perPerson(plan: PricingPlan) {
 }
 
 function planDesc(plan: PricingPlan) {
-  return `엄선된 <b>${plan.cardCount}명 카드</b> 받고 대화하기`;
+  return `엄선된 <b>${plan.cardCount}명</b> 프로필 카드 전달`;
 }
 
 interface PurchaseBottomSheetProps {

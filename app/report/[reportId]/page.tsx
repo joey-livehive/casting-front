@@ -20,6 +20,9 @@ import { PriceCompare } from '@/components/report/PriceCompare';
 import { CoupleTestimonials } from '@/components/report/CoupleTestimonials';
 import { FinalSignature } from '@/components/report/FinalSignature';
 import { ReportShell } from '@/components/report/ReportShell';
+import { getMockPersonalized } from '@/lib/personalization/mock-personalized';
+import { getMockUser, isMockUserKey } from '@/lib/personalization/mock-users';
+import { ApplicationSummary } from '@/components/report/ApplicationSummary';
 
 export function generateStaticParams() {
   return mockReportIds.map((reportId) => ({ reportId }));
@@ -27,19 +30,29 @@ export function generateStaticParams() {
 
 export default async function ReportPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ reportId: string }>;
+  searchParams: Promise<{ mock?: string }>;
 }) {
   const { reportId } = await params;
   const data = getReport(reportId);
   if (!data) notFound();
 
+  // ?mock=A|B|C → 개인화 Mock 선택. 없거나 잘못되면 A (기본값).
+  // [LLM_GENERATED] 추후 실제 유저 답변 → LLM 호출 결과로 교체.
+  const { mock } = await searchParams;
+  const mockKey = isMockUserKey(mock) ? mock : 'A';
+  const personalized = getMockPersonalized(mockKey);
+  const userAnswers = getMockUser(mockKey);
+
   return (
     <main className="max-w-[480px] mx-auto pb-[130px] relative bg-brand-bg min-h-screen font-body text-brand-ink">
       <ReportShell reportId={data.reportId} tone={data.tone}>
         <TopNav publishedAt={data.publishedAt} />
-        <Hero userName={data.userName} />
         <CredibilityStrip />
+        <Hero userName={data.userName} />
+        <ApplicationSummary userAnswers={userAnswers} />
         <HuntBox
           userName={data.userName}
           stats={data.huntStats}
@@ -48,9 +61,9 @@ export default async function ReportPage({
         />
 
         <TeaserCard candidate={data.teaserCandidate} />
-        <ReadingCard userName={data.userName} />
+        <ReadingCard userName={data.userName} personalized={personalized.readingCard} />
         <Chapter2 userName={data.userName} candidate={data.teaserCandidate} />
-        <Chapter1 userName={data.userName} />
+        <Chapter1 userName={data.userName} personalized={personalized.chapter1Traits} />
         <Chapter3 userName={data.userName} match={data.match} />
         <RemainingCandidates photos={data.remainingPhotos} />
         <ScarcityBlock userName={data.userName} total={data.totalCandidates} />

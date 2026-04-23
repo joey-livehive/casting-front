@@ -6,7 +6,7 @@ const badges: { icon: string; label: string; value: string }[] = [
 
 export function CredibilityStrip() {
   return (
-    <div className="px-7 mt-[22px] flex gap-2 flex-wrap">
+    <div className="px-7 mt-2 flex gap-2 flex-wrap">
       {badges.map((b) => (
         <div
           key={b.label}

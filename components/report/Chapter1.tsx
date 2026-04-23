@@ -3,6 +3,7 @@
 import { ChapterCard } from './ChapterCard';
 import { useTone } from './toneContext';
 import { SafeText } from './SafeText';
+import type { PersonalizedContent } from '@/lib/personalization/types';
 
 interface Trait {
   title: string;
@@ -56,7 +57,13 @@ const traitsFormal: Trait[] = [
   },
 ];
 
-export function Chapter1({ userName }: { userName: string }) {
+interface Chapter1Props {
+  userName: string;
+  /** [LLM_GENERATED] 개인화 도입 문장 (trait01Intro~trait04Intro). 없으면 스팟 렌더 X. */
+  personalized?: PersonalizedContent['chapter1Traits'];
+}
+
+export function Chapter1({ userName, personalized }: Chapter1Props) {
   const tone = useTone();
   const traits = tone === 'formal' ? traitsFormal : traitsCasual;
 
@@ -67,6 +74,13 @@ export function Chapter1({ userName }: { userName: string }) {
       ? `${userName}님이 고르신 <b>선택지 하나하나</b>, 그리고 그 밑에 숨어있는 <b>진짜 연애 성향</b>까지 뜯어봤어요. 관계 심리학 프레임으로 정리해드릴게요.`
       : `${userName}님이 고른 <b>선택지 하나하나</b>, 그리고 그 밑에 숨어있는 <b>진짜 연애 성향</b>까지 뜯어봤어. 관계 심리학 프레임으로 정리해볼게.`;
 
+  const intros = [
+    personalized?.trait01Intro,
+    personalized?.trait02Intro,
+    personalized?.trait03Intro,
+    personalized?.trait04Intro,
+  ];
+
   return (
     <ChapterCard
       number="CHAPTER 2"
@@ -75,31 +89,39 @@ export function Chapter1({ userName }: { userName: string }) {
       lead={lead}
     >
       <div>
-        {traits.map((t, i) => (
-          <div
-            key={t.title}
-            className={`py-4 ${i < traits.length - 1 ? 'border-b border-dashed border-brand-ink/20' : ''} ${
-              i === 0 ? 'pt-1' : ''
-            } ${i === traits.length - 1 ? 'pb-0.5' : ''}`}
-          >
-            <div className="flex items-start gap-2.5 mb-2">
-              <span
-                className="shrink-0 w-[22px] h-[22px] rounded-full bg-brand-orange text-white
-                           font-hand text-[14px] flex items-center justify-center mt-[1px]"
-                aria-hidden
-              >
-                ✓
-              </span>
-              <div className="font-display font-bold text-[16px] tracking-[-0.02em] leading-[1.4] text-brand-ink">
-                {t.title}
+        {traits.map((t, i) => {
+          const personalIntro = intros[i];
+          return (
+            <div
+              key={t.title}
+              className={`py-4 ${i < traits.length - 1 ? 'border-b border-dashed border-brand-ink/20' : ''} ${
+                i === 0 ? 'pt-1' : ''
+              } ${i === traits.length - 1 ? 'pb-0.5' : ''}`}
+            >
+              <div className="flex items-start gap-2.5 mb-2">
+                <span
+                  className="shrink-0 w-[22px] h-[22px] rounded-full bg-brand-orange text-white
+                             font-hand text-[14px] flex items-center justify-center mt-[1px]"
+                  aria-hidden
+                >
+                  ✓
+                </span>
+                <div className="font-display font-bold text-[16px] tracking-[-0.02em] leading-[1.4] text-brand-ink">
+                  {t.title}
+                </div>
+              </div>
+
+              {/* ========== [LLM_GENERATED] 개인화 도입 (있을 때만) ========== */}
+              {personalIntro && <p className="trait-personal-intro">{personalIntro}</p>}
+              {/* ========== [/LLM_GENERATED] ========== */}
+
+              <div className="ml-8 text-[13.5px] text-brand-ink-soft leading-[1.65]">{t.desc}</div>
+              <div className="ml-8 mt-2.5 bg-brand-mustard/25 border-l-[3px] border-brand-mustard-deep px-[13px] py-[9px] rounded-md font-hand text-[14px] text-brand-ink [&_b]:font-bold [&_b]:text-brand-orange-deep">
+                → <SafeText>{t.need}</SafeText>
               </div>
             </div>
-            <div className="ml-8 text-[13.5px] text-brand-ink-soft leading-[1.65]">{t.desc}</div>
-            <div className="ml-8 mt-2.5 bg-brand-mustard/25 border-l-[3px] border-brand-mustard-deep px-[13px] py-[9px] rounded-md font-hand text-[14px] text-brand-ink [&_b]:font-bold [&_b]:text-brand-orange-deep">
-              → <SafeText>{t.need}</SafeText>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </ChapterCard>
   );

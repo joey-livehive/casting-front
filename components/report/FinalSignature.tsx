@@ -11,7 +11,7 @@ export function FinalSignature() {
         <br />
         <span className="text-brand-orange font-bold">someonetheone</span>이
         <br />
-        {tone === 'formal' ? '대신 발품 팔아둘게요. 💌' : '대신 발품 팔아둘게. 💌'}
+        {tone === 'formal' ? '대신 발품 팔아올게요. 💌' : '대신 발품 팔아올게. 💌'}
       </div>
     </div>
   );
