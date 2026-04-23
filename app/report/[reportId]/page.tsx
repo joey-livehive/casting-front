@@ -1,8 +1,11 @@
 import { notFound } from 'next/navigation';
 import { getReport, mockReportIds } from '@/lib/report/mockData';
+import { getMockPersonalized } from '@/lib/personalization/mock-personalized';
+import { getMockUser, isMockUserKey } from '@/lib/personalization/mock-users';
 import { TopNav } from '@/components/report/TopNav';
 import { Hero } from '@/components/report/Hero';
 import { CredibilityStrip } from '@/components/report/CredibilityStrip';
+import { ApplicationSummary } from '@/components/report/ApplicationSummary';
 import { HuntBox } from '@/components/report/HuntBox';
 import { TeaserCard } from '@/components/report/TeaserCard';
 import { ReadingCard } from '@/components/report/ReadingCard';
@@ -20,9 +23,6 @@ import { PriceCompare } from '@/components/report/PriceCompare';
 import { CoupleTestimonials } from '@/components/report/CoupleTestimonials';
 import { FinalSignature } from '@/components/report/FinalSignature';
 import { ReportShell } from '@/components/report/ReportShell';
-import { getMockPersonalized } from '@/lib/personalization/mock-personalized';
-import { getMockUser, isMockUserKey } from '@/lib/personalization/mock-users';
-import { ApplicationSummary } from '@/components/report/ApplicationSummary';
 
 export function generateStaticParams() {
   return mockReportIds.map((reportId) => ({ reportId }));
@@ -39,8 +39,8 @@ export default async function ReportPage({
   const data = getReport(reportId);
   if (!data) notFound();
 
-  // ?mock=A|B|C → 개인화 Mock 선택. 없거나 잘못되면 A (기본값).
-  // [LLM_GENERATED] 추후 실제 유저 답변 → LLM 호출 결과로 교체.
+  // ?mock=A|B|C 로 Mock 유저 답변/개인화 케이스를 선택. 없거나 유효하지 않으면 A.
+  // 실제 API 연동 시에는 여기서 userAnswers/personalized 데이터를 fetch 로 교체.
   const { mock } = await searchParams;
   const mockKey = isMockUserKey(mock) ? mock : 'A';
   const personalized = getMockPersonalized(mockKey);
