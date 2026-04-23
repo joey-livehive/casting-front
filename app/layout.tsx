@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import { Gaegu } from 'next/font/google';
+import { Gaegu, Hahmlet, Gowun_Dodum } from 'next/font/google';
 import './globals.css';
 
 const META_PIXEL_ID = '573919161734831';
@@ -9,6 +9,20 @@ const gaegu = Gaegu({
   subsets: ['latin'],
   weight: ['400', '700'],
   variable: '--font-gaegu',
+  display: 'swap',
+});
+
+const hahmlet = Hahmlet({
+  subsets: ['latin'],
+  weight: ['400', '600', '700', '800'],
+  variable: '--font-hahmlet',
+  display: 'swap',
+});
+
+const gowunDodum = Gowun_Dodum({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-gowun',
   display: 'swap',
 });
 
@@ -32,7 +46,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko" className={gaegu.variable}>
+    <html lang="ko" className={`${gaegu.variable} ${hahmlet.variable} ${gowunDodum.variable}`}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </head>

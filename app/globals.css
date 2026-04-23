@@ -20,6 +20,51 @@
   --sto-surface: #F5EFE3;
   --sto-primary: #F7CA5D;
   --sto-accent: #FDA046;
+
+  /* Report (v6) tokens */
+  --bg: #F5EFE4;
+  --bg-deep: #EDE4D3;
+  --ink: #1C1A17;
+  --ink-soft: #4A443B;
+  --ink-mute: #8A8275;
+  --orange: #EC6A3D;
+  --orange-deep: #D4542A;
+  --orange-bright: #FF8B5E;
+  --mustard: #F5B847;
+  --mustard-deep: #E0A030;
+  --cream: #FFF8EC;
+  --line: #2A2721;
+  --blur-bg: #DCD2BD;
+  --urgent: #D93829;
+  --dark: #2E2A23;
+  --dark-deep: #252117;
+  --dark-elev: #3A3529;
+  --dark-line: #4A4337;
+  --dark-text: #F0E8D7;
+  --dark-mute: #A8A090;
+  --dark-scene-desc: #C0B9A8;
+}
+
+/* Blur text utility (호기심 포인트 가림) */
+.blur-text {
+  display: inline-block;
+  background: var(--blur-bg);
+  color: var(--blur-bg);
+  border-radius: 3px;
+  padding: 0 8px;
+  filter: blur(3.5px);
+  user-select: none;
+}
+
+/* Scroll reveal base */
+.reveal-base {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal-base.revealed {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 * {
