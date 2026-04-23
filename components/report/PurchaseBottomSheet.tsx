@@ -93,13 +93,13 @@ export function PurchaseBottomSheet({ open, onClose, reportId }: PurchaseBottomS
     }
 
     try {
-      const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-      const guestUid = new URLSearchParams(window.location.search).get('guest') || reportId;
+      const API = process.env.NEXT_PUBLIC_API_URL || 'https://api.publicvoid.im';
+      const guestUid = new URLSearchParams(window.location.search).get('guest') || undefined;
 
       const orderRes = await fetch(`${API}/theone/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ guest_uid: guestUid, product_id: selected.id }),
+        body: JSON.stringify({ guest_uid: guestUid, product_id: selected.id, report_id: reportId }),
       });
       if (!orderRes.ok) throw new Error('주문 생성 실패');
       const order = await orderRes.json();
