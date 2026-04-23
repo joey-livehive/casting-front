@@ -578,6 +578,30 @@
   letter-spacing: -0.01em;
   border-left: 3px solid var(--v7-gold);
 }
+
+/* 개인화 도입 문장 (Chapter 1 Trait) — trait-head 와 trait-desc 사이 */
+.v7-root .trait-personal-intro {
+  margin: 0 0 12px 30px;           /* trait-desc 와 같은 들여쓰기 */
+  padding-left: 12px;
+  border-left: 2px solid var(--v7-gold);
+  font-weight: 600;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--v7-ink);
+  letter-spacing: -0.01em;
+}
+
+/* 개인화 도입 문장 (Reading Card) — 각 고정 문단 앞 */
+.v7-root .letter-personal-opening {
+  margin: 0 0 10px;
+  padding-left: 12px;
+  border-left: 2px solid var(--v7-gold);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--v7-ink);
+  letter-spacing: -0.015em;
+}
 .v7-root .trait-need::before {
   content: 'NEED  ·  ';
   color: var(--v7-gold);
