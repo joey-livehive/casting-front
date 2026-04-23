@@ -71,7 +71,7 @@ export function TeaserCard({ candidate }: TeaserCardProps) {
               </div>
               <button
                 type="button"
-                onClick={openSheet}
+                onClick={() => openSheet('teaser_card')}
                 className="pointer-events-auto bg-brand-orange text-white rounded-full
                            px-7 py-4 font-display font-bold text-[16px] tracking-[-0.02em]
                            animate-cta-pulse active:scale-[0.97] transition-transform"

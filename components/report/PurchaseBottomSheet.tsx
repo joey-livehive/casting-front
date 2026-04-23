@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { PricingPlan } from '@/lib/report/types';
 import { useTone } from './toneContext';
 import { SafeText } from './SafeText';
+import { track } from '@/lib/report/tracking';
 
 const plans: PricingPlan[] = [
   {
@@ -54,6 +55,11 @@ export function PurchaseBottomSheet({ open, onClose, reportId }: PurchaseBottomS
   const selected = plans.find((p) => p.id === selectedId)!;
   const tone = useTone();
 
+  const selectPlan = (id: PricingPlan['id']) => {
+    setSelectedId(id);
+    track('plan_select', { reportId, plan: id, amount: plans.find((p) => p.id === id)?.discountedPrice });
+  };
+
   // ESC로 닫기
   useEffect(() => {
     if (!open) return;
@@ -80,17 +86,15 @@ export function PurchaseBottomSheet({ open, onClose, reportId }: PurchaseBottomS
     if (paying) return;
     setPaying(true);
 
-    if (typeof window !== 'undefined') {
-      const fbq = (window as unknown as { fbq?: (...args: unknown[]) => void }).fbq;
-      if (fbq) {
-        fbq('track', 'InitiateCheckout', {
-          value: selected.discountedPrice,
-          currency: 'KRW',
-          content_ids: ['someonetheone'],
-          content_name: `report_${reportId}_${selected.id}`,
-        });
-      }
-    }
+    track('purchase_click', { reportId, plan: selected.id, amount: selected.discountedPrice }, {
+      pixel: 'InitiateCheckout',
+      pixelData: {
+        value: selected.discountedPrice,
+        currency: 'KRW',
+        content_ids: ['someonetheone'],
+        content_name: `report_${reportId}_${selected.id}`,
+      },
+    });
 
     try {
       const API = process.env.NEXT_PUBLIC_API_URL || 'https://api.publicvoid.im';
@@ -185,7 +189,7 @@ export function PurchaseBottomSheet({ open, onClose, reportId }: PurchaseBottomS
               <button
                 key={plan.id}
                 type="button"
-                onClick={() => setSelectedId(plan.id)}
+                onClick={() => selectPlan(plan.id)}
                 aria-pressed={isSelected}
                 className={`relative text-left bg-brand-cream border-2 rounded-2xl p-[18px] transition-all
                             ${

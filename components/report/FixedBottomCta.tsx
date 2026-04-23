@@ -29,7 +29,7 @@ export function FixedBottomCta() {
         </div>
         <button
           type="button"
-          onClick={openSheet}
+          onClick={() => openSheet('fixed_bottom_cta')}
           aria-label="엄선된 사람 소개 받기"
           className="flex-1 bg-brand-orange text-white rounded-full
                      py-[18px] px-5 font-display font-extrabold text-[16px] max-[380px]:text-[15px]

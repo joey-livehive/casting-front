@@ -59,7 +59,7 @@ export function Chapter2({ userName, candidate }: { userName: string; candidate:
             <div className="absolute inset-0 bg-brand-line/15 pointer-events-none" />
             <button
               type="button"
-              onClick={openSheet}
+              onClick={() => openSheet('chapter2_photo')}
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
                          bg-brand-orange text-white rounded-full px-6 py-3
                          font-display font-bold text-[15px] tracking-[-0.02em]
