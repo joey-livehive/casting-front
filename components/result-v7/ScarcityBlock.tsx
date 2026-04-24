@@ -1,16 +1,17 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { HL } from './SectionFrame';
 
-const VALIDITY_DAYS = 3;
-
-function formatMonthDay(d: Date) {
-  return `${d.getMonth() + 1}월 ${d.getDate()}일`;
-}
-
 export function ScarcityBlock({ total }: { total: number }) {
-  const start = new Date();
-  const end = new Date(start);
-  end.setDate(end.getDate() + VALIDITY_DAYS);
-  const range = `${formatMonthDay(start)} ~ ${formatMonthDay(end)} · ${VALIDITY_DAYS}일`;
+  const [secs, setSecs] = useState(3 * 60 * 60);
+  useEffect(() => {
+    const id = setInterval(() => setSecs((s) => (s > 0 ? s - 1 : 0)), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const hh = String(Math.floor(secs / 3600)).padStart(2, '0');
+  const mm = String(Math.floor((secs % 3600) / 60)).padStart(2, '0');
+  const ss = String(secs % 60).padStart(2, '0');
 
   return (
     <div className="scarcity">
@@ -21,7 +22,14 @@ export function ScarcityBlock({ total }: { total: number }) {
         배정되었습니다.
       </h3>
 
-<ul className="sc-list">
+      <div style={{ textAlign: 'center', margin: '16px 0 20px', fontVariantNumeric: 'tabular-nums' }}>
+        <span style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--v7-accent, #C9A961)' }}>
+          {hh}:{mm}:{ss}
+        </span>
+        <span style={{ fontSize: 12, color: 'var(--v7-mute, #A8A090)', marginLeft: 8 }}>남음</span>
+      </div>
+
+      <ul className="sc-list">
         <li>
           <span>
             다른 사용자와 <b>절대 중복되지 않는 프로필</b>입니다.
@@ -42,7 +50,7 @@ export function ScarcityBlock({ total }: { total: number }) {
       <div className="sc-box">
         <span className="sc-box-label">유효 기간</span>
         <div className="sc-box-body">
-          <b>{range}</b>
+          <b>3시간</b>
           <br />
           이후 다른 캐스팅 대상자에게 순차 배정됩니다.
         </div>

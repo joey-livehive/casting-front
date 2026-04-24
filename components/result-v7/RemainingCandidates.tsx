@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
 import { useSheet } from './sheetContext';
 import { Section, SectionLabel, SectionTitle, HL } from './SectionFrame';
 
@@ -19,13 +18,6 @@ const hints: RemainingHint[] = [
 
 export function RemainingCandidates({ photos }: { photos?: string[] }) {
   const { openSheet } = useSheet();
-  const [secs, setSecs] = useState(50 * 60 + 45);
-  useEffect(() => {
-    const id = setInterval(() => setSecs((s) => (s > 0 ? s - 1 : 0)), 1000);
-    return () => clearInterval(id);
-  }, []);
-  const mm = String(Math.floor(secs / 60)).padStart(2, '0');
-  const ss = String(secs % 60).padStart(2, '0');
 
   return (
     <>
@@ -36,12 +28,6 @@ export function RemainingCandidates({ photos }: { photos?: string[] }) {
           <br />
           사람이 어울리실 것 같습니다.
         </SectionTitle>
-        <div style={{ textAlign: 'center', marginTop: 12, fontVariantNumeric: 'tabular-nums' }}>
-          <span style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--v7-accent, #C9A961)' }}>
-            {mm}:{ss}
-          </span>
-          <span style={{ fontSize: 12, color: 'var(--v7-mute, #A8A090)', marginLeft: 6 }}>남음</span>
-        </div>
       </Section>
 
       <div

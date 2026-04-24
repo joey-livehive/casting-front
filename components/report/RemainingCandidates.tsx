@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
 import { useSheet } from './sheetContext';
 import { useTone } from './toneContext';
 import { Section, SectionLabel, SectionTitle, HL } from './SectionFrame';
@@ -23,13 +22,6 @@ const hints: RemainingHint[] = [
 export function RemainingCandidates({ photos }: { photos?: string[] }) {
   const { openSheet } = useSheet();
   const tone = useTone();
-  const [secs, setSecs] = useState(50 * 60 + 45);
-  useEffect(() => {
-    const id = setInterval(() => setSecs((s) => (s > 0 ? s - 1 : 0)), 1000);
-    return () => clearInterval(id);
-  }, []);
-  const mm = String(Math.floor(secs / 60)).padStart(2, '0');
-  const ss = String(secs % 60).padStart(2, '0');
 
   return (
     <Section>
@@ -39,10 +31,6 @@ export function RemainingCandidates({ photos }: { photos?: string[] }) {
         <br />
         {tone === 'formal' ? '사람이 어울리실 것 같아요!' : '사람이 어울릴 것 같아!'}
       </SectionTitle>
-      <div className="text-center mt-3 tabular-nums">
-        <span className="font-display font-extrabold text-[28px] tracking-[-0.02em] text-brand-orange">{mm}:{ss}</span>
-        <span className="text-[12px] text-brand-ink-mute ml-1.5">남음</span>
-      </div>
 
       <div
         className="grid grid-cols-2 gap-3"

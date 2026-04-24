@@ -1,11 +1,20 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Section } from './SectionFrame';
 import { useTone } from './toneContext';
 import { SafeText } from './SafeText';
 
 export function ScarcityBlock({ userName, total }: { userName: string; total: number }) {
   const tone = useTone();
+  const [secs, setSecs] = useState(3 * 60 * 60);
+  useEffect(() => {
+    const id = setInterval(() => setSecs((s) => (s > 0 ? s - 1 : 0)), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const hh = String(Math.floor(secs / 3600)).padStart(2, '0');
+  const mm = String(Math.floor((secs % 3600) / 60)).padStart(2, '0');
+  const ss = String(secs % 60).padStart(2, '0');
   const items: string[] =
     tone === 'formal'
       ? [
@@ -24,13 +33,13 @@ export function ScarcityBlock({ userName, total }: { userName: string; total: nu
   const expiryText =
     tone === 'formal' ? (
       <>
-        유효기간 <b className="font-display text-brand-urgent font-bold">7일</b> — 이후엔 캐스팅 풀에서 해제되고
+        유효기간 <b className="font-display text-brand-urgent font-bold">{hh}:{mm}:{ss}</b> — 이후엔 캐스팅 풀에서 해제되고
         <br />
         다른 분께 재매칭이 시작돼요
       </>
     ) : (
       <>
-        유효기간 <b className="font-display text-brand-urgent font-bold">7일</b> — 이후엔 캐스팅 풀에서 해제되고
+        유효기간 <b className="font-display text-brand-urgent font-bold">{hh}:{mm}:{ss}</b> — 이후엔 캐스팅 풀에서 해제되고
         <br />
         다른 유저한테 재매칭 시작돼
       </>
