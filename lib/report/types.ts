@@ -40,6 +40,8 @@ export interface Candidate {
   };
   daySchedule: DayScheduleItem[];
   background: string;
+  /** 결제 후 공개되는 호기심 훅 한 줄. <blur>...</blur> 마크업 사용. */
+  secretAppeal: string;
   /** 맛보기 카드용 인물 사진 (4:5). 없으면 그라디언트 placeholder. 블러 처리는 컴포넌트가 적용. */
   teaserPhoto?: string;
   /** Chapter 2용 분위기 사진 (16:9). 없으면 그라디언트 placeholder. */

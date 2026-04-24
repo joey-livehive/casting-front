@@ -69,7 +69,7 @@ export function CastingProcess() {
   const scenes = tone === 'formal' ? scenesFormal : scenesCasual;
   const sub =
     tone === 'formal'
-      ? '소개팅앱처럼 앱 안에서만 빙빙 도는 게 아니에요. 캐스팅 매니저가 실제로 발품을 팔아요. 네 정보는 절대 먼저 공개하지 않고, 매력적으로 "포장만" 해서 접근해요.'
+      ? '소개팅앱처럼 앱 안에서만 빙빙 도는 게 아니에요. 캐스팅 매니저가 실제로 발품을 팔아요. 의뢰인님의 정보는 절대 먼저 공개하지 않고, 매력적으로 "포장만" 해서 접근해요.'
       : '소개팅앱처럼 앱 안에서만 빙빙 도는 게 아니야. 캐스팅 매니저가 실제로 발품을 팔아. 네 정보는 절대 먼저 공개하지 않고, 매력적으로 "포장만" 해서 접근해.';
   const titleSuffix = tone === 'formal' ? '이렇게 찾아와요' : '이렇게 찾아와';
   return (

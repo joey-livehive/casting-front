@@ -87,7 +87,7 @@ export function RemainingCandidates({ photos }: { photos?: string[] }) {
       </div>
 
       <div className="mt-4 text-center font-hand text-[13px] text-brand-ink-soft">
-        결제하면 <b className="font-display text-brand-orange-deep font-bold">7일 안에</b>{' '}
+        결제 후 <b className="font-display text-brand-orange-deep font-bold">7일 안에</b>{' '}
         {tone === 'formal' ? '순차 전달돼요' : '순차 전달돼'}
       </div>
     </Section>

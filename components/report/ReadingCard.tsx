@@ -2,8 +2,15 @@
 
 import { useTone } from './toneContext';
 import { SafeText } from './SafeText';
+import type { PersonalizedContent } from '@/lib/personalization/types';
 
-export function ReadingCard({ userName }: { userName: string }) {
+interface ReadingCardProps {
+  userName: string;
+  /** [LLM_GENERATED] 문단 1/2 앞에 삽입되는 개인화 도입 문장. 없으면 스팟 렌더 X. */
+  personalized?: PersonalizedContent['readingCard'];
+}
+
+export function ReadingCard({ userName, personalized }: ReadingCardProps) {
   const tone = useTone();
 
   const paragraphs: string[] =
@@ -28,6 +35,11 @@ export function ReadingCard({ userName }: { userName: string }) {
       ? `이런 분 만나시면 <b>행복할 확률이 89%</b>예요.`
       : `이런 분 만나면 <b>행복할 확률이 89%</b>야.`;
 
+  // 개인화 도입은 paragraphs[1] (핵심 성향) 과 paragraphs[2] (관계 기대) 앞에 삽입.
+  // brief §4.2 가 정의한 "문단 1", "문단 2" 위치에 대응.
+  const personalOpening1 = personalized?.paragraph1Opening;
+  const personalOpening2 = personalized?.paragraph2Opening;
+
   return (
     <div className="px-7 mt-8">
       <div className="relative bg-brand-bg-deep border-[1.5px] border-brand-line rounded-[18px] pt-[26px] px-[22px] pb-[22px]">
@@ -40,14 +52,24 @@ export function ReadingCard({ userName }: { userName: string }) {
         </div>
 
         <div className="space-y-[14px]">
-          {paragraphs.map((p, i) => (
-            <p
-              key={i}
-              className="text-[14.5px] leading-[1.7] text-brand-ink-soft [&_b]:font-display [&_b]:font-bold [&_b]:text-brand-ink"
-            >
-              <SafeText>{p}</SafeText>
-            </p>
-          ))}
+          {paragraphs.map((p, i) => {
+            const opening =
+              i === 1 ? personalOpening1 : i === 2 ? personalOpening2 : undefined;
+
+            return (
+              <div key={i}>
+                {/* [LLM_GENERATED] 문단 1/2 앞 개인화 도입 */}
+                {opening && (
+                  <p className="mb-2.5 pl-3 border-l-2 border-brand-mustard-deep font-semibold text-[14px] leading-[1.75] tracking-[-0.015em] text-brand-ink">
+                    {opening}
+                  </p>
+                )}
+                <p className="text-[14.5px] leading-[1.7] text-brand-ink-soft [&_b]:font-display [&_b]:font-bold [&_b]:text-brand-ink">
+                  <SafeText>{p}</SafeText>
+                </p>
+              </div>
+            );
+          })}
           <p className="text-[14.5px] leading-[1.7] text-brand-ink [&_b]:font-display [&_b]:font-bold [&_b]:text-brand-ink">
             <SafeText>{closing}</SafeText>
           </p>

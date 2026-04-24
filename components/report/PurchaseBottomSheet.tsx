@@ -41,7 +41,7 @@ function perPerson(plan: PricingPlan) {
 }
 
 function planDesc(plan: PricingPlan) {
-  return `엄선된 <b>${plan.cardCount}명 카드</b> 받고 대화하기`;
+  return `엄선된 <b>${plan.cardCount}명</b> 프로필 카드 전달`;
 }
 
 interface PurchaseBottomSheetProps {
@@ -206,7 +206,7 @@ export function PurchaseBottomSheet({ open, onClose, reportId }: PurchaseBottomS
                                font-hand text-[13px] px-3.5 py-[3px] rounded-[14px]
                                border-[1.5px] border-brand-line whitespace-nowrap"
                   >
-                    ✨ 제일 많이 골라
+                    ✨ 제일 많이 골라요
                   </div>
                 )}
                 <div className="flex justify-between items-start gap-2 mb-2">

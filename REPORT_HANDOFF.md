@@ -10,8 +10,11 @@
 
 개발 서버: `http://localhost:3007`
 
-- **존댓말 여성 유저 리포트**: `/report/STO-2604-F02` → `지영님` 기준, 남자 후보 (서글서글한 강아지상, IT 스타트업 PM)
-- **존댓말 남성 유저 리포트**: `/report/STO-2604-M02` → `준호님` 기준, 여자 후보 (단아한 고양이상, 브랜드 디자이너)
+- **존댓말 여성 유저 리포트**: `/report/STO-2604-F02` → `의뢰인님` 기준, 남자 후보 (서글서글한 강아지상, IT 스타트업 PM)
+- **존댓말 남성 유저 리포트**: `/report/STO-2604-M02` → `의뢰인님` 기준, 여자 후보 (단아한 고양이상, 브랜드 디자이너)
+
+ApplicationSummary 개인화 Mock 선택: 페이지에 `?mock=A|B|C` 쿼리 파라미터 (없으면 A).
+A=답변 중간 수준, B=자유응답 포함, C=본인 정보만.
 
 모바일 퍼스트 (max-width 480px).
 
@@ -38,7 +41,7 @@ someonetheone/
 │       │
 │       ├── TopNav.tsx                        # 로고 + 발행일
 │       ├── Hero.tsx                          # eyebrow pill + h1 (스크리블 하이라이트)
-│       ├── CredibilityStrip.tsx              # 배지 3개 (4,293쌍 / 583쌍 / 비밀계약)
+│       ├── ApplicationSummary.tsx            # 📋 의뢰서 복기 (유저 답변 원본 그대로 — 이상형/본인정보/자유응답)
 │       ├── HuntBox.tsx                       # 찾아온 경로 stats + effort sticker
 │       ├── TeaserCard.tsx                    # 맛보기 카드 (블러 사진 + 중앙 얼굴확인 CTA)
 │       ├── ReadingCard.tsx                   # Barnum 메모 (💌 6문단)
@@ -67,15 +70,22 @@ someonetheone/
 │   ├── useScrollReveal.ts                    # IntersectionObserver 기반 (현재 미사용)
 │   └── useToastRotation.ts                   # 3.5s 후 첫 노출 → 6~9s 간격 로테이션
 ├── lib/
-│   └── report/
-│       ├── types.ts                          # ReportData / Candidate / MatchAnalysis / PricingPlan + Tone
-│       ├── mockData.ts                       # F01/M01/F02/M02 4종 하드코딩 (F02/M02는 존댓말 copy 포함)
-│       ├── purchaseToastData.ts              # 10개 토스트 (6구매 / 2매칭 / 2만남)
-│       └── blurMarkup.ts                     # <blur>X</blur> → <span class="blur-text">
-├── public/images/teaser/
-│   ├── f01-card1.png, f01-card2.png          # 여자 유저용 맛보기 + Chapter 2 사진 (F02도 공유)
-│   ├── m01-card1.webp, m01-card2.webp        # 남자 유저용 (M02도 공유)
-│   └── m01-extra1~4.webp                     # 남은 4명 미리보기 (M02만. F02는 그라디언트 placeholder)
+│   ├── report/
+│   │   ├── types.ts                          # ReportData / Candidate (+ secretAppeal) / MatchAnalysis / PricingPlan + Tone
+│   │   ├── mockData.ts                       # F01/M01/F02/M02 4종 하드코딩 (F02/M02는 존댓말 copy 포함). userName 은 4종 모두 '의뢰인' 통일
+│   │   ├── purchaseToastData.ts              # 10개 토스트 (6구매 / 2매칭 / 2만남)
+│   │   └── blurMarkup.ts                     # <blur>X</blur> → <span class="blur-text">
+│   └── personalization/                      # 개인화 레이어 (brief Addendum 01)
+│       ├── types.ts                          # UserAnswers / PersonalizedContent
+│       ├── mock-users.ts                     # Mock 답변 A/B/C + isMockUserKey 가드
+│       ├── mock-personalized.ts              # [LLM_GENERATED] 자리 Mock 출력 A/B/C
+│       └── README.md                         # 레이어 설명, 향후 LLM 연동 스펙
+├── public/images/
+│   ├── teaser/
+│   │   ├── f01-card1.png, f01-card2.png      # 여자 유저용 맛보기 + Chapter 2 사진 (F02도 공유)
+│   │   ├── m01-card1.webp, m01-card2.webp    # 남자 유저용 (M02도 공유)
+│   │   └── m01-extra1~4.webp                 # 남은 4명 미리보기 (M02만. F02는 그라디언트 placeholder)
+│   └── couples/couple1~3.webp                # CoupleTestimonials 실사 이미지 3종
 ├── tailwind.config.ts                        # brand-* / dark-* 토큰 + 폰트 + keyframes
 ├── tsconfig.json                             # @/* 별칭 설정됨
 └── package.json
@@ -112,11 +122,11 @@ someonetheone/
 |---|---|---|
 | TopNav | ✅ 완료 | |
 | Hero | ✅ 완료 | eyebrow pill, h1 스크리블 하이라이트 |
-| CredibilityStrip | ✅ 완료 | 배지 3개 |
+| ApplicationSummary | ✅ 완료 | 📋 의뢰서 복기 — 이상형/본인정보/자유응답 원본 그대로 (Hero 바로 아래) |
 | HuntBox | ✅ 완료 | 2×2 stats 그리드, effort sticker, 점선 summary |
-| TeaserCard | ✅ 완료 | 블러 사진 + 중앙 `얼굴 확인하기` CTA, 하단 그라디언트 닉네임, 2×2 meta |
-| ReadingCard | ✅ 완료 | Barnum 5문단 + closing. `💌 {userName}님께 쓰는 메모` 라벨 |
-| Chapter1 (CHAPTER 2) | ✅ 완료 | 4 trait, 심리학 배지 |
+| TeaserCard | ✅ 완료 | 블러 사진 + 중앙 `얼굴 확인하기` CTA, 하단 그라디언트 닉네임, 2×2 meta + 🔒 비밀 매력 포인트 한 줄 |
+| ReadingCard | ✅ 완료 | Barnum 5문단 + closing + [LLM_GENERATED] 개인화 도입 2스팟. `💌 {userName}님께 쓰는 메모` 라벨 |
+| Chapter1 (CHAPTER 2) | ✅ 완료 | 4 trait, 심리학 배지, 각 trait 앞 [LLM_GENERATED] 개인화 도입 |
 | Chapter2 (CHAPTER 1) | ✅ 완료 | 인물 사진 wide + 취미/성격/스타일/배경 + Day Timeline |
 | Chapter3 (CHAPTER 3) | ✅ 완료 | Chart.js 레이더 + notes + 🎬 시뮬 |
 | RemainingCandidates | ✅ 완료 | 2×2 블러 카드 (Instagram / LinkedIn / 헬스장 / 와인바) |
@@ -151,7 +161,7 @@ someonetheone/
 ### 5.2 카피 전반의 톤
 - **F02/M02는 모든 본문을 존댓말(요체)로 재작성.**
 - 반말 버전 카피는 `lib/report/mockData.ts`에 casual 원문 유지 → **F02/M02는 formal 변형 별도 저장**
-- 호칭은 현재 `{userName}님` (`지영님`, `준호님`) — mock 이름. 실제 서비스엔 이름 없음 → **호칭 정책 미정** (후보: `회원님`, `의뢰인님`, `주인공님`, `그대` 등 논의 중)
+- 호칭은 현재 **`의뢰인` 로 4종 리포트 모두 통일**(mockData `userName` 필드). `{userName}님` 치환이 쓰이는 곳(Hero/Chapter/ReadingCard 등)에서 자연스럽게 `의뢰인님` 으로 렌더됨. formal 전용 카피(예: ScarcityBlock, ApplicationSummary, CastingProcess)는 `의뢰인님` 을 직접 하드코딩.
 
 ### 5.3 디자인
 - Bridge 그라디언트 **2-stop 베이지→다크 → 4-stop 웜톤(`F5EFE4 → D6C3A2 → 8A6E52 → 2E2A23`)** (전환 탁함 개선)
@@ -179,8 +189,18 @@ someonetheone/
 
 ### 6.2 유저 데이터 치환 방식 (현재)
 - **없음.** `userName`, `publishedAt`, `huntStats` 등 모두 mockData에 고정값.
-- `STO-2604-F02`의 `userName`은 `'지영'`으로 하드코딩 → 실제 유저 이름 아님.
-- **프로덕션 전 필수**: 유저 식별 후 `userName`, `publishedAt`, 매칭 스코어 등 동적 치환 로직 필요.
+- 4종 리포트 모두 `userName: '의뢰인'` 으로 통일 (실제 이름 없음 — 호칭 placeholder).
+- **프로덕션 전 필수**: 유저 식별 후 `userName`(또는 호칭), `publishedAt`, 매칭 스코어 등 동적 치환 로직 필요.
+
+### 6.5 개인화 영역 (brief Addendum 01 — 신규)
+- **데이터 소스**: `lib/personalization/mock-users.ts` (`UserAnswers` Mock A/B/C) + `mock-personalized.ts` (LLM 출력 자리, 수동 Mock).
+- **케이스 선택**: `/report/<id>?mock=A|B|C` — 없거나 유효하지 않으면 `A`. `isMockUserKey` 가드.
+- **렌더 위치**:
+  - `ApplicationSummary` — `userAnswers` 원본을 Hero 아래 "의뢰서 복기" 카드로 표시.
+  - `ReadingCard` — 문단 1/2 앞에 `[LLM_GENERATED]` 개인화 도입 (있을 때만).
+  - `Chapter1` — 4개 trait 각 앞에 `[LLM_GENERATED]` 개인화 도입 (있을 때만).
+- **교체 지점**: page.tsx 의 `getMockUser` / `getMockPersonalized` 호출을 실제 fetch 로 치환 예정.
+- **자세한 스펙**: `lib/personalization/README.md`.
 
 ### 6.3 Tone 주입
 - `ReportData.tone: 'casual' | 'formal'` 필드 → `ReportShell`이 `ToneContext.Provider` 로 하위에 주입
@@ -230,12 +250,12 @@ someonetheone/
 
 ### 8.2 에셋
 - **F02 남은 4명 사진 4장** 미업로드 (현재 그라디언트 placeholder) — 경로 규칙: `public/images/teaser/f02-extra1~4.*`
-- **CoupleTestimonials 커플 사진 3장** (뒷모습/손/그림자) 전부 미업로드
+- **CoupleTestimonials 커플 사진 3장** `public/images/couples/couple1~3.webp` 반영됨
 - **실제 명함 이미지** — 현재 CSS로 그린 가상 명함
 - M02/F02는 F01/M01과 같은 사진 공유 중 → 필요 시 분리
 
 ### 8.3 호칭 정책 (⚠️ 미결정)
-- 현재 `지영님/준호님` mock name 사용 중. 실제 서비스엔 이름 정보 없음.
+- 현재 mockData 의 userName 은 placeholder `'의뢰인'` 으로 임시 통일. 실제 서비스엔 이름 정보 없음.
 - 후보: `회원님` / `의뢰인님` / `주인공님` / `그대` / `자기님` 등 논의 중
 - 결정되면 mockData의 userName 필드 제거 + 각 컴포넌트에서 호칭 상수 주입 필요
 

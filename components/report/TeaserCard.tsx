@@ -64,11 +64,8 @@ export function TeaserCard({ candidate }: TeaserCardProps) {
             {/* 중앙 CTA */}
             <div
               className="absolute left-1/2 top-[48%] -translate-x-1/2 -translate-y-1/2 z-[4]
-                         flex flex-col items-center gap-3.5 pointer-events-none w-[88%]"
+                         flex flex-col items-center pointer-events-none w-[88%]"
             >
-              <div className="font-hand text-[16px] text-white bg-brand-ink/75 px-4 py-[7px] rounded-[18px] backdrop-blur-[6px] text-center">
-                {tone === 'formal' ? '이 사람 진짜 모습, 궁금하시죠?' : '이 사람 진짜 모습, 궁금하지?'}
-              </div>
               <button
                 type="button"
                 onClick={() => openSheet('teaser_card')}
@@ -102,6 +99,7 @@ export function TeaserCard({ candidate }: TeaserCardProps) {
             <MetaItem label="직업" value={`${candidate.occupation} <blur>${candidate.occupationDetail}</blur>`} />
             <MetaItem label="성격" value={candidate.personality} />
             <MetaItem label="찾은 곳" value={`${candidate.foundAt} (오프라인)`} full />
+            <MetaItem label="🔒 비밀 매력 포인트" value={candidate.secretAppeal} full />
           </div>
         </div>
       </div>

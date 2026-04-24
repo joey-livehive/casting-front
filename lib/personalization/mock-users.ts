@@ -1,17 +1,12 @@
 /**
  * Mock 유저 답변 3종.
  *
- * 실제 DB 조회 대신 이 파일에서 직접 로드한다.
- * Addendum 02 에서 DB 조회 구현 시 이 파일은 fallback 으로 이동한다.
- *
- * 유저 답변 문자열은 실제 DB 값과 동일하게 유지한다 (오타/띄어쓰기 포함).
+ * 주의: 실제 DB 저장 데이터와 동일한 톤/띄어쓰기/구두점 유지.
+ * Mock-personalized와 1:1 대응되므로 키 변경 시 둘 다 맞춰야 함.
  */
 
 import { UserAnswers } from './types';
 
-// ─────────────────────────────────────
-// Case A — 답변 중간 수준, 본인 정보 / 자유응답 없음
-// ─────────────────────────────────────
 export const MOCK_USER_A: UserAnswers = {
   idealType: {
     attractionFactor: "'성격'이 좋은 사람",
@@ -24,11 +19,9 @@ export const MOCK_USER_A: UserAnswers = {
     dealBreaker: '흡연하는 사람',
     firstMeeting: '뭐든 좋아',
   },
+  // selfInfo, freeResponse 없음 (답변 중간 수준)
 };
 
-// ─────────────────────────────────────
-// Case B — 답변 많음 + 자유응답 있음
-// ─────────────────────────────────────
 export const MOCK_USER_B: UserAnswers = {
   idealType: {
     attractionFactor: "유능한 '능력'을 가진 사람",
@@ -59,9 +52,6 @@ export const MOCK_USER_B: UserAnswers = {
   },
 };
 
-// ─────────────────────────────────────
-// Case C — 답변 적음, 본인 정보 일부만, 자유응답 없음
-// ─────────────────────────────────────
 export const MOCK_USER_C: UserAnswers = {
   idealType: {
     attractionFactor: "'외모'가 수려한 사람",
@@ -81,6 +71,7 @@ export const MOCK_USER_C: UserAnswers = {
     weekend: '집에서 쉬어',
     drinking: '거의 안 마셔',
   },
+  // freeResponse 없음
 };
 
 export const MOCK_USERS = {
@@ -91,11 +82,10 @@ export const MOCK_USERS = {
 
 export type MockUserKey = keyof typeof MOCK_USERS;
 
-/** URL 파라미터나 페이지 prop 으로 받아서 Mock 유저 선택 */
 export function getMockUser(key: MockUserKey = 'A'): UserAnswers {
   return MOCK_USERS[key];
 }
 
-export function isMockUserKey(v: string | undefined): v is MockUserKey {
-  return v === 'A' || v === 'B' || v === 'C';
+export function isMockUserKey(value: unknown): value is MockUserKey {
+  return value === 'A' || value === 'B' || value === 'C';
 }

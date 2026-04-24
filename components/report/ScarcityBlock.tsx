@@ -38,15 +38,15 @@ export function ScarcityBlock({ userName, total }: { userName: string; total: nu
   const guaranteeText =
     tone === 'formal' ? (
       <>
-        <b className="font-display text-brand-mustard font-bold">재캐스팅 1회 무료 보장</b> — {total}명 다 마음에 안 드시면
+        <b className="font-display text-brand-mustard font-bold">1명 재캐스팅 무료 보장</b> — {total}명 전부 맘에 안 드시면
         <br />
-        완전히 새로운 {total}명, 무료로 다시 캐스팅해드릴게요
+        새로운 1명, 무료로 다시 캐스팅해드릴게요
       </>
     ) : (
       <>
-        <b className="font-display text-brand-mustard font-bold">재캐스팅 1회 무료 보장</b> — {total}명 다 마음에 안 들면
+        <b className="font-display text-brand-mustard font-bold">1명 재캐스팅 무료 보장</b> — {total}명 전부 맘에 안 들면
         <br />
-        완전히 새로운 {total}명, 무료로 다시 캐스팅해줄게
+        새로운 1명, 무료로 다시 캐스팅해줄게
       </>
     );
 
