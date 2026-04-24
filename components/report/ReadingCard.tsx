@@ -58,9 +58,12 @@ export function ReadingCard({ userName, personalized }: ReadingCardProps) {
 
             return (
               <div key={i}>
-                {/* ========== [LLM_GENERATED] 문단 1/2 앞 개인화 도입 ========== */}
-                {opening && <p className="letter-personal-opening">{opening}</p>}
-                {/* ========== [/LLM_GENERATED] ========== */}
+                {/* [LLM_GENERATED] 문단 1/2 앞 개인화 도입 */}
+                {opening && (
+                  <p className="mb-2.5 pl-3 border-l-2 border-brand-mustard-deep font-semibold text-[14px] leading-[1.75] tracking-[-0.015em] text-brand-ink">
+                    {opening}
+                  </p>
+                )}
                 <p className="text-[14.5px] leading-[1.7] text-brand-ink-soft [&_b]:font-display [&_b]:font-bold [&_b]:text-brand-ink">
                   <SafeText>{p}</SafeText>
                 </p>

@@ -33,12 +33,10 @@ const SELF_INFO_QUESTIONS: { q: string; k: keyof NonNullable<UserAnswers['selfIn
 ];
 
 export function ApplicationSummary({ userAnswers }: { userAnswers: UserAnswers }) {
-  const selfRows = SELF_INFO_QUESTIONS.map((row) => ({
-    ...row,
-    v: userAnswers.selfInfo?.[row.k],
-  })).filter(
-    (r): r is { q: string; k: keyof NonNullable<UserAnswers['selfInfo']>; v: string } => !!r.v,
-  );
+  const selfRows = SELF_INFO_QUESTIONS.flatMap(({ q, k }) => {
+    const a = userAnswers.selfInfo?.[k];
+    return a ? [{ q, a }] : [];
+  });
 
   return (
     <div className="px-7 mt-7">
@@ -69,8 +67,8 @@ export function ApplicationSummary({ userAnswers }: { userAnswers: UserAnswers }
 
         {selfRows.length > 0 && (
           <Group label="본인 정보" divider>
-            {selfRows.map((row) => (
-              <Row key={row.k} q={row.q} a={row.v} />
+            {selfRows.map(({ q, a }) => (
+              <Row key={q} q={q} a={a} />
             ))}
           </Group>
         )}

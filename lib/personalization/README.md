@@ -5,9 +5,12 @@
 ## 현재 단계 (UI Mock)
 
 - `types.ts` — `UserAnswers`, `PersonalizedContent` 타입
-- `static-content.ts` — 모든 유저에게 동일하게 보이는 고정 해석 (TRAITS, READING_CARD_CONTENT, FALLBACK)
 - `mock-users.ts` — 유저 답변 Mock 3종 (A/B/C)
 - `mock-personalized.ts` — LLM 출력 Mock 3종 (수동 작성)
+
+고정 해석 카피(트레이트 4종, ReadingCard 본문 5문단)는 현재 각 컴포넌트
+(`Chapter1.tsx`, `ReadingCard.tsx`)에 `<b>` 마크업과 tone 분기까지 함께 인라인돼 있다.
+추후 centralize 필요 시 별도 소스 파일로 추출할 것.
 
 리포트 페이지는 URL 파라미터 `?mock=A|B|C`로 케이스 선택.
 
@@ -48,10 +51,10 @@ grep -rn "LLM_GENERATED" components/ lib/
 | `paragraph1_opening` | 1~2문장 | 이상형 답변 1~2개 통합 |
 | `paragraph2_opening` | 1~2문장 | 자유응답 있으면 인용 / 없으면 본인정보 / 없으면 폴백 |
 
-**폴백**: `lib/personalization/static-content.ts`의 `FALLBACK_INTROS`.
+**폴백**: 개인화 문장이 비어 있으면 DOM에 렌더링되지 않음 (원본 구조로 자연스럽게 빠짐).
 
 ## 주의 사항
 
 - **유저 답변은 원본 그대로 보관**. 띄어쓰기·구두점 수정 금지.
-- 빈 문자열/`null` 개인화 문장은 DOM에 렌더링되지 않음 (v7 원본 구조로 fallback).
-- 이 레이어는 디자인 토큰/Tailwind 설정/기본 해석 텍스트(`static-content.ts`)와 무관하게 독립 교체 가능해야 함.
+- 빈 문자열/`null` 개인화 문장은 DOM에 렌더링되지 않음.
+- 이 레이어는 디자인 토큰/Tailwind 설정과 독립적으로 교체 가능해야 함.

@@ -111,9 +111,12 @@ export function Chapter1({ userName, personalized }: Chapter1Props) {
                 </div>
               </div>
 
-              {/* ========== [LLM_GENERATED] 개인화 도입 (있을 때만) ========== */}
-              {personalIntro && <p className="trait-personal-intro">{personalIntro}</p>}
-              {/* ========== [/LLM_GENERATED] ========== */}
+              {/* [LLM_GENERATED] 개인화 도입 (있을 때만) */}
+              {personalIntro && (
+                <p className="ml-8 mb-3 pl-3 border-l-2 border-brand-mustard-deep font-semibold text-[13.5px] leading-[1.65] tracking-[-0.01em] text-brand-ink">
+                  {personalIntro}
+                </p>
+              )}
 
               <div className="ml-8 text-[13.5px] text-brand-ink-soft leading-[1.65]">{t.desc}</div>
               <div className="ml-8 mt-2.5 bg-brand-mustard/25 border-l-[3px] border-brand-mustard-deep px-[13px] py-[9px] rounded-md font-hand text-[14px] text-brand-ink [&_b]:font-bold [&_b]:text-brand-orange-deep">
