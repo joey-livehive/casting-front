@@ -27,7 +27,7 @@ export function PriceCompare() {
         </SectionTitle>
       </Section>
 
-      <div className="price-compare">
+      <div className="price-compare" style={{ gridTemplateColumns: '1fr 1.3fr 1fr' }}>
         <div className="pc-col">
           <div className="pc-brand">결혼정보회사</div>
           {rows.map((r) => (
@@ -37,21 +37,21 @@ export function PriceCompare() {
             </div>
           ))}
         </div>
+        <div className="pc-col us" style={{ transform: 'scale(1.04)', zIndex: 1 }}>
+          <div className="pc-brand">someonetheone</div>
+          {rows.map((r) => (
+            <div key={r.k} className="pc-row">
+              <div className="pc-k">{r.k}</div>
+              <div className={`pc-v${r.usDim ? ' dim' : ''}`}>{r.us}</div>
+            </div>
+          ))}
+        </div>
         <div className="pc-col">
           <div className="pc-brand">소개팅앱</div>
           {rows.map((r) => (
             <div key={r.k} className="pc-row">
               <div className="pc-k">{r.k}</div>
               <div className={`pc-v${r.appDim ? ' dim' : ''}`}>{r.app}</div>
-            </div>
-          ))}
-        </div>
-        <div className="pc-col us">
-          <div className="pc-brand">someonetheone</div>
-          {rows.map((r) => (
-            <div key={r.k} className="pc-row">
-              <div className="pc-k">{r.k}</div>
-              <div className={`pc-v${r.usDim ? ' dim' : ''}`}>{r.us}</div>
             </div>
           ))}
         </div>

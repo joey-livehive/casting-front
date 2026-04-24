@@ -15,7 +15,7 @@ export function FixedBottomCta() {
           <span className="fc-timer-val">{short}</span>
         </div>
         <button type="button" className="fc-btn" onClick={() => openSheet('fixed_bottom_cta')}>
-          <span>소개 받기</span>
+          <span>사진 보기</span>
           <svg viewBox="0 0 14 14" fill="none" aria-hidden="true">
             <path
               d="M1 7H13M13 7L8 2M13 7L8 12"

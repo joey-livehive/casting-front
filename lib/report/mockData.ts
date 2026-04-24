@@ -20,8 +20,8 @@ const femaleReport: ReportData = {
   teaserCandidate: {
     nickname: '○○○',
     faceType: '서글서글한 강아지상',
-    ageRange: '20대',
-    ageDetail: '후반',
+    ageRange: '21~24세',
+    ageDetail: '',
     occupation: 'IT 스타트업',
     occupationDetail: 'PM',
     personality: '따뜻한 현실주의자',
@@ -48,7 +48,7 @@ const femaleReport: ReportData = {
     radarData: {
       labels: ['정서적\n안정감', '자기\n몰입도', '커뮤니케이션', '유머 코드', '생활 템포', '가치관'],
       userDesired: [9, 8, 8.5, 7, 7.5, 8],
-      candidateActual: [8.7, 8.3, 8, 7.5, 7, 8.2],
+      candidateActual: [7.2, 8.3, 8, 7.5, 7, 8.2],
     },
     simulation: '첫 만남은 <b>조용한 <blur>◯◯◯</blur></b>가 어울릴 거야. 이 분은 시끄러운 곳보다 대화가 자연스럽게 흘러가는 공간을 선호해. 의뢰인님도 비슷한 걸 편안해하잖아. 한 잔 두고 <b><blur>◯~◯시간</blur> 얘기</b>하는 게 딱이야. 두 번째 만남쯤엔 이 분이 먼저 <b>작은 디테일</b>을 기억해서 꺼낼 거야. 그때 네가 "어, 그거 기억해?"라고 놀라는 표정 지으면, 이 분 속으로 웃을 거야. 그런 타입이거든.',
     notes: [
@@ -85,8 +85,8 @@ const maleReport: ReportData = {
   teaserCandidate: {
     nickname: '○○○',
     faceType: '단아한 고양이상',
-    ageRange: '20대',
-    ageDetail: '중반',
+    ageRange: '21~24세',
+    ageDetail: '',
     occupation: '브랜드 디자이너',
     occupationDetail: '시니어',
     personality: '호기심 많은 따뜻함',
@@ -113,7 +113,7 @@ const maleReport: ReportData = {
     radarData: {
       labels: ['감수성', '자기\n표현력', '커뮤니케이션', '유머 코드', '생활 템포', '가치관'],
       userDesired: [8.5, 8, 8.5, 8, 7, 8],
-      candidateActual: [8.8, 8.5, 8, 7.5, 7.5, 8.2],
+      candidateActual: [6.8, 8.5, 8, 7.5, 7.5, 8.2],
     },
     simulation: '첫 만남은 <b>작은 <blur>◯◯</blur></b>가 어울릴 거야. 이 분은 큰 데이트보다 일상 속 장소에서 서로의 반응을 보는 걸 더 좋아해. 의뢰인님도 조용한 공간에서 더 편해지잖아. 전시 한 바퀴 돌고, 근처 <b>작은 <blur>◯◯◯</blur>에서 한 잔</b>이 딱이야. 두 번째 만남엔 이 분이 자기 작업 얘기를 슬쩍 꺼낼 거야. 처음 만났을 땐 거의 안 해. 네가 <b>진지하게 듣는 태도</b>만 보여줘도, 이 분 속으로 엄청 긍정적으로 평가할 거야.',
     notes: [

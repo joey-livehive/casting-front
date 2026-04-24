@@ -27,7 +27,7 @@ export function Hero({ userName }: { userName: string }) {
                        -rotate-[0.8deg]"
           />
         </span>{' '}
-        {tone === 'formal' ? '찾아다녔어요.' : '찾아다녔어.'}
+        {tone === 'formal' ? "'캐스팅' 해왔어요." : "'캐스팅' 해왔어."}
       </h1>
     </div>
   );

@@ -55,8 +55,8 @@ export function CoupleTestimonials() {
                 className="cp-photo-img"
                 style={{
                   objectFit: 'cover',
-                  filter: 'blur(8px) saturate(1.05)',
-                  transform: 'scale(1.15)',
+                  filter: 'blur(4px) saturate(1.05)',
+                  transform: 'scale(1.08)',
                   pointerEvents: 'none',
                   WebkitUserSelect: 'none',
                   WebkitTouchCallout: 'none',

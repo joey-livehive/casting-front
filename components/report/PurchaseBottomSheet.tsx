@@ -257,7 +257,7 @@ export function PurchaseBottomSheet({ open, onClose, reportId }: PurchaseBottomS
                        active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0_var(--line)]
                        ${paying ? 'opacity-60 pointer-events-none' : ''}`}
           >
-            {paying ? '결제 준비 중...' : '결제하고 엄선된 사람 소개 받기!'}
+            {paying ? '결제 준비 중...' : '결제하고 사진 보기'}
           </button>
         </div>
       </div>

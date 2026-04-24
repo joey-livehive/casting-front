@@ -15,7 +15,7 @@ interface Brand {
   rows: Row[];
 }
 
-const comparisons: Brand[] = [
+const sides: Brand[] = [
   {
     brand: '결정사',
     rows: [
@@ -34,17 +34,18 @@ const comparisons: Brand[] = [
       { k: '검증', v: '없음', dim: true },
     ],
   },
-  {
-    brand: 'someonetheone',
-    us: true,
-    rows: [
-      { k: '가격', v: '3~10만원대' },
-      { k: '범위', v: '앱 밖까지' },
-      { k: '소요', v: '7일' },
-      { k: '검증', v: 'AI+매니저' },
-    ],
-  },
 ];
+
+const center: Brand = {
+  brand: 'someonetheone',
+  us: true,
+  rows: [
+    { k: '가격', v: '3~10만원대' },
+    { k: '범위', v: '앱 밖까지' },
+    { k: '소요', v: '7일' },
+    { k: '검증', v: 'AI+매니저' },
+  ],
+};
 
 export function PriceCompare() {
   const tone = useTone();
@@ -55,21 +56,21 @@ export function PriceCompare() {
         근데 <HL>가격은</HL> 훨씬 합리적
       </SectionTitle>
 
-      <div className="grid grid-cols-3 gap-2">
-        {comparisons.map((c) => {
+      <div className="grid grid-cols-[1fr_1.3fr_1fr] gap-2 items-start">
+        {[sides[0], center, sides[1]].map((c) => {
           const isUs = !!c.us;
           return (
             <div
               key={c.brand}
               className={`rounded-[14px] py-4 px-2.5 border-[1.5px] border-brand-line text-center relative ${
                 isUs
-                  ? 'bg-brand-orange text-white shadow-[3px_4px_0_var(--line)]'
+                  ? 'bg-brand-orange text-white shadow-[3px_4px_0_var(--line)] -mt-1 scale-[1.04] z-10'
                   : 'bg-[#E8E3D6]'
               }`}
             >
               <div
-                className={`font-display font-extrabold text-[12.5px] tracking-[-0.02em] mb-[11px] pb-[9px] whitespace-nowrap overflow-hidden text-ellipsis border-b ${
-                  isUs ? 'border-white/30' : 'border-black/10'
+                className={`font-display font-extrabold tracking-[-0.02em] mb-[11px] pb-[9px] whitespace-nowrap overflow-hidden text-ellipsis border-b ${
+                  isUs ? 'text-[13.5px] border-white/30' : 'text-[12.5px] border-black/10'
                 }`}
               >
                 {c.brand}
@@ -89,12 +90,12 @@ export function PriceCompare() {
                     {r.k}
                   </div>
                   <div
-                    className={`font-display font-bold text-[12.5px] ${
+                    className={`font-display font-bold ${
                       isUs
-                        ? 'text-white'
+                        ? 'text-[13.5px] text-white'
                         : r.dim
-                          ? 'text-brand-ink-mute font-normal'
-                          : 'text-brand-ink'
+                          ? 'text-[12.5px] text-brand-ink-mute font-normal'
+                          : 'text-[12.5px] text-brand-ink'
                     }`}
                   >
                     {r.v}
