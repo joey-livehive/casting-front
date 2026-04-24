@@ -43,14 +43,23 @@ export function CoupleTestimonials() {
       <div className="couples-scroll">
         {cases.map((c) => (
           <div key={c.no} className="couple-card">
-            <div className="cp-photo">
+            <div className="cp-photo" onContextMenu={(e) => e.preventDefault()}>
               <Image
                 src={c.photo}
                 alt=""
                 fill
                 sizes="240px"
+                draggable={false}
                 className="cp-photo-img"
-                style={{ objectFit: 'cover' }}
+                style={{
+                  objectFit: 'cover',
+                  filter: 'blur(8px) saturate(1.05)',
+                  transform: 'scale(1.15)',
+                  pointerEvents: 'none',
+                  WebkitUserSelect: 'none',
+                  WebkitTouchCallout: 'none',
+                  WebkitUserDrag: 'none',
+                } as React.CSSProperties}
               />
             </div>
             <div className="cp-body">
