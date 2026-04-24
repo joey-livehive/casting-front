@@ -7,7 +7,7 @@ export function FinalSignature() {
         <br />
         의뢰인님의 시간을
         <br />
-        대신 씁니다.
+        소중히 생각합니다.
       </div>
     </div>
   );
