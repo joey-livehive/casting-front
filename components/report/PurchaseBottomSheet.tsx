@@ -10,16 +10,16 @@ const plans: PricingPlan[] = [
   {
     id: 'starter',
     name: '스타터',
-    originalPrice: 49900,
-    discountedPrice: 39900,
+    originalPrice: 24900,
+    discountedPrice: 19900,
     discountPercent: 20,
     cardCount: 5,
   },
   {
     id: 'regular',
     name: '레귤러',
-    originalPrice: 89900,
-    discountedPrice: 69900,
+    originalPrice: 44900,
+    discountedPrice: 34900,
     discountPercent: 22,
     cardCount: 10,
     conversationGuarantee: 3,
@@ -28,8 +28,8 @@ const plans: PricingPlan[] = [
   {
     id: 'premium',
     name: '프리미엄',
-    originalPrice: 129900,
-    discountedPrice: 99900,
+    originalPrice: 64900,
+    discountedPrice: 49900,
     discountPercent: 23,
     cardCount: 20,
     conversationGuarantee: 10,
@@ -59,6 +59,10 @@ export function PurchaseBottomSheet({ open, onClose, reportId }: PurchaseBottomS
     setSelectedId(id);
     track('plan_select', { reportId, plan: id, amount: plans.find((p) => p.id === id)?.discountedPrice });
   };
+
+  useEffect(() => {
+    if (open) track('sheet_open', { reportId });
+  }, [open, reportId]);
 
   // ESC로 닫기
   useEffect(() => {

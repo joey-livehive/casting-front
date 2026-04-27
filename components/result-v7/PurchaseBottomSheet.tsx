@@ -12,17 +12,17 @@ const plans: Plan[] = [
   {
     id: 'starter',
     name: '스타터',
-    originalPrice: 44900,
-    discountedPrice: 39900,
-    discountPercent: 11,
+    originalPrice: 24900,
+    discountedPrice: 19900,
+    discountPercent: 20,
     cardCount: 5,
     desc: '엄선된 5명 프로필 카드 전달',
   },
   {
     id: 'regular',
     name: '레귤러',
-    originalPrice: 89900,
-    discountedPrice: 69900,
+    originalPrice: 44900,
+    discountedPrice: 34900,
     discountPercent: 22,
     cardCount: 10,
     recommended: true,
@@ -31,9 +31,9 @@ const plans: Plan[] = [
   {
     id: 'premium',
     name: '프리미엄',
-    originalPrice: 149900,
-    discountedPrice: 99900,
-    discountPercent: 33,
+    originalPrice: 64900,
+    discountedPrice: 49900,
+    discountPercent: 23,
     cardCount: 20,
     desc: '엄선된 20명 프로필 카드 전달',
   },
@@ -58,6 +58,10 @@ export function PurchaseBottomSheet({ open, onClose, reportId }: Props) {
     setSelectedId(id);
     track('plan_select', { reportId, plan: id, amount: plans.find((p) => p.id === id)?.discountedPrice, version: 'v7' });
   };
+
+  useEffect(() => {
+    if (open) track('sheet_open', { reportId, version: 'v7' });
+  }, [open, reportId]);
 
   useEffect(() => {
     if (!open) return;

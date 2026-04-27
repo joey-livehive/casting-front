@@ -1,23 +1,7 @@
-const CASTING_DAYS = 17;
-
-function pad(n: number) {
-  return String(n).padStart(2, '0');
-}
-function formatFull(d: Date) {
-  return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`;
-}
-function formatMonthDay(d: Date) {
-  return `${pad(d.getMonth() + 1)}.${pad(d.getDate())}`;
-}
+const CASTING_HOURS = 3;
 
 export function Hero({ userName }: { userName: string }) {
-  const end = new Date();
-  const start = new Date(end);
-  start.setDate(start.getDate() - CASTING_DAYS);
-  const sameYear = start.getFullYear() === end.getFullYear();
-  const range = sameYear
-    ? `${formatFull(start)} ~ ${formatMonthDay(end)} · 총 ${CASTING_DAYS}일`
-    : `${formatFull(start)} ~ ${formatFull(end)} · 총 ${CASTING_DAYS}일`;
+  const range = `총 ${CASTING_HOURS}시간`;
 
   return (
     <div className="hero">

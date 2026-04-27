@@ -19,7 +19,7 @@ export function Hero({ userName }: { userName: string }) {
         <span className="text-brand-orange">{userName}님을 위해</span>
         <br />
         <span className="relative inline-block">
-          7일간
+          3시간
           <span
             aria-hidden
             className="absolute left-[-3px] right-[-3px] bottom-[2px] h-[10px]
