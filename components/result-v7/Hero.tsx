@@ -1,8 +1,4 @@
-const CASTING_HOURS = 3;
-
 export function Hero({ userName }: { userName: string }) {
-  const range = `총 ${CASTING_HOURS}시간`;
-
   return (
     <div className="hero">
       <span className="kicker">PRIVATE CASTING</span>
@@ -14,8 +10,6 @@ export function Hero({ userName }: { userName: string }) {
         마쳤습니다.
       </h1>
       <p className="hero-sub">
-        {range}
-        <br />
         오프라인 현장, Instagram, LinkedIn에서
         <br />
         의뢰인님의 기준에 부합하는 사람을 찾았습니다.

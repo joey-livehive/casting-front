@@ -18,15 +18,6 @@ export function Hero({ userName }: { userName: string }) {
       >
         <span className="text-brand-orange">{userName}님을 위해</span>
         <br />
-        <span className="relative inline-block">
-          3시간
-          <span
-            aria-hidden
-            className="absolute left-[-3px] right-[-3px] bottom-[2px] h-[10px]
-                       bg-brand-mustard z-[-1] opacity-85 rounded
-                       -rotate-[0.8deg]"
-          />
-        </span>{' '}
         {tone === 'formal' ? "'캐스팅' 해왔어요." : "'캐스팅' 해왔어."}
       </h1>
     </div>
