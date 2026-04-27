@@ -17,8 +17,8 @@ export function Hero({ userName }: { userName: string }) {
                    tracking-[-0.035em] text-brand-ink"
       >
         <span className="text-brand-orange">{userName}님을 위해</span>
-        <br />
-        {tone === 'formal' ? "'캐스팅' 해왔어요." : "'캐스팅' 해왔어."}
+        {' '}
+        {tone === 'formal' ? '찾아왔어요.' : '찾아왔어.'}
       </h1>
     </div>
   );
