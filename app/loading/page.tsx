@@ -19,46 +19,34 @@ const C = {
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 const PHASE_TEXTS = [
-  '성격 매칭 패턴 분석 중...',
-  '영역별 매칭 점수 계산 중...',
-  '가장 잘 맞는 사람 선별 중...',
+  '너의 연애 유형을 분석하고 있어!',
+  '너의 연애 가치관을 분석하고 있어!',
+  '너와 잘 맞는 사람을 찾고 있어!',
 ];
-
-const PHASE_DURATIONS = [8000, 8000, 6000];
+const PHASE_DURATIONS = [4000, 4000, 6000];
 const TOTAL_MS = PHASE_DURATIONS.reduce((s, d) => s + d, 0);
 
-const RADAR_AXES = ['성격', '외모', '라이프', '가치관', '연애관'];
-const RADAR_TARGETS = [0.92, 0.85, 0.88, 0.9, 0.93];
+const RADAR_AXES = ['표현력', '다정함', '안정성', '자유로움', '불안도'];
 
-const BAR_DATA = [
-  { label: '성격', value: 96 },
-  { label: '라이프', value: 89 },
-  { label: '가치관', value: 92 },
-  { label: '연애관', value: 94 },
-];
+const BAR_LABELS = ['외모', '성격', '능력', '분위기'];
 
-type CardData = {
-  tag: string;
-  match: number;
-  desc: string;
-  // 추후 사용자가 사진 주면 src로 교체
-  photo?: string;
-};
+type CardData = { tag: string; match: number; desc: string; photo?: string };
 
+// 사진은 /public/loading-cards/m1.jpg ~ m5.jpg, f1.jpg ~ f5.jpg에 두면 자동 로드
 const MALE_CARDS: CardData[] = [
-  { tag: 'INFJ · 서울 · 28', match: 94, desc: '조용한데 다정한 사람' },
-  { tag: 'ENFP · 경기 · 27', match: 91, desc: '에너지 넘치는 분위기' },
-  { tag: 'INTP · 서울 · 30', match: 89, desc: '깊이 있는 대화 가능' },
-  { tag: 'ESFJ · 인천 · 26', match: 87, desc: '챙겨주는 게 자연스러운' },
-  { tag: 'ISTJ · 서울 · 29', match: 85, desc: '안정감 있는 타입' },
+  { tag: 'INFJ · 서울 · 28', match: 94, desc: '조용한데 다정한 사람', photo: '/loading-cards/m1.jpg' },
+  { tag: 'ENFP · 경기 · 27', match: 91, desc: '에너지 넘치는 분위기', photo: '/loading-cards/m2.jpg' },
+  { tag: 'INTP · 서울 · 30', match: 89, desc: '깊이 있는 대화 가능', photo: '/loading-cards/m3.jpg' },
+  { tag: 'ESFJ · 인천 · 26', match: 87, desc: '챙겨주는 게 자연스러운', photo: '/loading-cards/m4.jpg' },
+  { tag: 'ISTJ · 서울 · 29', match: 85, desc: '안정감 있는 타입', photo: '/loading-cards/m5.jpg' },
 ];
 
 const FEMALE_CARDS: CardData[] = [
-  { tag: 'ENFJ · 서울 · 27', match: 95, desc: '다정하고 세심한 분위기' },
-  { tag: 'INFP · 경기 · 26', match: 92, desc: '감성적이고 따뜻한 사람' },
-  { tag: 'ISFJ · 서울 · 28', match: 90, desc: '조용한데 깊이 있어' },
-  { tag: 'ENTP · 인천 · 29', match: 88, desc: '재치 있는 대화 가능' },
-  { tag: 'ESTP · 서울 · 25', match: 86, desc: '활발하고 즉흥적인' },
+  { tag: 'ENFJ · 서울 · 27', match: 95, desc: '다정하고 세심한 분위기', photo: '/loading-cards/f1.jpg' },
+  { tag: 'INFP · 경기 · 26', match: 92, desc: '감성적이고 따뜻한 사람', photo: '/loading-cards/f2.jpg' },
+  { tag: 'ISFJ · 서울 · 28', match: 90, desc: '조용한데 깊이 있어', photo: '/loading-cards/f3.jpg' },
+  { tag: 'ENTP · 인천 · 29', match: 88, desc: '재치 있는 대화 가능', photo: '/loading-cards/f4.jpg' },
+  { tag: 'ESTP · 서울 · 25', match: 86, desc: '활발하고 즉흥적인', photo: '/loading-cards/f5.jpg' },
 ];
 
 type Stage = 'analyzing' | 'phone';
@@ -66,44 +54,43 @@ type Stage = 'analyzing' | 'phone';
 export default function LoadingPage() {
   const router = useRouter();
   const [stage, setStage] = useState<Stage>('analyzing');
-  const [phase, setPhase] = useState(0);
-  const [percent, setPercent] = useState(0);
+  const [t, setT] = useState(0); // seconds since mount
   const [phone, setPhone] = useState('');
   const submittedRef = useRef(false);
 
-  // 성별 분기 — 사용자 본인 성별의 반대 카드 사용
   const cards = useMemo(() => {
     if (typeof window === 'undefined') return MALE_CARDS;
     const userGender = sessionStorage.getItem('sto_user_gender');
     return userGender === 'male' ? FEMALE_CARDS : MALE_CARDS;
   }, []);
 
+  // 매 프레임 시간 갱신 (sin 진동 기반)
   useEffect(() => {
     trackPageView('loading');
     trackSubmitApplication();
 
-    const t1 = setTimeout(() => setPhase(1), PHASE_DURATIONS[0]);
-    const t2 = setTimeout(
-      () => setPhase(2),
-      PHASE_DURATIONS[0] + PHASE_DURATIONS[1]
-    );
-    const t3 = setTimeout(() => setStage('phone'), TOTAL_MS);
-
-    const startedAt = Date.now();
-    const interval = setInterval(() => {
-      const elapsed = Date.now() - startedAt;
-      const t = Math.max(0, Math.min(1, elapsed / TOTAL_MS));
-      const eased = 1 - Math.pow(1 - t, 2);
-      setPercent(Math.min(99, Math.floor(eased * 100)));
-    }, 80);
-
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-      clearInterval(interval);
+    const start = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const elapsed = (now - start) / 1000;
+      setT(elapsed);
+      if (elapsed * 1000 >= TOTAL_MS) {
+        setStage('phone');
+        return;
+      }
+      raf = requestAnimationFrame(tick);
     };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, []);
+
+  const ms = t * 1000;
+  const percent = Math.min(100, Math.floor((ms / TOTAL_MS) * 100));
+  const phase = ms < PHASE_DURATIONS[0]
+    ? 0
+    : ms < PHASE_DURATIONS[0] + PHASE_DURATIONS[1]
+    ? 1
+    : 2;
 
   function formatPhone(value: string): string {
     const digits = value.replace(/\D/g, '').slice(0, 11);
@@ -133,7 +120,7 @@ export default function LoadingPage() {
     router.push('/results');
   }
 
-  // ── Phone form ──
+  // ── Phone ──
   if (stage === 'phone') {
     return (
       <main
@@ -165,7 +152,7 @@ export default function LoadingPage() {
                 letterSpacing: '-0.5px',
               }}
             >
-              상대 카드를 받을{'\n'}
+              소개 카드를 받을{'\n'}
               <span style={{ color: C.accent }}>연락처</span>를 알려줘!
             </h1>
             <p className="mb-8 opacity-60 text-sm" style={{ color: C.ink }}>
@@ -188,7 +175,7 @@ export default function LoadingPage() {
                 }}
               />
               <p
-                className="text-sm font-semibold mb-2"
+                className="text-sm font-semibold mb-2 text-center"
                 style={{ color: C.accent }}
               >
                 이제 맛보기 카드를 무료로 받아볼 수 있어!
@@ -212,76 +199,98 @@ export default function LoadingPage() {
     );
   }
 
-  // ── Analyzing ──
+  // ── Analyzing dashboard ──
+  // 한 화면, 정보 누적, 모든 요소 매 프레임 sin 진동
   return (
     <main
-      className="min-h-screen flex flex-col items-center px-6 pt-12 pb-10 overflow-hidden"
-      style={{ background: C.dark, color: C.bg }}
+      className="min-h-screen relative overflow-hidden"
+      style={{
+        background: C.dark,
+        color: C.bg,
+        // 베이지 그레인 + 라디알 글로우
+        backgroundImage: `
+          radial-gradient(ellipse at 20% 0%, rgba(247,202,93,0.08) 0%, transparent 55%),
+          radial-gradient(ellipse at 90% 100%, rgba(232,93,47,0.08) 0%, transparent 55%),
+          repeating-radial-gradient(circle at 50% 50%, rgba(254,251,244,0.012) 0px, rgba(254,251,244,0.012) 1px, transparent 1px, transparent 3px)
+        `,
+      }}
     >
-      <div className="w-full max-w-md text-center">
-        <p
-          className="text-xs font-bold tracking-[0.3em]"
-          style={{ color: C.gold, opacity: 0.7 }}
-        >
-          ANALYZING · {percent}%
-        </p>
-        <h2
-          key={phase}
-          className="mt-3 text-xl sm:text-2xl font-bold"
-          style={{ animation: 'sto-fade 0.5s ease-out both' }}
-        >
-          {PHASE_TEXTS[phase]}
-        </h2>
-      </div>
+      <div className="relative w-full max-w-[440px] mx-auto px-5 pt-8 pb-8 flex flex-col items-center min-h-screen">
 
-      <div className="flex-1 w-full max-w-md flex items-center justify-center my-6">
-        {phase === 0 && <RadarChart />}
-        {phase === 1 && <BarGraph />}
-        {phase === 2 && <CardCarousel cards={cards} />}
-      </div>
-
-      <div className="w-full max-w-md">
-        <div
-          className="h-2 rounded-full overflow-hidden"
-          style={{ background: 'rgba(247,202,93,0.15)' }}
+        <h1
+          className="w-full text-lg sm:text-xl mb-6"
+          style={{
+            fontFamily: "'PP Editorial Old', serif",
+            fontWeight: 400,
+            letterSpacing: '-0.01em',
+            lineHeight: 1.05,
+            opacity: 0.85,
+          }}
         >
+          someonetheone
+        </h1>
+
+        {/* phase별 메인 비주얼 — 위에 중앙정렬 phase 텍스트 */}
+        <div className="flex-1 w-full flex flex-col items-center justify-center">
+          <p
+            key={phase}
+            className="text-center text-lg sm:text-xl font-bold mb-5"
+            style={{
+              color: C.gold,
+              animation: 'sto-fade-up 0.5s ease-out both',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            {PHASE_TEXTS[phase]}
+          </p>
+          <div className="w-full flex items-center justify-center">
+            {phase === 0 && <RadarPanel key="radar" t={t} />}
+            {phase === 1 && <BarPanel key="bars" t={t} />}
+            {phase === 2 && <CardPanel key="cards" cards={cards} />}
+          </div>
+        </div>
+
+        {/* Progress bar — 두꺼운 ink/베이지 보더 */}
+        <div className="w-full mt-7">
           <div
-            className="h-full transition-all duration-100 ease-out"
-            style={{ width: `${percent}%`, background: C.gold }}
-          />
+            className="relative w-full overflow-hidden rounded-full"
+            style={{
+              height: '34px',
+              background: 'rgba(254,251,244,0.08)',
+              border: `2px solid ${C.bg}`,
+            }}
+          >
+            <div
+              className="h-full transition-all duration-100 ease-out"
+              style={{
+                width: `${percent}%`,
+                background: `linear-gradient(90deg, ${C.accent} 0%, ${C.gold} 100%)`,
+              }}
+            />
+          </div>
+          <div className="mt-3 flex justify-center">
+            <span
+              className="text-3xl font-bold tracking-tight"
+              style={{
+                fontFamily: "'PP Editorial Old', serif",
+                color: C.gold,
+                lineHeight: 1,
+              }}
+            >
+              {percent}
+              <span className="text-xl opacity-60">%</span>
+            </span>
+          </div>
         </div>
       </div>
 
       <style jsx global>{`
-        @keyframes sto-fade {
-          from { opacity: 0; transform: translateY(8px); }
-          to { opacity: 1; transform: translateY(0); }
+        @keyframes sto-shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(400%); }
         }
-        @keyframes sto-radar-grow {
-          from { transform: scale(0.2); opacity: 0; }
-          to { transform: scale(1); opacity: 1; }
-        }
-        @keyframes sto-radar-pulse {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.04); }
-        }
-        @keyframes sto-dot-pulse {
-          0%, 100% { r: 4; opacity: 0.95; }
-          50% { r: 6; opacity: 1; }
-        }
-        @keyframes sto-axis-fade {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes sto-bar-grow {
-          from { height: 0%; }
-        }
-        @keyframes sto-bar-jiggle {
-          0%, 100% { transform: scaleY(1); }
-          50% { transform: scaleY(1.02); }
-        }
-        @keyframes sto-tick {
-          from { opacity: 0.4; transform: translateY(2px); }
+        @keyframes sto-fade-up {
+          from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
         }
         @keyframes sto-card-in {
@@ -292,244 +301,227 @@ export default function LoadingPage() {
           0% { transform: translateX(0) scale(1) rotate(0deg); opacity: 1; }
           100% { transform: translateX(-28%) scale(0.92) rotate(-2deg); opacity: 0; }
         }
-        @keyframes sto-scan {
-          0% { transform: translateY(-100%); }
-          100% { transform: translateY(120%); }
-        }
-        @keyframes sto-shimmer {
-          0% { background-position: -200% 0; }
-          100% { background-position: 200% 0; }
-        }
       `}</style>
     </main>
   );
 }
 
-/* ─────────── Phase 0: Radar ─────────── */
-
-function RadarChart() {
-  const cx = 150;
-  const cy = 150;
-  const R = 95;
+/* ────────── Radar (sin oscillation per axis, 50~88 사이) ────────── */
+function RadarPanel({ t }: { t: number }) {
+  const cx = 160;
+  const cy = 160;
+  const R = 110;
   const n = RADAR_AXES.length;
-  const [pct, setPct] = useState(0);
 
-  useEffect(() => {
-    const startedAt = Date.now();
-    const interval = setInterval(() => {
-      const t = Math.min(1, (Date.now() - startedAt) / 7500);
-      const eased = 1 - Math.pow(1 - t, 2);
-      setPct(eased);
-      if (t >= 1) clearInterval(interval);
-    }, 80);
-    return () => clearInterval(interval);
-  }, []);
+  // 각 축이 base 70, amp 18, 다른 freq/phase로 진동 → 52~88 oscillate
+  const values = RADAR_AXES.map((_, i) => {
+    const base = 70;
+    const amp = 18;
+    const freq = 0.5 + i * 0.17;
+    const phase = i * 0.9;
+    return Math.max(45, Math.min(92, base + Math.sin(t * freq + phase) * amp));
+  });
 
-  const polyAt = (r: number) =>
+  const polyAt = (rRatio: number) =>
     Array.from({ length: n }, (_, i) => {
       const angle = -Math.PI / 2 + (i * 2 * Math.PI) / n;
-      return `${cx + R * r * Math.cos(angle)},${cy + R * r * Math.sin(angle)}`;
+      return `${cx + R * rRatio * Math.cos(angle)},${cy + R * rRatio * Math.sin(angle)}`;
     }).join(' ');
 
-  const dataPoints = Array.from({ length: n }, (_, i) => {
-    const angle = -Math.PI / 2 + (i * 2 * Math.PI) / n;
-    const v = RADAR_TARGETS[i] * pct;
-    return `${cx + R * v * Math.cos(angle)},${cy + R * v * Math.sin(angle)}`;
-  }).join(' ');
+  const dataPoints = values
+    .map((v, i) => {
+      const angle = -Math.PI / 2 + (i * 2 * Math.PI) / n;
+      const r = (R * v) / 100;
+      return `${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)}`;
+    })
+    .join(' ');
 
   return (
-    <div className="relative" style={{ animation: 'sto-fade 0.5s ease-out both' }}>
-      <svg width="320" height="320" viewBox="0 0 300 300">
-        {/* 동심 펜타곤 */}
-        {[0.25, 0.5, 0.75, 1].map((r, i) => (
-          <polygon
-            key={i}
-            points={polyAt(r)}
-            fill="none"
-            stroke="rgba(247,202,93,0.18)"
-            strokeWidth="1"
-          />
-        ))}
-
-        {/* 축 */}
-        {Array.from({ length: n }, (_, i) => {
-          const angle = -Math.PI / 2 + (i * 2 * Math.PI) / n;
-          const ex = cx + R * Math.cos(angle);
-          const ey = cy + R * Math.sin(angle);
-          return (
-            <line
+    <div
+      className="relative w-full flex items-center justify-center"
+      style={{
+        animation: 'sto-fade-up 0.5s ease-out both',
+        marginBottom: '8px',
+      }}
+    >
+      {/* someonetheone 톤 카드 박스 */}
+      <div
+        className="relative rounded-3xl p-5 flex items-center justify-center"
+        style={{
+          width: '100%',
+          background: 'rgba(254,251,244,0.04)',
+          border: `2px solid ${C.bg}`,
+        }}
+      >
+        <svg width="320" height="320" viewBox="0 0 320 320">
+          {/* 동심 펜타곤 4겹 */}
+          {[0.25, 0.5, 0.75, 1].map((r, i) => (
+            <polygon
               key={i}
-              x1={cx}
-              y1={cy}
-              x2={ex}
-              y2={ey}
-              stroke="rgba(247,202,93,0.25)"
+              points={polyAt(r)}
+              fill="none"
+              stroke="rgba(254,251,244,0.15)"
               strokeWidth="1"
             />
-          );
-        })}
-
-        {/* 데이터 폴리곤 — 매 프레임 다시 그려져서 자라남 */}
-        <g style={{ animation: 'sto-radar-pulse 2.4s ease-in-out infinite' }}>
-          <polygon
-            points={dataPoints}
-            fill="rgba(232,93,47,0.32)"
-            stroke="#E85D2F"
-            strokeWidth="2.5"
-            style={{ filter: 'drop-shadow(0 0 8px rgba(232,93,47,0.5))' }}
-          />
-          {RADAR_TARGETS.map((target, i) => {
+          ))}
+          {/* 축 (대시 라인) */}
+          {Array.from({ length: n }, (_, i) => {
             const angle = -Math.PI / 2 + (i * 2 * Math.PI) / n;
-            const v = target * pct;
             return (
-              <circle
+              <line
                 key={i}
-                cx={cx + R * v * Math.cos(angle)}
-                cy={cy + R * v * Math.sin(angle)}
-                r="4"
-                fill="#F7CA5D"
-                style={{
-                  animation: `sto-dot-pulse 1.6s ease-in-out ${i * 0.18}s infinite`,
-                }}
+                x1={cx}
+                y1={cy}
+                x2={cx + R * Math.cos(angle)}
+                y2={cy + R * Math.sin(angle)}
+                stroke="rgba(254,251,244,0.2)"
+                strokeWidth="1"
+                strokeDasharray="3 4"
               />
             );
           })}
-        </g>
-
-        {/* 라벨 */}
-        {RADAR_AXES.map((label, i) => {
-          const angle = -Math.PI / 2 + (i * 2 * Math.PI) / n;
-          const lx = cx + (R + 22) * Math.cos(angle);
-          const ly = cy + (R + 22) * Math.sin(angle);
-          return (
-            <text
-              key={label}
-              x={lx}
-              y={ly}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              fill="rgba(254,251,244,0.85)"
-              fontSize="13"
-              fontWeight="700"
-              style={{
-                animation: `sto-axis-fade 0.4s ease-out ${0.2 + i * 0.12}s both`,
-              }}
-            >
-              {label}
-            </text>
-          );
-        })}
-      </svg>
-
-      {/* 중앙 카운터 */}
-      <div
-        className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
-        style={{ marginTop: 4 }}
-      >
-        <span
-          className="text-3xl font-extrabold"
-          style={{ color: C.gold, textShadow: '0 0 12px rgba(247,202,93,0.5)' }}
-        >
-          {Math.floor(pct * 100)}
-          <span className="text-lg opacity-70">%</span>
-        </span>
-        <span className="text-[10px] opacity-60 tracking-widest mt-0.5">
-          MATCH PROFILE
-        </span>
+          {/* 점들이 축 따라 움직인 자국 — gold trail beam */}
+          {values.map((v, i) => {
+            const angle = -Math.PI / 2 + (i * 2 * Math.PI) / n;
+            const r = (R * v) / 100;
+            const px = cx + r * Math.cos(angle);
+            const py = cy + r * Math.sin(angle);
+            return (
+              <line
+                key={`trail-${i}`}
+                x1={cx}
+                y1={cy}
+                x2={px}
+                y2={py}
+                stroke={C.gold}
+                strokeWidth="2"
+                strokeLinecap="round"
+                opacity="0.45"
+              />
+            );
+          })}
+          {/* 데이터 폴리곤 — 점들이 만드는 면 (담백) */}
+          <polygon
+            points={dataPoints}
+            fill="rgba(232,93,47,0.18)"
+            stroke={C.accent}
+            strokeWidth="2"
+            strokeLinejoin="round"
+          />
+          {/* 점 — 축 위를 출렁이며 움직임 */}
+          {values.map((v, i) => {
+            const angle = -Math.PI / 2 + (i * 2 * Math.PI) / n;
+            const r = (R * v) / 100;
+            const px = cx + r * Math.cos(angle);
+            const py = cy + r * Math.sin(angle);
+            return (
+              <circle
+                key={`pt-${i}`}
+                cx={px}
+                cy={py}
+                r="6"
+                fill={C.gold}
+                stroke={C.dark}
+                strokeWidth="2"
+              />
+            );
+          })}
+          {/* 라벨 + 실시간 점수 */}
+          {RADAR_AXES.map((label, i) => {
+            const angle = -Math.PI / 2 + (i * 2 * Math.PI) / n;
+            const lx = cx + (R + 24) * Math.cos(angle);
+            const ly = cy + (R + 24) * Math.sin(angle);
+            return (
+              <text
+                key={label}
+                x={lx}
+                y={ly}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fill={C.bg}
+                fontSize="13"
+                fontWeight="700"
+              >
+                {label}
+              </text>
+            );
+          })}
+        </svg>
       </div>
     </div>
   );
 }
 
-/* ─────────── Phase 1: Bars ─────────── */
-
-function BarGraph() {
-  const [tick, setTick] = useState(0);
-  // 계속 카운터가 살아있는 듯 미세 변동
-  useEffect(() => {
-    const interval = setInterval(() => setTick((t) => t + 1), 600);
-    return () => clearInterval(interval);
-  }, []);
-
+/* ────────── Bars — 담백, sin oscillation만 ────────── */
+function BarPanel({ t }: { t: number; startedAt?: number }) {
   return (
     <div
-      className="w-full flex items-end justify-around gap-3 relative"
-      style={{ animation: 'sto-fade 0.5s ease-out both', height: '280px' }}
+      className="w-full rounded-3xl p-5"
+      style={{
+        background: 'rgba(254,251,244,0.04)',
+        border: `2px solid ${C.bg}`,
+        animation: 'sto-fade-up 0.5s ease-out both',
+      }}
     >
-      {/* 스캔라인 — 위에서 아래로 흐름 */}
+      <div className="mb-5">
+        <span
+          className="text-[12px] font-bold"
+          style={{ color: C.gold, opacity: 0.85, letterSpacing: '0.05em' }}
+        >
+          연애 가치관 분석
+        </span>
+      </div>
       <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            'linear-gradient(180deg, transparent 0%, rgba(247,202,93,0.18) 50%, transparent 100%)',
-          height: '60px',
-          animation: 'sto-scan 2.6s linear infinite',
-        }}
-      />
+        className="flex items-end justify-around gap-3"
+        style={{ height: '220px' }}
+      >
+        {BAR_LABELS.map((label, i) => {
+          // sin 진동: 28~92 사이 크게 출렁
+          const base = 60;
+          const amp = 32;
+          const freq = 1.6 + i * 0.4;
+          const phase = i * 1.3;
+          const live = base + Math.sin(t * freq + phase) * amp;
+          const height = (live / 100) * 180;
 
-      {BAR_DATA.map((bar, i) => {
-        // 미세 변동: ±1
-        const jitter = ((tick + i) * 7) % 3 - 1;
-        const display = Math.max(0, Math.min(99, bar.value + jitter));
-        return (
-          <div
-            key={bar.label}
-            className="flex-1 flex flex-col items-center gap-2 z-10"
-          >
-            <span
-              key={display}
-              className="text-2xl font-extrabold"
+          return (
+            <div
+              key={label}
+              className="flex-1 flex flex-col items-center"
               style={{
-                color: C.gold,
-                animation: 'sto-tick 0.3s ease-out both',
-                textShadow: '0 0 8px rgba(247,202,93,0.4)',
+                animation: `sto-fade-up 0.4s ease-out ${i * 0.12}s both`,
               }}
             >
-              {display}
-              <span className="text-sm opacity-70">%</span>
-            </span>
-            <div
-              className="w-full flex items-end justify-center"
-              style={{ height: '180px' }}
-            >
               <div
-                className="w-full max-w-[52px] rounded-t-lg relative overflow-hidden"
-                style={{
-                  height: `${(bar.value / 100) * 180}px`,
-                  background: `linear-gradient(180deg, ${C.accent} 0%, ${C.gold} 100%)`,
-                  boxShadow: `0 -2px 16px rgba(232,93,47,0.55)`,
-                  animation: `sto-bar-grow 1.2s cubic-bezier(0.16,1,0.3,1) ${i * 0.18}s both, sto-bar-jiggle 1.8s ease-in-out ${1.4 + i * 0.18}s infinite`,
-                  transformOrigin: 'bottom',
-                }}
+                className="w-full flex items-end justify-center"
+                style={{ height: '180px' }}
               >
-                {/* shimmer */}
                 <div
-                  className="absolute inset-0"
+                  className="w-full max-w-[48px]"
                   style={{
-                    background:
-                      'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
-                    backgroundSize: '200% 100%',
-                    animation: 'sto-shimmer 2.4s linear infinite',
+                    height: `${height}px`,
+                    background: `linear-gradient(180deg, ${C.accent} 0%, ${C.gold} 100%)`,
+                    border: `2px solid ${C.bg}`,
+                    borderRadius: '8px',
                   }}
                 />
               </div>
+              <span
+                className="mt-3 text-xs font-semibold"
+                style={{ color: C.bg, opacity: 0.75 }}
+              >
+                {label}
+              </span>
             </div>
-            <span
-              className="text-xs font-semibold"
-              style={{ color: C.bg, opacity: 0.7 }}
-            >
-              {bar.label}
-            </span>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-/* ─────────── Phase 2: Card Carousel ─────────── */
-
-function CardCarousel({ cards }: { cards: CardData[] }) {
+/* ────────── Cards (auto-rotate, someonetheone 톤) ────────── */
+function CardPanel({ cards }: { cards: CardData[] }) {
   const [idx, setIdx] = useState(0);
   const [animating, setAnimating] = useState(false);
 
@@ -539,7 +531,7 @@ function CardCarousel({ cards }: { cards: CardData[] }) {
       setTimeout(() => {
         setIdx((i) => (i + 1) % cards.length);
         setAnimating(false);
-      }, 350);
+      }, 320);
     }, 1100);
     return () => clearInterval(interval);
   }, [cards.length]);
@@ -548,114 +540,109 @@ function CardCarousel({ cards }: { cards: CardData[] }) {
 
   return (
     <div
-      className="w-full relative flex items-center justify-center"
-      style={{ height: '320px' }}
+      className="w-full mt-5 rounded-3xl p-5 relative"
+      style={{
+        background: 'rgba(254,251,244,0.04)',
+        border: `2px solid ${C.bg}`,
+        animation: 'sto-fade-up 0.6s ease-out both',
+      }}
     >
-      {/* 뒤에 옅은 카드 두 장 (스택 느낌) */}
-      <div
-        className="absolute rounded-3xl"
-        style={{
-          width: '210px',
-          height: '290px',
-          background: 'rgba(247,202,93,0.05)',
-          border: '1.5px solid rgba(247,202,93,0.15)',
-          transform: 'translate(8px, 8px) rotate(2deg) scale(0.96)',
-        }}
-      />
-      <div
-        className="absolute rounded-3xl"
-        style={{
-          width: '210px',
-          height: '290px',
-          background: 'rgba(247,202,93,0.08)',
-          border: '1.5px solid rgba(247,202,93,0.22)',
-          transform: 'translate(-6px, 4px) rotate(-2deg) scale(0.98)',
-        }}
-      />
+      <div className="mb-3">
+        <span
+          className="text-[12px] font-bold"
+          style={{ color: C.gold, opacity: 0.85, letterSpacing: '0.05em' }}
+        >
+          매칭 후보
+        </span>
+      </div>
 
-      {/* 메인 카드 */}
       <div
-        key={idx}
-        className="relative rounded-3xl flex flex-col p-5"
-        style={{
-          width: '230px',
-          height: '300px',
-          background:
-            'linear-gradient(160deg, rgba(247,202,93,0.18) 0%, rgba(232,93,47,0.12) 100%)',
-          border: '1.5px solid rgba(247,202,93,0.4)',
-          backdropFilter: 'blur(14px)',
-          WebkitBackdropFilter: 'blur(14px)',
-          boxShadow:
-            '0 12px 36px rgba(232,93,47,0.25), inset 0 1px 0 rgba(255,255,255,0.15)',
-          animation: animating
-            ? 'sto-card-out 0.35s ease-in both'
-            : 'sto-card-in 0.45s cubic-bezier(0.16,1,0.3,1) both',
-        }}
+        className="relative flex items-center justify-center"
+        style={{ height: '380px' }}
       >
-        {/* 사진 자리 (placeholder — 사용자 사진 받으면 교체) */}
+        {/* 백 카드 1 */}
         <div
-          className="w-full rounded-2xl mb-3 relative overflow-hidden"
+          className="absolute rounded-2xl"
           style={{
-            height: '160px',
-            background: `linear-gradient(135deg, ${C.accent}aa, ${C.gold}cc)`,
+            width: '230px',
+            height: '350px',
+            background: 'rgba(254,251,244,0.04)',
+            border: `2px solid rgba(254,251,244,0.4)`,
+            transform: 'translate(8px, 6px) rotate(2.5deg) scale(0.96)',
+          }}
+        />
+        {/* 백 카드 2 */}
+        <div
+          className="absolute rounded-2xl"
+          style={{
+            width: '230px',
+            height: '350px',
+            background: 'rgba(254,251,244,0.06)',
+            border: `2px solid rgba(254,251,244,0.6)`,
+            transform: 'translate(-7px, 3px) rotate(-2.5deg) scale(0.98)',
+          }}
+        />
+        {/* 메인 카드 — 세로형 */}
+        <div
+          key={idx}
+          className="relative rounded-2xl flex flex-col"
+          style={{
+            width: '240px',
+            height: '360px',
+            background: C.dark,
+            border: `2px solid ${C.bg}`,
+            animation: animating
+              ? 'sto-card-out 0.32s ease-in both'
+              : 'sto-card-in 0.45s cubic-bezier(0.16,1,0.3,1) both',
+            overflow: 'hidden',
           }}
         >
-          {card.photo ? (
-            <img
-              src={card.photo}
-              alt=""
-              className="w-full h-full object-cover"
-              style={{ filter: 'blur(6px)' }}
-            />
-          ) : (
+          {/* 사진 자리 — 위쪽 220px */}
+          <div
+            className="relative"
+            style={{
+              width: '100%',
+              height: '220px',
+              background: `linear-gradient(135deg, ${C.accent}cc, ${C.gold}dd)`,
+              borderBottom: `2px solid ${C.bg}`,
+            }}
+          >
+            {card.photo ? (
+              <img
+                src={card.photo}
+                alt=""
+                className="w-full h-full object-cover"
+                style={{ filter: 'blur(16px)' }}
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+            ) : null}
             <div
-              className="absolute inset-0"
+              className="absolute inset-0 pointer-events-none"
               style={{
                 background:
-                  'radial-gradient(circle at 50% 40%, rgba(255,255,255,0.4) 0%, transparent 60%)',
+                  'radial-gradient(circle at 50% 40%, rgba(255,255,255,0.45) 0%, transparent 65%)',
                 filter: 'blur(8px)',
               }}
             />
-          )}
-          {/* 매치 뱃지 */}
-          <div
-            className="absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-extrabold"
-            style={{
-              background: C.dark,
-              color: C.gold,
-              border: `1.5px solid ${C.gold}`,
-            }}
-          >
-            {card.match}%
+          </div>
+          {/* 정보 영역 — 아래쪽 */}
+          <div className="flex-1 flex flex-col justify-between p-4">
+            <div>
+              <p
+                className="text-[10px] font-bold tracking-[0.2em] mb-2"
+                style={{ color: C.gold, opacity: 0.85 }}
+              >
+                {card.tag}
+              </p>
+              <p
+                className="text-sm font-semibold leading-snug"
+                style={{ color: C.bg }}
+              >
+                {card.desc}
+              </p>
+            </div>
           </div>
         </div>
-        <p
-          className="text-xs font-bold tracking-widest mb-1"
-          style={{ color: C.gold, opacity: 0.85 }}
-        >
-          {card.tag}
-        </p>
-        <p
-          className="text-sm font-semibold leading-snug"
-          style={{ color: C.bg }}
-        >
-          {card.desc}
-        </p>
-      </div>
-
-      {/* 인덱스 도트 */}
-      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
-        {cards.map((_, i) => (
-          <span
-            key={i}
-            className="rounded-full transition-all duration-300"
-            style={{
-              width: i === idx ? '18px' : '6px',
-              height: '6px',
-              background: i === idx ? C.gold : 'rgba(247,202,93,0.3)',
-            }}
-          />
-        ))}
       </div>
     </div>
   );
