@@ -201,7 +201,7 @@ export default function LoadingPage() {
   function navigateToReport() {
     const current = reportRef.current;
     if (current.status === 'ready') {
-      router.push(`/report/20/${current.gender}/${current.reportId}`);
+      router.push(`/report/${current.gender}/${current.reportId}`);
     }
   }
 
