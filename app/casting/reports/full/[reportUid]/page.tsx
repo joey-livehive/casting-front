@@ -22,6 +22,7 @@ import sto7AE62F0A from '@/lib/casting/fixtures/sto-7ae62f0a.json';
 import stoB482E0BB from '@/lib/casting/fixtures/sto-b482e0bb.json';
 import sto2B61597F from '@/lib/casting/fixtures/sto-2b61597f.json';
 import stoEEEC92BD from '@/lib/casting/fixtures/sto-eeec92bd.json';
+import stoB17D69E0 from '@/lib/casting/fixtures/sto-b17d69e0.json';
 
 const EMPTY_PERSONALIZED: PersonalizedContent = {
   chapter1Traits: { trait01Intro: '', trait02Intro: '', trait03Intro: '', trait04Intro: '' },
@@ -51,6 +52,8 @@ const FIXTURES: Record<string, Fixture> = {
   'STO-2B61597F': sto2B61597F as Fixture,
   'CASTING-LOCAL-008': stoEEEC92BD as Fixture,
   'STO-EEEC92BD': stoEEEC92BD as Fixture,
+  'CASTING-LOCAL-009': stoB17D69E0 as Fixture,
+  'STO-B17D69E0': stoB17D69E0 as Fixture,
 };
 
 function loadFixture(uid: string): {
@@ -138,7 +141,9 @@ export default async function CastingMatchReportPage({
             reportUid === 'STO-2B61597F' ||
             reportUid === 'CASTING-LOCAL-007' ||
             reportUid === 'STO-EEEC92BD' ||
-            reportUid === 'CASTING-LOCAL-008'
+            reportUid === 'CASTING-LOCAL-008' ||
+            reportUid === 'STO-B17D69E0' ||
+            reportUid === 'CASTING-LOCAL-009'
               ? '/images/simulation/c324be08-meeting.jpg'
               : undefined
           }

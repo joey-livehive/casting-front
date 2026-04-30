@@ -1,0 +1,124 @@
+{
+  "report_id": "STO-B17D69E0",
+  "guest_uid": "f8c21163-79aa-440b-8d36-9a3f30d443c2",
+  "status": "ready",
+  "published_at": "2026.05.01",
+  "user_answers": {
+    "idealType": {
+      "attractionFactor": "'외모'가 수려한 사람",
+      "agePreference": "나보다 어린 사람",
+      "heightPreference": "작은 편이 좋아",
+      "bodyType": "마른 편",
+      "contactStyle": "수시로 연락했으면",
+      "dealBreaker": "흡연하는 사람",
+      "religionImportance": "같은 가톨릭이면 좋아"
+    },
+    "freeResponse": {
+      "strictCriteria": "제가 스케쥴 근무를 할 일이 많아서 승무원 여자친구를 만날 때 스케쥴이 편했어요",
+      "messageToUs": "승무원을 캐스팅 해준다면 정말 감사하겠어!!!!!!!!!!!!!"
+    },
+    "selfInfo": {
+      "gender": "남자",
+      "location": "서울",
+      "occupation": "사업/프리랜서",
+      "age": "37",
+      "height": "184",
+      "datingFrequency": "주 2~3번 정도",
+      "mbti": "ISFP",
+      "weekend": "집에서 쉬어",
+      "drinking": "가끔 마셔",
+      "dateStyle": "카페·전시·문화",
+      "skinship": "상대에 맞춰도 돼",
+      "marriageIntent": "결혼 상대 찾는 중",
+      "jobDetail": "영상 (촬영 편집)",
+      "income": "3천~5천"
+    },
+    "personality": {
+      "jealousy": "상황 따라 달라",
+      "conflictStyle": "먼저 사과하는 편",
+      "selfDescription": "serious,calm,warm"
+    }
+  },
+  "personalized": {
+    "chapter1Traits": {
+      "trait01Intro": "\"수시로 연락했으면\"이라고 답하신 걸 보면, 상대의 꾸준한 리듬에서 안정감을 느끼시는 분이에요.",
+      "trait02Intro": "의뢰인님께서 \"외모가 수려한 사람\"에 끌린다고 답하신 걸 보면, 단순한 미적 취향이 아니라 자기관리를 꾸준히 유지하는 분에게 매력을 느끼시는 것 같아요.",
+      "trait03Intro": "의뢰인님께서 이상형에 대해 \"나보다 어린 사람\", \"작은 편이 좋아\", \"마른 편\"처럼 구체적인 기준을 세워 두신 걸 보면, 평소 작은 부분까지 놓치지 않으시는 섬세한 분이에요. 그만큼 상대에게도 사소한 걸 기억해주는 세심함을 기대하실 거랍니다.",
+      "trait04Intro": "의뢰인님의 답변 전반을 보면, 연애에 대한 기준과 고민이 뚜렷하신 분이라는 게 드러나요. 그만큼 관계에서 상대가 감정을 애매하게 피하거나 어리숙하게 넘기려 할 때 실망이 크실 분이에요."
+    },
+    "readingCard": {
+      "paragraph1Opening": "\"수시로 연락했으면\"과 \"나보다 어린 사람\"을 꼽으신 걸 보면, 꾸준한 교감 속에서 관계의 안정감을 중요하게 생각하시는 편이에요.",
+      "paragraph2Opening": "\"제가 스케쥴 근무를 할 일이 많아서 승무원 여자친구를 만날 때 스케쥴이 편했어요\"라고 직접 적어 주신 걸 보면, 관계에 대한 의뢰인님만의 명확한 기준이 있으신 분이에요.",
+      "candidateMatch": "이 분은 <b>자기 페이스가 분명한 차분한 ISTJ</b>예요! 의뢰인님이 좋아하실 <b>단정한 분위기·마른 편</b>이고, 매일의 안부를 챙기면서도 둘만의 시간을 깊게 쌓는 결이 잘 맞아요."
+    }
+  },
+  "candidate": {
+    "nickname": "○○○",
+    "faceType": "차분하고 단정한 분위기",
+    "ageRange": "30세",
+    "ageDetail": "",
+    "occupation": "물리치료사",
+    "occupationDetail": "",
+    "personality": "기준이 분명하고 솔직한 ISTJ 타입",
+    "location": "경기",
+    "foundAt": "<red>내용 없음</red>",
+    "hobbies": {
+      "visible": [
+        "<red>내용 없음</red>"
+      ],
+      "hidden": 0
+    },
+    "daySchedule": [
+      {
+        "time": "—",
+        "activity": "<red>내용 없음</red>"
+      }
+    ],
+    "background": "주중엔 환자 케어로 바쁘다가, 주말이면 <b>집에서 충전하거나 카페·전시</b>로 잔잔하게 시간을 보내는 차분한 타입이에요. 자기 페이스를 챙기는 분이라, 의뢰인님처럼 수시로 연락하면서도 둘만의 시간이 깊어지는 관계에 잘 맞아요.",
+    "secretAppeal": "<red>내용 없음</red>",
+    "teaserPhoto": "/images/teaser/b17d69e0-candidate.webp",
+    "chapter2Photo": "/images/teaser/b17d69e0-candidate.webp",
+    "mbti": "ISTJ",
+    "recommendation": "자기 페이스가 분명한 차분한 ISTJ, 손이 다정한 물리치료사💆‍♀️"
+  },
+  "match": {
+    "matchRate": 87,
+    "topPercent": 6,
+    "radarData": {
+      "labels": [
+        "정서적\n안정감",
+        "자기\n몰입도",
+        "커뮤니케이션",
+        "유머 코드",
+        "생활 템포",
+        "가치관"
+      ],
+      "userDesired": [
+        8,
+        8,
+        9,
+        7,
+        8,
+        8
+      ],
+      "candidateActual": [
+        8.5,
+        7,
+        8.5,
+        7,
+        8,
+        8
+      ]
+    },
+    "simulation": "두 분 다 <b>스케줄 단위 근무</b>(영상·물리치료)라 시간 맞추기에 부담이 적어요. 첫 만남은 <b>조용한 카페</b>가 어울리는데, 두 분 다 카페·전시·문화 데이트를 좋아하셔서 자리만 잡으시면 대화가 자연스럽게 이어질 거예요. 후보분이 <b>차분하면서 기준이 분명한 ISTJ</b>라, 의뢰인님이 수시로 연락하셔도 오히려 행복해 하면서 받아주실 거예요.",
+    "notes": [
+      "<b>연락 빈도</b>가 정확히 일치해요 — 두 분 다 \"수시로 연락\" 응답하셨어요.",
+      "<b>키·체형</b>이 의뢰인님 이상형과 부합해요 — 의뢰인님 \"작은 편이 좋아\"·\"마른 편\" 선호, 후보분 159cm로 자연스럽게 매칭돼요.",
+      "<b>나이 적합</b> — 의뢰인님께서 \"나보다 어린 사람\"을 답하셨고, 후보분은 30세로 7살 차이가 자연스러워요.",
+      "<b>카페·문화 중심 데이트</b>를 모두 좋아하셔서, 첫 만남 그림이 자연스럽게 잡혀요.",
+      "<b>MBTI 앞 두 글자 IS</b>가 일치해요 — 의뢰인님 ISFP·후보분 ISTJ로 둘 다 내향(I) + 감각(S) 타입이라, 관계의 안정감을 좌우한다고 자주 언급되는 두 축에서 결이 잘 맞아요."
+    ]
+  },
+  "created_at": "2026-04-30T04:59:42",
+  "expires_at": "2026-05-07T04:59:42"
+}
