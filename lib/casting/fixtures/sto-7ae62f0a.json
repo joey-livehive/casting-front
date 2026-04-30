@@ -1,0 +1,103 @@
+{
+  "report_id": "STO-7AE62F0A",
+  "guest_uid": "1da2363c-28ee-49ea-83f0-9894c5b10f60",
+  "status": "ready",
+  "published_at": "2026.04.30",
+  "user_answers": {
+    "idealType": {
+      "attractionFactor": "'외모'가 수려한 사람",
+      "agePreference": "나보다 많은 사람",
+      "heightPreference": "큰 편이 좋아",
+      "bodyType": "보통",
+      "contactStyle": "수시로 연락했으면",
+      "dealBreaker": "친구 자주 만나는 사람",
+      "religionImportance": "종교 없는 사람이 좋아"
+    },
+    "freeResponse": {
+      "strictCriteria": "외모를 중요시하지만 능력을 안보는건 아니야",
+      "messageToUs": "급하다고 아무나 만나고싶지않아. 좋은사람만나고싶아"
+    },
+    "selfInfo": {
+      "gender": "여자",
+      "location": "경기",
+      "occupation": "회사원",
+      "age": "30",
+      "height": "159",
+      "datingFrequency": "주 1번이면 충분해",
+      "mbti": "ISTJ",
+      "weekend": "집에서 쉬어",
+      "drinking": "가끔 마셔",
+      "dateStyle": "카페·전시·문화",
+      "skinship": "천천히 친해지는 편",
+      "marriageIntent": "좋은 사람 있다면",
+      "jobDetail": "물리치료사",
+      "income": "3천~5천"
+    },
+    "personality": {
+      "jealousy": "솔직히 신경 쓰여",
+      "conflictStyle": "그때그때 달라",
+      "selfDescription": "serious,comfortable,honest"
+    }
+  },
+  "personalized": {
+    "chapter1Traits": {
+      "trait01Intro": "\"수시로 연락했으면\"이라고 답하신 걸 보면, 상대의 꾸준한 리듬에서 안정감을 느끼시는 분이에요.",
+      "trait02Intro": "의뢰인님께서 \"외모가 수려한 사람\"에 끌린다고 답하신 걸 보면, 단순한 미적 취향이 아니라 자기관리를 꾸준히 유지하는 분에게 매력을 느끼시는 것 같아요.",
+      "trait03Intro": "의뢰인님께서 이상형에 대해 이렇게 구체적인 기준을 세워 두신 걸 보면, 평소 주변의 작은 부분까지 잘 알아채시는 섬세한 분이에요. 그만큼 상대에게도 사소한 걸 기억해주고 알아봐 주는 세심함을 기대하실 거랍니다.",
+      "trait04Intro": "의뢰인님의 답변 전반을 보면, 관계에 대한 기준과 감정에 솔직하신 분이라는 게 드러나요. 그만큼 상대가 감정을 애매하게 피하거나 대화를 회피할 때 실망이 크실 분이에요."
+    },
+    "readingCard": {
+      "paragraph1Opening": "\"수시로 연락했으면\"과 \"나보다 많은 사람\"을 꼽으신 걸 보면, 꾸준한 교감과 든든한 안정감을 중요하게 생각하시는 편이에요.",
+      "paragraph2Opening": "\"급하다고 아무나 만나고 싶지 않아\"라고 직접 적어 주신 걸 보면, 관계의 진정성과 의뢰인님만의 명확한 기준을 중요하게 생각하시는 분이에요.",
+      "candidateMatch": "이 분은 <b>키 184cm에 자기 일에 진심인 영상 크리에이터</b>이고, 의뢰인님처럼 <b>수시로 연락하는 가까운 관계</b>를 좋아하는 분이에요! 이분만이 줄 수 있는 <b>든든한 안정감</b>이 의뢰인님께 딱 필요하다고 판단했어요."
+    }
+  },
+  "candidate": {
+    "nickname": "○○○",
+    "faceType": "키 크고 단정한 분위기",
+    "ageRange": "37세",
+    "ageDetail": "",
+    "occupation": "영상 크리에이터",
+    "occupationDetail": "",
+    "personality": "먼저 사과할 줄 아는, 차분하고 따뜻한 ISFP 타입",
+    "location": "서울",
+    "foundAt": "<red>내용 없음</red>",
+    "hobbies": {
+      "visible": [
+        "<red>내용 없음</red>"
+      ],
+      "hidden": 0
+    },
+    "daySchedule": [
+      {
+        "time": "—",
+        "activity": "<red>내용 없음</red>"
+      }
+    ],
+    "background": "주중엔 영상 작업으로 깊이 몰입하다가, 주말이면 <b>집에서 책이나 가까운 전시</b>로 한 주를 정리하는 차분한 타입이에요. 카페·전시 같은 잔잔한 자리를 좋아해서, 의뢰인님처럼 천천히 친해지시는 분과 호흡 맞기 좋아요.",
+    "secretAppeal": "<red>내용 없음</red>",
+    "teaserPhoto": "/images/teaser/7ae62f0a-candidate.jpg",
+    "chapter2Photo": "/images/teaser/7ae62f0a-candidate.jpg",
+    "mbti": "ISFP",
+    "recommendation": "184cm 단정한 영상 크리에이터, 차분히 챙겨주는 7살 연상🎬"
+  },
+  "match": {
+    "matchRate": 87,
+    "topPercent": 6,
+    "radarData": {
+      "labels": ["정서적\n안정감", "자기\n몰입도", "커뮤니케이션", "유머 코드", "생활 템포", "가치관"],
+      "userDesired": [8, 8, 9, 7, 8, 8],
+      "candidateActual": [8.5, 7, 9, 7.5, 8, 8.5]
+    },
+    "simulation": "첫 만남은 <b>조용한 카페</b>에서 시작하시면 좋아요. 두 분 다 카페·전시·문화 데이트를 좋아하셔서, 자리만 잡으시면 자연스럽게 대화가 이어질 거예요. 후보분이 <b>차분하면서도 먼저 챙겨주는 타입</b>이라, 의뢰인님이 천천히 친해지시는 페이스에 잘 맞춰주실 거예요.",
+    "notes": [
+      "<b>연락 빈도</b>가 정확히 일치해요 — 두 분 다 \"수시로 연락\" 응답하셨어요.",
+      "<b>키·외모형</b>이 의뢰인님 기준에 잘 부합해요. 후보분 키 184cm에 자기관리가 꾸준한 영상 크리에이터예요.",
+      "<b>나이 적합</b> — 의뢰인님께서 \"나보다 많은 사람\"을 답하셨고, 후보분은 7살 연상이에요.",
+      "<b>카페·문화 중심 데이트</b>를 모두 좋아하셔서, 첫 만남 그림이 자연스럽게 잡혀요.",
+      "<b>MBTI 앞 두 글자 IS</b>가 일치해요 — 둘 다 내향(I) + 감각(S) 타입이라, 관계의 안정감을 좌우한다고 자주 언급되는 두 축에서 결이 잘 맞아요."
+    ]
+  },
+  "created_at": "2026-04-29T07:44:56",
+  "expires_at": "2026-05-06T07:44:56"
+}

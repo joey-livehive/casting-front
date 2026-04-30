@@ -1,0 +1,125 @@
+{
+  "report_id": "STO-B482E0BB",
+  "guest_uid": "259f0f07-17c2-499a-9213-7f00395020c8",
+  "status": "ready",
+  "published_at": "2026.04.30",
+  "user_answers": {
+    "idealType": {
+      "attractionFactor": "외모가 수려한 사람",
+      "agePreference": "상관없어",
+      "heightPreference": "상관없어",
+      "bodyType": "상관없어",
+      "contactStyle": "수시로 연락했으면",
+      "religionImportance": "상관없어",
+      "dealBreaker": "사람 너무 많이 만나는 사람"
+    },
+    "selfInfo": {
+      "age": "26세",
+      "ageRange": "26세",
+      "gender": "여자",
+      "location": "광주광역시",
+      "height": "169cm",
+      "mbti": "ENTJ",
+      "occupation": "기타",
+      "jobDetail": "바리스타 준비 예정",
+      "income": "5,000만~7,000만원",
+      "weekend": "집에서 쉬어",
+      "drinking": "가끔 마셔",
+      "relationshipStyle": "유연하게 맞춰가는 타입",
+      "dateStyle": "문화 데이트(전시·공연)",
+      "skinship": "적당히 편해",
+      "marriageIntent": "결혼 상대 찾는 중"
+    },
+    "personality": {
+      "jealousy": "질투 많이 해",
+      "conflictStyle": "바로 풀어야 돼",
+      "selfDescription": "lively,fun,honest"
+    },
+    "freeResponse": {
+      "strictCriteria": "다정하고 잘 챙겨 주고 결혼 생각이 있고 잘생기고 운동을 좋아하는 사람이먄 좋겠어",
+      "messageToUs": "안녕 내 사랑?"
+    }
+  },
+  "personalized": {
+    "chapter1Traits": {
+      "trait01Intro": "\"수시로 연락했으면\"이라고 답하신 걸 보면, 상대의 꾸준한 리듬에서 안정감을 느끼시는 분이에요.",
+      "trait02Intro": "의뢰인님께서 \"외모가 수려한 사람\"에 끌린다고 답하신 걸 보면, 단순한 미적 취향이 아니라 자기관리를 꾸준히 유지하는 분에게 매력을 느끼시는 것 같아요.",
+      "trait03Intro": "의뢰인님께서 이상형에 대한 기준을 이렇게 구체적으로 답하신 걸 보면, 평소 주변의 작은 부분까지 잘 알아채시는 섬세한 분이에요. 그만큼 상대에게도 사소한 걸 기억해주고 알아봐 주는 세심함을 기대하실 거랍니다.",
+      "trait04Intro": "\"바로 풀어야 돼\"라고 갈등 해결 방식을 명확히 답하신 걸 보면, 관계에서 감정을 덮어두거나 회피하기보다 대화로 풀어나가는 것을 중요하게 생각하시는 분이에요."
+    },
+    "readingCard": {
+      "paragraph1Opening": "\"다정하고 잘 챙겨 주는 사람\"을 이상형으로 꼽으신 걸 보면, 상대의 꾸준한 관심과 일상에서의 작은 배려를 중요하게 생각하시는 편이에요.",
+      "paragraph2Opening": "\"결혼 상대 찾는 중\"이라고 직접 말씀해 주셨고, 이상형으로 \"결혼 생각이 있는 사람\"을 꼽으신 걸 보면, 관계의 진정성과 미래에 대한 명확한 기준을 가지고 계신답니다.",
+      "candidateMatch": "이 분은 <b>먼저 사과할 줄 알고, 분위기로 사람을 알아보는</b> 분이에요. 의뢰인님께서 중요하게 생각하시는 <b>꾸준한 다정함과 갈등을 회피하지 않는 태도</b>를 자연스럽게 갖추고 계셔서, 두 분의 결이 잘 맞을 거라고 판단했어요."
+    }
+  },
+  "candidate": {
+    "nickname": "○○○",
+    "faceType": "굵은 T존으로 남자다운 얼굴",
+    "ageRange": "23세",
+    "ageDetail": "",
+    "occupation": "대학생",
+    "occupationDetail": "",
+    "personality": "분위기를 먼저 읽고, 갈등은 먼저 풀러 가는 다정한 타입",
+    "location": "전북 전주",
+    "foundAt": "<red>내용 없음</red>",
+    "hobbies": {
+      "visible": [
+        "<red>내용 없음</red>"
+      ],
+      "hidden": 0
+    },
+    "daySchedule": [
+      {
+        "time": "—",
+        "activity": "<red>내용 없음</red>"
+      }
+    ],
+    "background": "주말이면 <b>집에서 차분히 쉬며 자기 페이스를 챙기는</b> 타입이라, 의뢰인님처럼 평일엔 부지런하게 살고 주말엔 회복하는 리듬과 잘 맞아요. 사람들 사이에서는 <b>편안하고 따뜻하다는</b> 평을 자주 듣는 분이라, 의뢰인님께서 원하시는 \"다정하고 잘 챙겨주는\" 결을 자연스럽게 갖추고 계세요.",
+    "secretAppeal": "<red>내용 없음</red>",
+    "teaserPhoto": "/images/teaser/b482e0bb-candidate.jpg",
+    "chapter2Photo": "/images/teaser/b482e0bb-candidate.jpg",
+    "mbti": "ISTP",
+    "recommendation": "키 173cm·따뜻한 옷 스타일링에 자기관리가 꾸준한 남자"
+  },
+  "match": {
+    "matchRate": 84,
+    "topPercent": 9,
+    "radarData": {
+      "labels": [
+        "정서적\n안정감",
+        "자기\n몰입도",
+        "커뮤니케이션",
+        "유머 코드",
+        "생활 템포",
+        "가치관"
+      ],
+      "userDesired": [
+        9,
+        7,
+        9,
+        8,
+        7,
+        8
+      ],
+      "candidateActual": [
+        8.5,
+        7.5,
+        8,
+        8,
+        7.5,
+        7.5
+      ]
+    },
+    "simulation": "첫 만남은 <b>전시나 공연 같은 문화 데이트</b>로 가볍게 시작하시면 좋아요. 두 분 다 \"문화 중심 데이트\"를 선호하시고, 후보분이 <b>먼저 분위기를 읽고 맞춰주는 타입</b>이라 의뢰인님이 리드하셔도 자연스럽게 따라오실 거예요. 광주↔전주는 KTX 1시간대라 첫 만남 동선도 부담 없어요.",
+    "notes": [
+      "<b>나잇대 상관없어</b>라고 답하셔서 폭을 넓혔어요. 그래서 의뢰인님(26세)께 <b>진중함이 묻어나는 23세 — 3살 연하</b>를 매칭해드렸어요. 나이보다 결로 고른 케이스예요.",
+      "<b>연락 빈도</b>는 의뢰인님 \"수시로\" / 후보분 \"상관없어\"로, 의뢰인님 페이스에 맞춰주실 가능성이 높아요.",
+      "<b>갈등 해결</b>이 잘 맞아요 — 의뢰인님은 \"바로 풀어야 돼\", 후보분은 \"먼저 사과하는 편\"이라 충돌이 길게 가지 않아요.",
+      "<b>주말·음주·스킨십</b> 페이스가 거의 동일해서 일상 결이 잘 붙어요.",
+      "<b>문화 데이트·MBTI 결</b>이 잘 맞아요 — ENTJ × ISTP 조합은 의뢰인님이 끌고 후보분이 받쳐주는 안정적 구조예요."
+    ]
+  },
+  "created_at": "2026-04-29T04:10:35",
+  "expires_at": "2026-05-06T04:10:35"
+}
