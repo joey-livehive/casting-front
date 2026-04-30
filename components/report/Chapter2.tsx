@@ -1,6 +1,6 @@
 'use client';
 
-import { Candidate, MatchAnalysis } from '@/lib/report/types';
+import { Candidate } from '@/lib/report/types';
 import { ChapterCard } from './ChapterCard';
 import { SafeText } from './SafeText';
 import { useTone } from './toneContext';
@@ -10,11 +10,9 @@ const LOCKED_SHAPES = ['◯◯◯', '◯◯◯◯', '◯◯'];
 export function Chapter2({
   userName,
   candidate,
-  match,
 }: {
   userName: string;
   candidate: Candidate;
-  match?: MatchAnalysis;
 }) {
   const tone = useTone();
   const lead =
@@ -104,27 +102,6 @@ export function Chapter2({
         </div>
       )}
 
-      {/* 의뢰인님 조건과 겹친 지점 — match.notes 가 있을 때만 */}
-      {match?.notes && match.notes.length > 0 && (
-        <div className="mt-5 p-[18px] bg-brand-bg-deep rounded-[14px] border-[1.5px] border-brand-line">
-          <div className="font-hand text-[15px] text-brand-orange-deep mb-[14px]">
-            📋 {userName}님 조건과 겹친 지점
-          </div>
-          {match.notes.map((note, i) => (
-            <div
-              key={i}
-              className={`flex gap-3 py-[9px] ${i > 0 ? 'border-t border-dashed border-brand-ink/15' : ''}`}
-            >
-              <div className="shrink-0 w-7 font-display font-bold text-[13px] text-brand-ink pt-[1px]">
-                {String(i + 1).padStart(2, '0')}
-              </div>
-              <div className="flex-1 text-[13.5px] text-brand-ink-soft leading-[1.6] [&_b]:font-display [&_b]:font-bold [&_b]:text-brand-ink">
-                <SafeText>{note}</SafeText>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
     </ChapterCard>
   );
 }

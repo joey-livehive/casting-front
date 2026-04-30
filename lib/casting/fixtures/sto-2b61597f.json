@@ -1,0 +1,112 @@
+{
+  "report_id": "STO-2B61597F",
+  "guest_uid": "4f7c66f5-0afe-4f2d-bc3c-1129e72af4bb",
+  "status": "ready",
+  "published_at": "2026.05.01",
+  "user_answers": {
+    "idealType": {
+      "attractionFactor": "'외모'가 수려한 사람",
+      "agePreference": "나보다 많은 사람",
+      "heightPreference": "큰 편이 좋아",
+      "bodyType": "근육질",
+      "relationshipPriority": "매일 연락하는 거",
+      "contactStyle": "수시로 연락했으면",
+      "religionImportance": "상관없어",
+      "dealBreaker": "흡연하는 사람",
+      "firstMeeting": "밥 먹으면서"
+    },
+    "freeResponse": {
+      "strictCriteria": "군필에 손이쁜사람 목소리 좋고 비흡연자"
+    },
+    "selfInfo": {
+      "ageRange": "20대 초반",
+      "gender": "여자",
+      "location": "그 외 지역",
+      "weekend": "집에서 쉬어",
+      "drinking": "가끔",
+      "relationshipStyle": "적당한 거리가 좋아",
+      "readiness": "바로 만나고 싶어"
+    }
+  },
+  "personalized": {
+    "chapter1Traits": {
+      "trait01Intro": "\"매일 연락하는 거\"를 꼽으신 걸 보면, 상대방과 꾸준히 소통하면서 안정감을 느끼고 싶어 하시는 분이에요.",
+      "trait02Intro": "의뢰인님께서 \"'외모'가 수려한 사람\"에게 끌린다고 답하신 걸 보면, 외적인 매력뿐 아니라 자기 관리에 꾸준한 노력을 기울이는 분에게 호감을 느끼시는 것 같아요.",
+      "trait03Intro": "의뢰인님께서 이상형 조건으로 \"손이쁜사람 목소리 좋고 비흡연자\" 같이 구체적인 부분을 언급하신 걸 보면, 평소 작은 부분까지 놓치지 않으시는 섬세한 분이에요. 그만큼 상대에게도 사소한 것을 기억해주는 세심함을 기대하실 거랍니다.",
+      "trait04Intro": "의뢰인님의 답변 전반을 보면, 자신의 기준을 명확하게 표현하고 상대방과의 소통을 중요하게 생각하시는 분이라는 게 드러나요. 그만큼 관계에서 상대방이 자신의 감정을 솔직하게 표현하고 대화로 문제를 해결하려는 노력을 중요하게 생각하실 것 같아요."
+    },
+    "readingCard": {
+      "paragraph1Opening": "\"매일 연락하는 거\"를 중요하게 생각하시는 걸 보니, 일상 속에서 꾸준히 교감하며 관계를 쌓아가는 걸 선호하시는 듯해요.",
+      "paragraph2Opening": "\"적당한 거리가 좋아\"라고 말씀하신 걸 보면, 관계에서 개인의 시간과 공간을 존중하는 스타일이신 것 같아요.",
+      "candidateMatch": "이 분은 <b>주말마다 운동으로 자기관리를 챙기고, 매일의 안부를 잊지 않는</b> 분이에요! 이분만이 줄 수 있는 <b>꾸준한 다정함</b>이 의뢰인님께 딱 필요하다고 판단했어요."
+    }
+  },
+  "candidate": {
+    "nickname": "○○○",
+    "faceType": "다정한 미소가 인상적인, 스타일리쉬한 외모",
+    "ageRange": "24세",
+    "ageDetail": "",
+    "occupation": "학생",
+    "occupationDetail": "",
+    "personality": "먼저 사과할 줄 아는 다정한 ENFJ 타입",
+    "location": "부산",
+    "foundAt": "<red>내용 없음</red>",
+    "hobbies": {
+      "visible": [
+        "<red>내용 없음</red>"
+      ],
+      "hidden": 0
+    },
+    "daySchedule": [
+      {
+        "time": "—",
+        "activity": "<red>내용 없음</red>"
+      }
+    ],
+    "background": "주중엔 학업, 주말이면 <b>꾸준한 운동으로 자기관리</b>를 챙기는 차분한 타입이에요. 카페나 집에서 잔잔한 시간을 보내는 데이트도 좋아해서, 의뢰인님처럼 매일 연락하는 가까운 관계에 잘 어울려요.",
+    "secretAppeal": "<red>내용 없음</red>",
+    "teaserPhoto": "/images/teaser/2b61597f-candidate.jpg",
+    "chapter2Photo": "/images/teaser/2b61597f-candidate.jpg",
+    "mbti": "ENFJ",
+    "recommendation": "주말마다 운동하는 자기관리 꾸준한 다정한 남자💪"
+  },
+  "match": {
+    "matchRate": 87,
+    "topPercent": 6,
+    "radarData": {
+      "labels": [
+        "정서적\n안정감",
+        "자기\n몰입도",
+        "커뮤니케이션",
+        "유머 코드",
+        "생활 템포",
+        "가치관"
+      ],
+      "userDesired": [
+        8,
+        8,
+        9,
+        7,
+        8,
+        8
+      ],
+      "candidateActual": [
+        8.5,
+        7,
+        9,
+        8,
+        8,
+        8
+      ]
+    },
+    "simulation": "첫 만남은 <b>편안한 식당이나 조용한 카페</b>에서 시작하시면 좋아요. 의뢰인님께서 \"밥 먹으면서\" 첫 만남을 답하셨고, 후보분도 카페·집처럼 편한 자리를 좋아하셔서 부담 없이 대화가 이어질 거예요. 후보분이 <b>다정하면서 먼저 사과할 줄 아는 ENFJ</b>라, 의뢰인님이 천천히 마음 여시는 데 잘 맞춰주실 거예요.",
+    "notes": [
+      "<b>연락 빈도</b>가 정확히 일치해요 — 의뢰인님은 \"매일 연락하는 거\", 후보분은 \"매일 보고 싶은 타입\" 이라 결이 같아요.",
+      "<b>자기관리</b>가 매력 포인트예요 — 후보분이 주말마다 꾸준히 운동하셔서, 의뢰인님 이상형 \"외모가 수려한 사람\"·\"근육질\"과 자연스럽게 연결돼요.",
+      "<b>잔잔한 데이트 결</b>이 잘 맞아요 — 의뢰인님은 \"밥 먹으면서\" 첫 만남, 후보분은 카페·집 데이트를 선호해서 첫 만남 그림이 자연스럽게 잡혀요.",
+      "<b>음주 빈도</b>가 일치해요 — 두 분 다 \"가끔\" 정도로 부담 없는 수준이에요."
+    ]
+  },
+  "created_at": "2026-04-27T04:05:43",
+  "expires_at": "2026-05-04T04:05:43"
+}
