@@ -84,12 +84,7 @@ export default async function ReportPage({
         <TopNav publishedAt={data.publishedAt} />
         <Hero userName={data.userName} />
         <ApplicationSummary userAnswers={userAnswers} />
-        <HuntBox
-          userName={data.userName}
-          stats={data.huntStats}
-          effort={data.effort}
-          total={data.totalCandidates}
-        />
+        <HuntBox stats={data.huntStats} />
 
         <TrackSection section="teaser_card" reportId={reportId}>
           <TeaserCard candidate={data.teaserCandidate} />

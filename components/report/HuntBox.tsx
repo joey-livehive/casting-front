@@ -1,12 +1,7 @@
-'use client';
-
 import { ReportData } from '@/lib/report/types';
 
 interface HuntBoxProps {
-  userName: string;
   stats: ReportData['huntStats'];
-  effort: ReportData['effort'];
-  total: number;
 }
 
 export function HuntBox({ stats }: HuntBoxProps) {
@@ -57,7 +52,6 @@ export function HuntBox({ stats }: HuntBoxProps) {
             ))}
           </div>
         </div>
-
       </div>
     </div>
   );

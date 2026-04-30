@@ -174,12 +174,7 @@ export default async function CastingMatchReportPage({
         <Hero userName="의뢰인" />
 
         <ApplicationSummary userAnswers={buildUserAnswers(report)} />
-        <HuntBox
-          userName="의뢰인"
-          stats={{ offlineGyms: 0, instagramProfiles: 0, linkedinProfiles: 0, communities: 411 }}
-          effort={{ castingHours: 3, verificationMeetings: 1 }}
-          total={8}
-        />
+        <HuntBox stats={{ offlineGyms: 0, instagramProfiles: 0, linkedinProfiles: 0, communities: 411 }} />
         <ReadingCard userName="의뢰인" personalized={personalized.readingCard} />
 
         <SignalGrid report={report} />

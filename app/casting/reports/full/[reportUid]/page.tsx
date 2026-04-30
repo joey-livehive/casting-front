@@ -61,10 +61,10 @@ export default async function CastingMatchReportPage({
   searchParams,
 }: {
   params: Promise<{ reportUid: string }>;
-  searchParams: Promise<{ mock?: string }>;
+  searchParams: Promise<{ mock?: string; cta?: string }>;
 }) {
   const { reportUid } = await params;
-  const { mock } = await searchParams;
+  const { mock, cta } = await searchParams;
 
   const data = { ...(getReport(reportUid) || getDefaultReport(reportUid, 'F')), tone: 'formal' as const };
 
@@ -96,12 +96,7 @@ export default async function CastingMatchReportPage({
         <TopNav publishedAt={data.publishedAt} />
         <Hero userName={data.userName} />
         <ApplicationSummary userAnswers={userAnswers} />
-        <HuntBox
-          userName={data.userName}
-          stats={data.huntStats}
-          effort={data.effort}
-          total={data.totalCandidates}
-        />
+        <HuntBox stats={data.huntStats} />
 
         <TrackSection section="teaser_card" reportId={reportUid}>
           <TeaserCard candidate={data.teaserCandidate} />
@@ -111,11 +106,11 @@ export default async function CastingMatchReportPage({
           <Chapter2 userName={data.userName} candidate={data.teaserCandidate} match={data.match} />
         </TrackSection>
         <TrackSection section="chapter3" reportId={reportUid}>
-          <Chapter3 userName={data.userName} match={data.match} />
+          <Chapter3 userName={data.userName} match={data.match} number="CHAPTER 2" />
         </TrackSection>
         <Chapter4Simulation
-          userName={data.userName}
           match={data.match}
+          number="CHAPTER 3"
           sceneImage={
             reportUid === 'STO-C324BE08' || reportUid === 'CASTING-LOCAL-003'
               ? '/images/simulation/c324be08-meeting.jpg'
@@ -123,7 +118,7 @@ export default async function CastingMatchReportPage({
           }
         />
 
-        <MeetOrPassCta />
+        <MeetOrPassCta initialCta={cta} />
       </ReportShell>
     </main>
   );

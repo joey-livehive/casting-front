@@ -6,22 +6,27 @@ import { ChapterCard } from './ChapterCard';
 import { SafeText } from './SafeText';
 import { useTone } from './toneContext';
 
-export function Chapter4Simulation({
-  userName,
-  match,
-  sceneImage,
-}: {
-  userName: string;
+interface Props {
   match: MatchAnalysis;
+  /** 시뮬레이션 장면 이미지(3:4). 없으면 텍스트만 노출. */
   sceneImage?: string;
-}) {
+  /** ChapterCard 번호. 페이지에서 chapter 순번을 결정. */
+  number?: string;
+}
+
+export function Chapter4Simulation({ match, sceneImage, number = 'CHAPTER 3' }: Props) {
   const tone = useTone();
+
+  // simulation 텍스트가 없으면 카드 자체를 숨긴다 — 빈 박스 노출 방지.
+  if (!match.simulation?.trim()) return null;
+
   const lead =
     tone === 'formal'
-      ? `두 분이 처음 만나면 어떻게 될지, 예측해 봤어요!`
-      : `두 사람이 처음 만나면 어떻게 될지, 예측해 봤어!`;
+      ? '두 분이 처음 만나면 어떻게 될지, 예측해 봤어요!'
+      : '두 사람이 처음 만나면 어떻게 될지, 예측해 봤어!';
+
   return (
-    <ChapterCard number="CHAPTER 3" title="🎬 만약 두 사람이 만난다면" lead={lead}>
+    <ChapterCard number={number} title="🎬 만약 두 사람이 만난다면" lead={lead}>
       <div className="bg-brand-bg-deep border-[1.5px] border-brand-line rounded-[14px] overflow-hidden">
         {sceneImage && (
           <div className="relative aspect-[3/4] w-full bg-[linear-gradient(135deg,#E8D5B7_0%,#C9A574_100%)]">
@@ -31,8 +36,8 @@ export function Chapter4Simulation({
               fill
               sizes="(max-width: 480px) 100vw, 480px"
               draggable={false}
-              className="object-cover select-none"
-              style={{ objectPosition: '50% 30%', pointerEvents: 'none' } as React.CSSProperties}
+              className="object-cover select-none pointer-events-none"
+              style={{ objectPosition: '50% 30%' }}
             />
           </div>
         )}

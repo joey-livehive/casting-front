@@ -93,6 +93,48 @@ export function ApplicationSummary({ userAnswers }: { userAnswers: UserAnswers }
     return a ? [{ q, a: formatPersonalityAnswer(k, a), key: k as string }] : [];
   });
 
+  // 비어있는 그룹은 끼워 넣지 않고, 첫 그룹은 divider 없이 렌더한다.
+  const groups: { label: string; node: React.ReactNode }[] = [];
+
+  if (idealRows.length > 0) {
+    groups.push({
+      label: '이상형',
+      node: idealRows.map(({ q, a, key }) => <Row key={key} q={q} a={a} />),
+    });
+  }
+  if (selfRows.length > 0) {
+    groups.push({
+      label: '본인 정보',
+      node: selfRows.map(({ q, a, key }) => <Row key={key} q={q} a={a} />),
+    });
+  }
+  if (personalityRows.length > 0) {
+    groups.push({
+      label: '성격',
+      node: personalityRows.map(({ q, a, key }) => <Row key={key} q={q} a={a} />),
+    });
+  }
+  if (userAnswers.freeResponse?.strictCriteria) {
+    groups.push({
+      label: '까다로운 기준',
+      node: (
+        <p className="text-[13.5px] text-brand-ink leading-[1.7] pl-3 border-l-2 border-brand-mustard-deep">
+          {userAnswers.freeResponse.strictCriteria}
+        </p>
+      ),
+    });
+  }
+  if (userAnswers.freeResponse?.messageToUs) {
+    groups.push({
+      label: '나한테 하고 싶은 말',
+      node: (
+        <p className="text-[14px] text-brand-ink leading-[1.65] pl-3 border-l-2 border-brand-mustard-deep font-hand">
+          &ldquo;{userAnswers.freeResponse.messageToUs}&rdquo;
+        </p>
+      ),
+    });
+  }
+
   return (
     <div className="px-7 mt-7">
       <div
@@ -114,45 +156,11 @@ export function ApplicationSummary({ userAnswers }: { userAnswers: UserAnswers }
           의뢰인님이 남겨 주신 그대로 담아왔어요.
         </p>
 
-        {idealRows.length > 0 && (
-          <Group label="이상형">
-            {idealRows.map(({ q, a, key }) => (
-              <Row key={key} q={q} a={a} />
-            ))}
+        {groups.map(({ label, node }, i) => (
+          <Group key={label} label={label} divider={i > 0}>
+            {node}
           </Group>
-        )}
-
-        {selfRows.length > 0 && (
-          <Group label="본인 정보" divider>
-            {selfRows.map(({ q, a, key }) => (
-              <Row key={key} q={q} a={a} />
-            ))}
-          </Group>
-        )}
-
-        {personalityRows.length > 0 && (
-          <Group label="성격" divider>
-            {personalityRows.map(({ q, a, key }) => (
-              <Row key={key} q={q} a={a} />
-            ))}
-          </Group>
-        )}
-
-        {userAnswers.freeResponse?.strictCriteria && (
-          <Group label="까다로운 기준" divider>
-            <p className="text-[13.5px] text-brand-ink leading-[1.7] pl-3 border-l-2 border-brand-mustard-deep">
-              {userAnswers.freeResponse.strictCriteria}
-            </p>
-          </Group>
-        )}
-
-        {userAnswers.freeResponse?.messageToUs && (
-          <Group label="나한테 하고 싶은 말" divider>
-            <p className="text-[14px] text-brand-ink leading-[1.65] pl-3 border-l-2 border-brand-mustard-deep font-hand">
-              &ldquo;{userAnswers.freeResponse.messageToUs}&rdquo;
-            </p>
-          </Group>
-        )}
+        ))}
       </div>
     </div>
   );

@@ -6,7 +6,16 @@ import { RadarChart } from './RadarChart';
 import { SafeText } from './SafeText';
 import { useTone } from './toneContext';
 
-export function Chapter3({ userName, match }: { userName: string; match: MatchAnalysis }) {
+export function Chapter3({
+  userName,
+  match,
+  number = 'CHAPTER 3',
+}: {
+  userName: string;
+  match: MatchAnalysis;
+  /** ChapterCard 번호. 페이지가 chapter 순번을 결정한다. */
+  number?: string;
+}) {
   const tone = useTone();
   const lead =
     tone === 'formal'
@@ -15,7 +24,7 @@ export function Chapter3({ userName, match }: { userName: string; match: MatchAn
   const title =
     tone === 'formal' ? '왜 잘 맞는지 알려드릴게요' : '너랑 왜 잘 맞냐면';
   return (
-    <ChapterCard number="CHAPTER 2" title={title} lead={lead}>
+    <ChapterCard number={number} title={title} lead={lead}>
       <div className="flex justify-center gap-5 mb-1.5 text-[13px]">
         <span className="flex items-center gap-1.5">
           <span className="inline-block w-3 h-3 rounded-[3px] bg-brand-orange" />
