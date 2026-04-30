@@ -42,28 +42,14 @@ export interface Candidate {
   background: string;
   /** 결제 후 공개되는 호기심 훅 한 줄. <blur>...</blur> 마크업 사용. */
   secretAppeal: string;
-  /** 맛보기 카드용 인물 사진 (4:5). 없으면 그라디언트 placeholder. */
+  /** 맛보기 카드용 인물 사진 (4:5). 없으면 그라디언트 placeholder. 블러는 파일 자체에 pre-blur 적용. */
   teaserPhoto?: string;
   /** Chapter 2용 분위기 사진 (16:9). 없으면 그라디언트 placeholder. */
   chapter2Photo?: string;
-  /** 얼굴 위치 (퍼센트 좌표) — 원형 블러 마스크 위치 결정. teaserPhoto 기준. */
-  teaserFace?: FacePosition;
-  /** 얼굴 위치 (퍼센트 좌표) — chapter2Photo 기준. */
-  chapter2Face?: FacePosition;
   /** MBTI 16 유형 (예: 'ENFP'). 폼에 없으면 undefined → 칸 자체 안 그림. */
   mbti?: string;
   /** 디렉터 추천사 한 줄. 폼에 없으면 undefined → 칸 자체 안 그림. */
   recommendation?: string;
-}
-
-/** 사진 위 얼굴 위치(원형 마스크용). 모두 컨테이너 대비 퍼센트(0~100). */
-export interface FacePosition {
-  /** 얼굴 중심 X (컨테이너 너비 기준 %) */
-  cx: number;
-  /** 얼굴 중심 Y (컨테이너 높이 기준 %) */
-  cy: number;
-  /** 얼굴 반지름 (컨테이너 너비 기준 %). 원의 지름 = 2r. */
-  r: number;
 }
 
 export interface DayScheduleItem {

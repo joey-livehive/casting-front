@@ -17,6 +17,7 @@ import { TrackSection } from '@/components/report/TrackSection';
 import { MeetOrPassCta } from '@/components/report/MeetOrPassCta';
 import stoD2666570 from '@/lib/casting/fixtures/sto-d2666570.json';
 import stoC324BE08 from '@/lib/casting/fixtures/sto-c324be08.json';
+import stoB778960B from '@/lib/casting/fixtures/sto-b778960b.json';
 
 const EMPTY_PERSONALIZED: PersonalizedContent = {
   chapter1Traits: { trait01Intro: '', trait02Intro: '', trait03Intro: '', trait04Intro: '' },
@@ -36,6 +37,8 @@ const FIXTURES: Record<string, Fixture> = {
   'STO-D2666570': stoD2666570 as Fixture,
   'CASTING-LOCAL-003': stoC324BE08 as Fixture,
   'STO-C324BE08': stoC324BE08 as Fixture,
+  'CASTING-LOCAL-004': stoB778960B as Fixture,
+  'STO-B778960B': stoB778960B as Fixture,
 };
 
 function loadFixture(uid: string): {
@@ -112,7 +115,10 @@ export default async function CastingMatchReportPage({
           match={data.match}
           number="CHAPTER 3"
           sceneImage={
-            reportUid === 'STO-C324BE08' || reportUid === 'CASTING-LOCAL-003'
+            reportUid === 'STO-C324BE08' ||
+            reportUid === 'CASTING-LOCAL-003' ||
+            reportUid === 'STO-B778960B' ||
+            reportUid === 'CASTING-LOCAL-004'
               ? '/images/simulation/c324be08-meeting.jpg'
               : undefined
           }

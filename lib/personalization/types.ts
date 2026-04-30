@@ -72,5 +72,7 @@ export interface PersonalizedContent {
     paragraph1Opening: string;
     /** [LLM_GENERATED] 문단 2 도입 — 자유응답 or 본인정보 or 폴백 */
     paragraph2Opening: string;
+    /** 후보별 매칭 한 줄 — ReadingCard 마지막 문단 자리. 없으면 컴포넌트 기본 카피로 폴백. */
+    candidateMatch?: string;
   };
 }

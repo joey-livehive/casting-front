@@ -5,7 +5,6 @@ import { Candidate } from '@/lib/report/types';
 import { Section, SectionLabel, SectionTitle, HL } from './SectionFrame';
 import { useTone } from './toneContext';
 import { SafeText } from './SafeText';
-import { FaceBlurOverlay } from './FaceBlurOverlay';
 
 interface TeaserCardProps {
   candidate: Candidate;
@@ -57,8 +56,6 @@ export function TeaserCard({ candidate }: TeaserCardProps) {
               </div>
             )}
 
-            {candidate.teaserFace && <FaceBlurOverlay position={candidate.teaserFace} blur={30} />}
-
             {/* 하단 그라디언트 */}
             <div className="absolute left-0 right-0 bottom-0 z-[2] pt-10 px-[18px] pb-[18px] text-white bg-[linear-gradient(180deg,transparent_0%,rgba(28,26,23,0.88)_100%)]">
               <div className="font-display font-semibold text-[20px] tracking-[-0.02em]">
@@ -77,6 +74,9 @@ export function TeaserCard({ candidate }: TeaserCardProps) {
             <MetaItem label="나이" value={candidate.ageRange} />
             <MetaItem label="거주지역" value={candidate.location} />
             {candidate.mbti && <MetaItem label="MBTI" value={candidate.mbti} />}
+            {candidate.occupation && !candidate.occupation.includes('<red>') && (
+              <MetaItem label="직업" value={candidate.occupation} />
+            )}
             {candidate.recommendation && (
               <MetaItem label="캐스터의 추천사" value={candidate.recommendation} full />
             )}
