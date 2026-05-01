@@ -181,8 +181,8 @@ export function PurchaseBottomSheet({ open, onClose, reportId }: PurchaseBottomS
         </div>
         <div className="px-6 pb-3 text-[13px] text-brand-ink-soft leading-[1.55]">
           {tone === 'formal'
-            ? '결제 후 바로 블러가 풀리고, 나머지 카드도 7일 안에 전달돼요.'
-            : '결제 후 바로 블러가 풀리고, 나머지 카드도 7일 안에 전달돼.'}
+            ? '결제 후 카드가 순차적으로 전달돼요!'
+            : '결제 후 카드가 순차적으로 전달돼!'}
         </div>
 
         {/* Plans */}
