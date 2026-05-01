@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation';
 import { getReport, getDefaultReport } from '@/lib/report/mockData';
 import { getMockPersonalized } from '@/lib/personalization/mock-personalized';
 import { getMockUser, isMockUserKey } from '@/lib/personalization/mock-users';
@@ -31,30 +32,32 @@ export default async function CastingMatchReportPage({
   const { reportUid } = await params;
   const { mock, cta } = await searchParams;
 
-  const data = { ...(getReport(reportUid) || getDefaultReport(reportUid, 'F')), tone: 'formal' as const };
+  const fixture = getFixture(reportUid);
+  const mockReport = getReport(reportUid);
+
+  // fixture 도 mock 리포트도 없으면 404. 디자인 검수용 mock 진입은 ?mock=A 쿼리가 있을 때만 허용.
+  if (!fixture && !(mockReport && mock)) {
+    notFound();
+  }
+
+  const data = { ...(mockReport ?? getDefaultReport(reportUid, 'F')), tone: 'formal' as const };
 
   let userAnswers: UserAnswers;
   let personalized: PersonalizedContent;
   let sceneImage: string | undefined;
 
-  if (getReport(reportUid) && mock) {
+  if (fixture) {
+    userAnswers = fixture.user_answers ?? ({ idealType: {} } as UserAnswers);
+    personalized = fixture.personalized ?? EMPTY_PERSONALIZED;
+    sceneImage = fixture.scene_image;
+    // 이 의뢰인 전용 후보·궁합 데이터가 fixture 에 있으면 mock 을 덮어씀
+    if (fixture.candidate) data.teaserCandidate = fixture.candidate;
+    if (fixture.match) data.match = fixture.match;
+    if (fixture.published_at) data.publishedAt = fixture.published_at;
+  } else {
     const mockKey = isMockUserKey(mock) ? mock : 'A';
     userAnswers = getMockUser(mockKey);
     personalized = getMockPersonalized(mockKey);
-  } else {
-    const fixture = getFixture(reportUid);
-    if (fixture) {
-      userAnswers = fixture.user_answers ?? ({ idealType: {} } as UserAnswers);
-      personalized = fixture.personalized ?? EMPTY_PERSONALIZED;
-      sceneImage = fixture.scene_image;
-      // 이 의뢰인 전용 후보·궁합 데이터가 fixture 에 있으면 mock 을 덮어씀
-      if (fixture.candidate) data.teaserCandidate = fixture.candidate;
-      if (fixture.match) data.match = fixture.match;
-      if (fixture.published_at) data.publishedAt = fixture.published_at;
-    } else {
-      userAnswers = getMockUser('A');
-      personalized = EMPTY_PERSONALIZED;
-    }
   }
 
   return (
