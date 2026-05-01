@@ -18,7 +18,7 @@ export function TeaserCard({ candidate }: TeaserCardProps) {
     <Section>
       <SectionLabel>맛보기 · 1 of 5</SectionLabel>
       <SectionTitle>
-        이 사람, <HL>{tone === 'formal' ? '어떠세요?' : '어때?'}</HL>
+        <HL>소개 받기</HL>
       </SectionTitle>
 
       <div className="[perspective:1000px]">
@@ -73,7 +73,7 @@ export function TeaserCard({ candidate }: TeaserCardProps) {
                            px-7 py-4 font-display font-bold text-[16px] tracking-[-0.02em]
                            animate-cta-pulse active:scale-[0.97] transition-transform"
               >
-                얼굴 확인하기
+                소개 받기
               </button>
             </div>
 

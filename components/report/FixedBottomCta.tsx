@@ -30,13 +30,13 @@ export function FixedBottomCta() {
         <button
           type="button"
           onClick={() => openSheet('fixed_bottom_cta')}
-          aria-label="사진 보기"
+          aria-label="매칭카드 받기"
           className="flex-1 bg-brand-orange text-white rounded-full
                      py-[18px] px-5 font-display font-extrabold text-[16px] max-[380px]:text-[15px]
                      tracking-[-0.02em] whitespace-nowrap
                      animate-cta-glow active:scale-[0.97] transition-transform"
         >
-          사진 보기
+          매칭카드 받기
         </button>
       </div>
     </div>

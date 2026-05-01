@@ -66,7 +66,7 @@ export function Chapter2({ userName, candidate }: { userName: string; candidate:
                          shadow-[0_6px_16px_rgba(0,0,0,0.35)]
                          active:scale-[0.97] transition-transform"
             >
-              얼굴 확인하기
+              소개 받기
             </button>
           </div>
         </div>

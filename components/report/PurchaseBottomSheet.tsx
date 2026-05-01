@@ -10,16 +10,16 @@ const plans: PricingPlan[] = [
   {
     id: 'starter',
     name: '스타터',
-    originalPrice: 24900,
-    discountedPrice: 19900,
+    originalPrice: 49900,
+    discountedPrice: 39900,
     discountPercent: 20,
     cardCount: 5,
   },
   {
     id: 'regular',
     name: '레귤러',
-    originalPrice: 44900,
-    discountedPrice: 34900,
+    originalPrice: 89900,
+    discountedPrice: 69900,
     discountPercent: 22,
     cardCount: 10,
     conversationGuarantee: 3,
@@ -28,8 +28,8 @@ const plans: PricingPlan[] = [
   {
     id: 'premium',
     name: '프리미엄',
-    originalPrice: 64900,
-    discountedPrice: 49900,
+    originalPrice: 129900,
+    discountedPrice: 99900,
     discountPercent: 23,
     cardCount: 20,
     conversationGuarantee: 10,
@@ -181,8 +181,8 @@ export function PurchaseBottomSheet({ open, onClose, reportId }: PurchaseBottomS
         </div>
         <div className="px-6 pb-3 text-[13px] text-brand-ink-soft leading-[1.55]">
           {tone === 'formal'
-            ? '결제 후 바로 블러가 풀리고, 나머지 카드도 7일 안에 전달돼요.'
-            : '결제 후 바로 블러가 풀리고, 나머지 카드도 7일 안에 전달돼.'}
+            ? '결제 후 카드가 순차적으로 전달돼요!'
+            : '결제 후 카드가 순차적으로 전달돼!'}
         </div>
 
         {/* Plans */}
@@ -261,7 +261,7 @@ export function PurchaseBottomSheet({ open, onClose, reportId }: PurchaseBottomS
                        active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0_var(--line)]
                        ${paying ? 'opacity-60 pointer-events-none' : ''}`}
           >
-            {paying ? '결제 준비 중...' : '결제하고 사진 보기'}
+            {paying ? '결제 준비 중...' : '결제하고 소개 받기'}
           </button>
         </div>
       </div>

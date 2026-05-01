@@ -40,9 +40,9 @@ const center: Brand = {
   brand: 'casting',
   us: true,
   rows: [
-    { k: '가격', v: '3~10만원대' },
+    { k: '가격', v: '4~10만원대' },
     { k: '범위', v: '앱 밖까지' },
-    { k: '소요', v: '7일' },
+    { k: '소요', v: '2~3일+' },
     { k: '검증', v: 'AI+매니저' },
   ],
 };
@@ -108,7 +108,7 @@ export function PriceCompare() {
       </div>
 
       <div className="mt-[18px] text-center font-hand text-[14px] text-brand-ink-soft">
-        결정사 가격의 <b className="text-brand-orange-deep font-bold">1/20</b>
+        결정사 가격의 <b className="text-brand-orange-deep font-bold">1/10</b>
         {tone === 'formal' ? ', 찾는 범위는 훨씬 넓어요.' : ', 근데 찾는 범위는 훨씬 넓어.'}
       </div>
     </Section>
