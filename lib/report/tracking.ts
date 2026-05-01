@@ -25,7 +25,7 @@ export function track(
     fbq('track', options.pixel, options.pixelData);
   }
 
-  fetch(`${API}/theone/events`, {
+  fetch(`${API}/casting/events`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

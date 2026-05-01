@@ -46,7 +46,7 @@ function sendEvent(
   const sessionId = getSessionId();
   if (!sessionId) return;
 
-  fetch(`${API_BASE}/theone/events`, {
+  fetch(`${API_BASE}/casting/events`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

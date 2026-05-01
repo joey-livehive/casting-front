@@ -36,7 +36,7 @@ const EMPTY_PERSONALIZED: PersonalizedContent = {
 
 async function fetchReport(reportId: string): Promise<{ userAnswers: UserAnswers; personalized: PersonalizedContent } | null> {
   try {
-    const res = await fetch(`${API}/theone/reports/${reportId}`, { cache: 'no-store' });
+    const res = await fetch(`${API}/casting/preview/reports/${reportId}`, { cache: 'no-store' });
     if (!res.ok) return null;
     const json = await res.json();
     return {

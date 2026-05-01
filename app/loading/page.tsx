@@ -84,7 +84,7 @@ export default function LoadingPage() {
     stopPolling();
     pollRef.current = setInterval(async () => {
       try {
-        const res = await fetch(`${API_BASE}/theone/reports/${reportId}`);
+        const res = await fetch(`${API_BASE}/casting/preview/reports/${reportId}`);
         if (!res.ok) return;
         const data = await res.json();
         if (data.status === 'ready') {
@@ -111,7 +111,7 @@ export default function LoadingPage() {
     if (!guestUid) return;
 
     try {
-      const res = await fetch(`${API_BASE}/theone/reports`, {
+      const res = await fetch(`${API_BASE}/casting/preview/reports`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ guest_uid: guestUid, version: '20' }),
@@ -146,7 +146,7 @@ export default function LoadingPage() {
     setStage('waiting');
 
     try {
-      const res = await fetch(`${API_BASE}/theone/reports/${current.reportId}/retry`, {
+      const res = await fetch(`${API_BASE}/casting/preview/reports/${current.reportId}/retry`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -216,10 +216,14 @@ export default function LoadingPage() {
       ? sessionStorage.getItem('sto_guest_uid')
       : null;
     if (guestUid) {
-      fetch(`${API_BASE}/theone/survey/${guestUid}/phone`, {
+      const token = typeof window !== 'undefined' ? sessionStorage.getItem('casting_guest_token') : null;
+      fetch(`${API_BASE}/casting/guests/${guestUid}/phone`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: digits }),
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'x-casting-guest-token': token } : {}),
+        },
+        body: JSON.stringify({ value: digits }),
       }).catch(() => {});
     }
     trackPhone(digits);
