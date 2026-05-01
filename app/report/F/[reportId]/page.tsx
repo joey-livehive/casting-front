@@ -87,7 +87,7 @@ export default async function ReportPage({
         <HuntBox stats={data.huntStats} />
 
         <TrackSection section="teaser_card" reportId={reportId}>
-          <TeaserCard candidate={data.teaserCandidate} />
+          <TeaserCard candidate={data.teaserCandidate} blurred />
         </TrackSection>
         <ReadingCard userName={data.userName} personalized={personalized.readingCard} />
         <TrackSection section="chapter1" reportId={reportId}>

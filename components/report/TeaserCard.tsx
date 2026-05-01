@@ -8,9 +8,11 @@ import { SafeText } from './SafeText';
 
 interface TeaserCardProps {
   candidate: Candidate;
+  /** true 면 사진을 블러 처리 (결제 전 무료 미리보기 화면에서 사용). 기본값 false. */
+  blurred?: boolean;
 }
 
-export function TeaserCard({ candidate }: TeaserCardProps) {
+export function TeaserCard({ candidate, blurred = false }: TeaserCardProps) {
   const tone = useTone();
   return (
     <Section>
@@ -40,6 +42,8 @@ export function TeaserCard({ candidate }: TeaserCardProps) {
                   WebkitUserSelect: 'none',
                   WebkitTouchCallout: 'none',
                   WebkitUserDrag: 'none',
+                  filter: blurred ? 'blur(18px)' : undefined,
+                  transform: blurred ? 'scale(1.1)' : undefined,
                 } as React.CSSProperties}
               />
             ) : (
