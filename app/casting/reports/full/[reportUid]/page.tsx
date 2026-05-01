@@ -75,19 +75,6 @@ export default async function CastingMatchReportPage({
     if (rj.published_at) data.publishedAt = rj.published_at;
     if (rj.user_name) data.userName = rj.user_name;
     if (rj.hunt_stats) data.huntStats = rj.hunt_stats;
-
-    // legacy_theone 마이그 리포트는 candidate 정보가 없어서 mock 사진(실제 사람 사진)이 노출됨.
-    // 의뢰인 성별 따라 일러스트로 교체 — 여성→남자 일러스트, 남성→(추후 추가).
-    if (!rj.candidate) {
-      const viewerGender = userAnswers.selfInfo?.gender;
-      if (viewerGender === '여자' || viewerGender === '여성' || viewerGender === 'female') {
-        data.teaserCandidate = {
-          ...data.teaserCandidate,
-          teaserPhoto: '/images/teaser/male-illustration.webp',
-          chapter2Photo: '/images/teaser/male-illustration.webp',
-        };
-      }
-    }
   } else if (fixture) {
     userAnswers = fixture.user_answers ?? ({ idealType: {} } as UserAnswers);
     personalized = fixture.personalized ?? EMPTY_PERSONALIZED;
@@ -100,6 +87,18 @@ export default async function CastingMatchReportPage({
     const mockKey = isMockUserKey(mock) ? mock : 'A';
     userAnswers = getMockUser(mockKey);
     personalized = getMockPersonalized(mockKey);
+  }
+
+  // 모든 경로의 teaserCandidate.teaserPhoto/chapter2Photo 를 일러스트로 강제 교체.
+  // 의뢰인이 여성이면 남자 일러스트. 남성 의뢰인용 일러스트는 추후 추가 (현재는 그대로 둠).
+  const viewerGender = userAnswers.selfInfo?.gender;
+  const viewerIsFemale = viewerGender === '여자' || viewerGender === '여성' || viewerGender === 'female';
+  if (viewerIsFemale) {
+    data.teaserCandidate = {
+      ...data.teaserCandidate,
+      teaserPhoto: '/images/teaser/male-illustration.webp',
+      chapter2Photo: '/images/teaser/male-illustration.webp',
+    };
   }
 
   return (
