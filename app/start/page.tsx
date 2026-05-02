@@ -86,15 +86,15 @@ const CHAPTER1_QUESTIONS: Question[] = [
     optionsByGender: {
       // 남자 → 여자 키
       male: [
-        { label: '보통이 좋아 (156~165cm)', value: 'fem_avg' },
-        { label: '아담해야 돼 (155cm 이하)', value: 'fem_petite' },
-        { label: '큰 게 좋아 (167cm~)', value: 'fem_tall' },
+        { label: '보통이 좋아 (156~165cm)', value: 'pref_female_height_156_165' },
+        { label: '아담해야 돼 (155cm 이하)', value: 'pref_female_height_155_or_less' },
+        { label: '큰 게 좋아 (167cm~)', value: 'pref_female_height_167_plus' },
         { label: '상관없어', value: 'any_height' },
       ],
       // 여자 → 남자 키
       female: [
-        { label: '키 커야 돼 (180cm~)', value: 'male_very_tall' },
-        { label: '보통 이상이면 돼 (172cm~)', value: 'male_avg_plus' },
+        { label: '키 커야 돼 (180cm~)', value: 'pref_male_height_180_plus' },
+        { label: '보통 이상이면 돼 (172cm~)', value: 'pref_male_height_172_plus' },
         { label: '상관없어', value: 'any_height' },
       ],
     },
@@ -105,16 +105,16 @@ const CHAPTER1_QUESTIONS: Question[] = [
     optionsByGender: {
       // 남자 → 여자 체형
       male: [
-        { label: '글래머러스가 좋아', value: 'fem_glamour' },
-        { label: '마른 게 좋아', value: 'fem_slim' },
-        { label: '보통이면 돼', value: 'fem_average' },
+        { label: '글래머러스가 좋아', value: 'pref_female_glamorous' },
+        { label: '마른 게 좋아', value: 'pref_female_slim' },
+        { label: '보통이면 돼', value: 'pref_female_average' },
         { label: '상관 없어', value: 'any_body' },
       ],
       // 여자 → 남자 체형
       female: [
-        { label: '근육 탄탄해야 돼', value: 'male_muscular' },
-        { label: '보통이면 돼', value: 'male_average' },
-        { label: '스키니한 게 좋아', value: 'male_slim' },
+        { label: '근육 탄탄해야 돼', value: 'pref_male_muscular' },
+        { label: '보통이면 돼', value: 'pref_male_average' },
+        { label: '스키니한 게 좋아', value: 'pref_male_slim' },
         { label: '상관 없어', value: 'any_body' },
       ],
     },
@@ -226,7 +226,7 @@ const CHAPTER3_QUESTIONS: Question[] = [
       female: [
         { label: '슬림한 편', value: 'self_slim' },
         { label: '보통', value: 'self_average' },
-        { label: '글래머', value: 'self_glamour' },
+        { label: '글래머', value: 'self_glamorous' },
         { label: '통통한 편', value: 'self_chubby' },
       ],
     },
