@@ -6,13 +6,25 @@ import { z } from 'zod';
 const BOLD_TAG = /<b>[\s\S]+?<\/b>/;
 const QUOTED = /["'""''「」『』][\s\S]+?["'""''「」『』]/;
 
-// 톤 가이드 위반 단어 (system prompt 가 막지만 검증으로 한 번 더)
+// 톤 가이드 위반 단어/패턴 (system prompt 가 막지만 Zod 한 번 더 hard gate)
 const FORBIDDEN_WORDS = ['곁자리', '곁을 지키', '결자리', '자유서술'];
-const META_PHRASES = /자유서술/;
 
-function noForbiddenWords(s: string) {
-  return !FORBIDDEN_WORDS.some((w) => s.includes(w));
+// "OO한 결이/은/을/의" 같이 "결" 을 추상 명사로 쓰는 패턴 차단.
+// "결혼", "결과", "결심", "결정", "결국" 등 일반 단어는 통과 (조사 매치 안 됨).
+const ABSTRACT_GYEOL = /[가-힣](?:한|는|운|진|순|긴|단|히)\s?결(?:이|은|을|의|도|가|에|로)\b/;
+
+// "ENFP 특유의" / "ISFJ 특유의" — MBTI 클리셰 표현.
+const MBTI_CLICHE =
+  /\b(?:ENFP|ENFJ|ENTP|ENTJ|ESFP|ESFJ|ESTP|ESTJ|INFP|INFJ|INTP|INTJ|ISFP|ISFJ|ISTP|ISTJ)\s*(?:특유의?|답게의|타입의?)/i;
+
+function noForbiddenWords(s: string): boolean {
+  if (FORBIDDEN_WORDS.some((w) => s.includes(w))) return false;
+  if (ABSTRACT_GYEOL.test(s)) return false;
+  if (MBTI_CLICHE.test(s)) return false;
+  return true;
 }
+
+const META_PHRASES = /자유서술/;
 
 // ── PERSON BUNDLE ──────────────────────────────────────────
 
