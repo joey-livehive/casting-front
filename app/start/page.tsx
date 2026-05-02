@@ -25,6 +25,11 @@ interface Question {
   subtitle: string;
   type?: 'choice' | 'mbti' | 'age' | 'height' | 'job' | 'major' | 'gu';
   options?: { label: string; value: string }[];
+  // 성별에 따라 옵션이 달라지는 경우 (이상형 키·체형, 본인 체형 등)
+  optionsByGender?: {
+    male: { label: string; value: string }[];
+    female: { label: string; value: string }[];
+  };
 }
 
 // 시/도별 구·시 옵션 (Q22→Q23 분기)
@@ -109,61 +114,93 @@ const CHAPTER1_QUESTIONS: Question[] = [
   {
     title: '상대 나이는\n어느 정도?',
     subtitle: '상대방 선호 나이대',
-    options: [
-      { label: '나보다 많은 사람', value: 'older' },
-      { label: '나보다 어린 사람', value: 'younger' },
-      { label: '동갑이 좋아', value: 'same_age' },
-      { label: '상관없어', value: 'any_age' },
-    ],
+    optionsByGender: {
+      // 남자 → 연하 우선
+      male: [
+        { label: '연하가 좋아', value: 'younger' },
+        { label: '연상이 좋아', value: 'older' },
+        { label: '동갑이나 또래가 좋아', value: 'same_age' },
+        { label: '상관 없어', value: 'any_age' },
+      ],
+      // 여자 → 연상 우선
+      female: [
+        { label: '연상이 좋아', value: 'older' },
+        { label: '연하가 좋아', value: 'younger' },
+        { label: '동갑이나 또래가 좋아', value: 'same_age' },
+        { label: '상관 없어', value: 'any_age' },
+      ],
+    },
   },
   {
     title: '키는\n어느 정도?',
     subtitle: '선호하는 상대의 키',
-    options: [
-      { label: '큰 게 좋아', value: 'tall' },
-      { label: '비슷하면 좋겠어', value: 'similar' },
-      { label: '작은 게 좋아', value: 'short' },
-      { label: '상관없어', value: 'any_height' },
-    ],
+    optionsByGender: {
+      // 남자 → 여자 키
+      male: [
+        { label: '보통이 좋아 (156~165cm)', value: 'fem_avg' },
+        { label: '아담해야 돼 (155cm 이하)', value: 'fem_petite' },
+        { label: '큰 게 좋아 (167cm~)', value: 'fem_tall' },
+        { label: '상관없어', value: 'any_height' },
+      ],
+      // 여자 → 남자 키
+      female: [
+        { label: '키 커야 돼 (180cm~)', value: 'male_very_tall' },
+        { label: '보통 이상이면 돼 (172cm~)', value: 'male_avg_plus' },
+        { label: '상관없어', value: 'any_height' },
+      ],
+    },
   },
   {
     title: '체형은\n어땠음 해?',
     subtitle: '선호하는 상대의 체형',
-    options: [
-      { label: '마른 편', value: 'slim' },
-      { label: '보통', value: 'average' },
-      { label: '근육질', value: 'muscular' },
-      { label: '상관없어', value: 'any_body' },
-    ],
+    optionsByGender: {
+      // 남자 → 여자 체형
+      male: [
+        { label: '글래머러스가 좋아', value: 'fem_glamour' },
+        { label: '마른 게 좋아', value: 'fem_slim' },
+        { label: '보통이면 돼', value: 'fem_average' },
+        { label: '상관 없어', value: 'any_body' },
+      ],
+      // 여자 → 남자 체형
+      female: [
+        { label: '근육 탄탄해야 돼', value: 'male_muscular' },
+        { label: '보통이면 돼', value: 'male_average' },
+        { label: '스키니한 게 좋아', value: 'male_slim' },
+        { label: '상관 없어', value: 'any_body' },
+      ],
+    },
   },
 ];
 
-// ── Chapter 2 — 라이프 + 본인 스펙 (9문항, 종교 답변 따라 +1 분기) ──
+// ── Chapter 2 — 관계·라이프 선호 + 거주지 (8문항, 종교 분기 +1 / 시·도 자유입력) ──
 const CHAPTER2_QUESTIONS: Question[] = [
   {
-    title: '넌\n담배 피워?',
-    subtitle: '',
+    title: '얼마나 자주\n만나고 싶어?',
+    subtitle: '연애할 때 기준',
     options: [
-      { label: '안 피워', value: 'no_smoke' },
-      { label: '가끔 피워', value: 'sometimes_smoke' },
-      { label: '많이 피워', value: 'heavy_smoke' },
+      { label: '주 1~2번', value: 'weekly_1_2' },
+      { label: '주 3~4번', value: 'weekly_3_4' },
+      { label: '거의 매일', value: 'daily_meet' },
+      { label: '상황 따라 유연하게', value: 'flexible_meet' },
     ],
   },
   {
-    title: '연인이\n담배 피운다면?',
+    title: '연락은\n얼마나 자주가 좋아?',
     subtitle: '',
     options: [
-      { label: '괜찮아', value: 'pref_smoke_ok' },
-      { label: '흡연자는 안돼', value: 'pref_smoke_no' },
+      { label: '2~3시간 간격', value: 'contact_2_3h' },
+      { label: '수시로 했으면', value: 'contact_anytime' },
+      { label: '하루에 통화 1~2번', value: 'contact_1_2_day' },
+      { label: '연락 잘 안 해도 편한 사이가 좋아', value: 'contact_relaxed' },
     ],
   },
   {
-    title: '술은\n자주 마셔?',
-    subtitle: '',
+    title: '넌 지금\n얼마나 진지해?',
+    subtitle: '어떤 만남을 원하는지',
     options: [
-      { label: '자주 마셔', value: 'often_drink' },
-      { label: '가끔 마셔', value: 'sometimes_drink' },
-      { label: '거의 안 마셔', value: 'rarely_drink' },
+      { label: '진지한 연애 원해', value: 'serious_dating' },
+      { label: '일단 대화부터 할래', value: 'casual_chat' },
+      { label: '부담없이 가볍게 만나고 싶어', value: 'casual_meet' },
     ],
   },
   {
@@ -176,83 +213,21 @@ const CHAPTER2_QUESTIONS: Question[] = [
     ],
   },
   {
+    title: '연인이\n담배 피운다면?',
+    subtitle: '',
+    options: [
+      { label: '괜찮아', value: 'pref_smoke_ok' },
+      { label: '가능하지만 선호하진 않아', value: 'pref_smoke_meh' },
+      { label: '흡연자는 안돼', value: 'pref_smoke_no' },
+    ],
+  },
+  {
     title: '상대 종교는\n중요해?',
-    subtitle: "'상관 없어'로 답변하면 매칭이 더 잘돼",
+    subtitle: '',
     options: [
       { label: '상관 없어', value: 'pref_any_religion' },
       { label: '무교였으면 해', value: 'pref_no_religion' },
       { label: '같은 종교이길 바라', value: 'pref_same_religion' },
-    ],
-  },
-  {
-    title: '넌 나이가\n어떻게 돼?',
-    subtitle: '숫자로 입력해줘',
-    type: 'age',
-  },
-  {
-    title: '키가\n어떻게 돼?',
-    subtitle: 'cm로 입력해줘',
-    type: 'height',
-  },
-  {
-    title: '네 체형을\n알려줘',
-    subtitle: '',
-    options: [
-      { label: '마른 편', value: 'self_slim' },
-      { label: '보통', value: 'self_average' },
-      { label: '근육질', value: 'self_muscular' },
-      { label: '통통한 편', value: 'self_chubby' },
-    ],
-  },
-  {
-    title: 'MBTI\n뭐야?',
-    subtitle: '모르면 건너뛰어도 돼',
-    type: 'mbti',
-  },
-];
-
-// ── Chapter 3 — 진지함, 직업, 거주지 (학생 분기) ──
-const CHAPTER3_QUESTIONS: Question[] = [
-  {
-    title: '넌 지금\n얼마나 진지해?',
-    subtitle: '어떤 만남을 원하는지',
-    options: [
-      { label: '결혼 상대 찾는 중', value: 'seeking_marriage' },
-      { label: '진지한 연애 원해', value: 'serious_dating' },
-      { label: '일단 대화부터 할래', value: 'casual_chat' },
-      { label: '부담없이 가볍게 만나고 싶어', value: 'casual_meet' },
-    ],
-  },
-  {
-    title: '얼마나 자주\n만나고 싶어?',
-    subtitle: '연애할 때 기준',
-    options: [
-      { label: '거의 매일', value: 'daily_meet' },
-      { label: '주 1~2번', value: 'weekly_1_2' },
-      { label: '상황 따라 유연하게', value: 'flexible_meet' },
-    ],
-  },
-  {
-    title: '넌\n어떤 일 해?',
-    subtitle: '대략적으로',
-    options: [
-      { label: '학생', value: 'student' },
-      { label: '회사원', value: 'office' },
-      { label: '전문직', value: 'professional' },
-      { label: '공직', value: 'public' },
-      { label: '사업/프리랜서', value: 'freelance' },
-      { label: '기타', value: 'other_job' },
-    ],
-  },
-  {
-    title: '연소득은\n얼마야?',
-    subtitle: '매칭에만 쓸 거야, 걱정 마',
-    options: [
-      { label: '3천만원 미만', value: 'under_30' },
-      { label: '3천~5천', value: '30_50' },
-      { label: '5천~7천', value: '50_70' },
-      { label: '7천~1억', value: '70_100' },
-      { label: '1억 이상', value: 'over_100' },
     ],
   },
   {
@@ -275,11 +250,89 @@ const CHAPTER3_QUESTIONS: Question[] = [
       { label: '그 외 지역', value: 'other_region' },
     ],
   },
-  // 학생이면 SKIP — 비학생만 직업 디테일 입력
+];
+
+// ── Chapter 3 — 본인 스펙 (9문항, 학생이면 직업 디테일 SKIP) ──
+const CHAPTER3_QUESTIONS: Question[] = [
+  {
+    title: '넌 나이가\n어떻게 돼?',
+    subtitle: '숫자로 입력해줘',
+    type: 'age',
+  },
+  {
+    title: '키가\n어떻게 돼?',
+    subtitle: 'cm로 입력해줘',
+    type: 'height',
+  },
+  {
+    title: '네 체형을\n알려줘',
+    subtitle: '',
+    optionsByGender: {
+      male: [
+        { label: '마른 편', value: 'self_slim' },
+        { label: '보통', value: 'self_average' },
+        { label: '근육 탄탄', value: 'self_muscular' },
+        { label: '통통한 편', value: 'self_chubby' },
+      ],
+      female: [
+        { label: '슬림한 편', value: 'self_slim' },
+        { label: '보통', value: 'self_average' },
+        { label: '글래머', value: 'self_glamour' },
+        { label: '통통한 편', value: 'self_chubby' },
+      ],
+    },
+  },
+  {
+    title: '넌\n담배 피워?',
+    subtitle: '',
+    options: [
+      { label: '안 피워', value: 'no_smoke' },
+      { label: '가끔 피워', value: 'sometimes_smoke' },
+      { label: '많이 피워', value: 'heavy_smoke' },
+    ],
+  },
+  {
+    title: '술은\n자주 마셔?',
+    subtitle: '',
+    options: [
+      { label: '자주 마셔', value: 'often_drink' },
+      { label: '가끔 마셔', value: 'sometimes_drink' },
+      { label: '거의 안 마셔', value: 'rarely_drink' },
+    ],
+  },
+  {
+    title: 'MBTI\n뭐야?',
+    subtitle: '모르면 건너뛰어도 돼',
+    type: 'mbti',
+  },
+  {
+    title: '넌\n어떤 일 해?',
+    subtitle: '대략적으로',
+    options: [
+      { label: '학생', value: 'student' },
+      { label: '회사원', value: 'office' },
+      { label: '전문직', value: 'professional' },
+      { label: '공직', value: 'public' },
+      { label: '사업/프리랜서', value: 'freelance' },
+      { label: '기타', value: 'other_job' },
+    ],
+  },
+  // 학생이면 SKIP
   {
     title: '직업이 정확히\n뭐야?',
     subtitle: '예: 마케팅 PM, 디자이너...',
     type: 'job',
+  },
+  {
+    title: '연소득은\n얼마야?',
+    subtitle: '매칭에만 쓸 거야, 걱정 마',
+    options: [
+      { label: '3천만원 미만', value: 'under_30' },
+      { label: '3천~5천', value: '30_50' },
+      { label: '5천~7천', value: '50_70' },
+      { label: '7천~1억', value: '70_100' },
+      { label: '1억 이상', value: 'over_100' },
+    ],
   },
 ];
 
@@ -432,17 +485,17 @@ export default function StartPage() {
   }
 
   // ── Chapter 2 인덱스 헬퍼 ──
-  const RELIGION_STEP_IDX = 4; // CHAPTER2_QUESTIONS의 종교 질문 인덱스
+  const RELIGION_STEP_IDX = CHAPTER2_QUESTIONS.findIndex(
+    (q) => q.options?.some((o) => o.value === 'pref_any_religion'),
+  );
+  const sidoCh2Idx = CHAPTER2_QUESTIONS.findIndex(
+    (q) => q.options?.some((o) => o.value === 'seoul'),
+  );
 
   // ── Chapter 3 인덱스 헬퍼 ──
-  // title 의존 대신 옵션/타입으로 인덱스 찾기 (제목 변경에도 안전)
   const occupationCh3Idx = CHAPTER3_QUESTIONS.findIndex(
     (q) => q.options?.some((o) => o.value === 'student'),
   );
-  const sidoCh3Idx = CHAPTER3_QUESTIONS.findIndex(
-    (q) => q.options?.some((o) => o.value === 'seoul'),
-  );
-  const guCh3Idx = CHAPTER3_QUESTIONS.findIndex((q) => q.type === 'gu');
 
   function shouldSkipChapter3(idx: number, answers: string[] = ch3Answers): boolean {
     const q = CHAPTER3_QUESTIONS[idx];
@@ -475,9 +528,9 @@ export default function StartPage() {
 
   // 입력형 step으로 돌아갈 때 input 상태 복원
   function restoreInputForStep(ch: 1 | 2 | 3, idx: number) {
-    if (ch === 2) {
-      const q = CHAPTER2_QUESTIONS[idx];
-      const stored = ch2Answers[idx] || '';
+    if (ch === 3) {
+      const q = CHAPTER3_QUESTIONS[idx];
+      const stored = ch3Answers[idx] || '';
       if (q?.type === 'mbti') {
         if (stored && stored.length === 4) setMbti([stored[0], stored[1], stored[2], stored[3]]);
         else setMbti(['', '', '', '']);
@@ -485,12 +538,11 @@ export default function StartPage() {
         setAge(stored);
       } else if (q?.type === 'height') {
         setHeight(stored);
+      } else if (q?.type === 'job') {
+        setJobDetail(stored);
+      } else if (q?.type === 'major') {
+        setMajorDetail(stored);
       }
-    } else if (ch === 3) {
-      const q = CHAPTER3_QUESTIONS[idx];
-      const stored = ch3Answers[idx] || '';
-      if (q?.type === 'job') setJobDetail(stored);
-      else if (q?.type === 'major') setMajorDetail(stored);
     }
   }
 
@@ -540,15 +592,15 @@ export default function StartPage() {
         }
       }, 100);
     } else if (phase === 'chapter2') {
-      setAnswerAt(2, step, value);
-      setTimeout(() => advanceChapter2FromStep(step), 100);
-    } else if (phase === 'chapter3') {
       // 시·도에서 "그 외 지역" 선택 → 자유 입력 모드로 전환
-      if (step === sidoCh3Idx && value === 'other_region') {
+      if (step === sidoCh2Idx && value === 'other_region') {
         setOtherRegionInput(true);
         return;
       }
-      // 학생/시·도 분기는 ch3Answers를 즉시 봐야 하므로 nextAnswers를 advance에 직접 전달
+      setAnswerAt(2, step, value);
+      setTimeout(() => advanceChapter2FromStep(step), 100);
+    } else if (phase === 'chapter3') {
+      // 학생 분기는 ch3Answers를 즉시 봐야 하므로 nextAnswers를 advance에 직접 전달
       const nextAnswers = [...ch3Answers];
       nextAnswers[step] = value;
       setCh3Answers(nextAnswers);
@@ -563,31 +615,31 @@ export default function StartPage() {
     if (next.every((l) => l)) {
       const combined = next.join('');
       persistAnswer('MBTI 뭐야?', combined);
-      setAnswerAt(2, step, combined);
-      setTimeout(() => advanceChapter2FromStep(step), 200);
+      setAnswerAt(3, step, combined);
+      setTimeout(() => advanceChapter3FromStep(step), 200);
     }
   }
 
   function handleMbtiUnknown() {
     persistAnswer('MBTI 뭐야?', 'unknown');
-    setAnswerAt(2, step, 'unknown');
-    advanceChapter2FromStep(step);
+    setAnswerAt(3, step, 'unknown');
+    advanceChapter3FromStep(step);
   }
 
   function handleAgeSubmit() {
     const n = parseInt(age, 10);
     if (!n || n < 14 || n > 99) return;
     persistAnswer('넌 나이가 어떻게 돼?', String(n));
-    setAnswerAt(2, step, String(n));
-    advanceChapter2FromStep(step);
+    setAnswerAt(3, step, String(n));
+    advanceChapter3FromStep(step);
   }
 
   function handleHeightSubmit() {
     const n = parseInt(height, 10);
     if (!n || n < 130 || n > 220) return;
     persistAnswer('키가 어떻게 돼?', String(n));
-    setAnswerAt(2, step, String(n));
-    advanceChapter2FromStep(step);
+    setAnswerAt(3, step, String(n));
+    advanceChapter3FromStep(step);
   }
 
   function handleJobSubmit() {
@@ -603,11 +655,9 @@ export default function StartPage() {
     if (!trimmed) return;
     const stored = `other_region:${trimmed}`;
     persistAnswer('어디쯤 살아?', stored);
-    const nextAnswers = [...ch3Answers];
-    nextAnswers[step] = stored;
-    setCh3Answers(nextAnswers);
+    setAnswerAt(2, step, stored);
     setOtherRegionInput(false);
-    advanceChapter3FromStep(step, nextAnswers);
+    advanceChapter2FromStep(step);
   }
 
   function handleMajorSubmit() {
@@ -631,16 +681,9 @@ export default function StartPage() {
     }, 100);
   }
 
-  // 시/도가 GU_OPTIONS에 있으면 동적 옵션, 없으면 빈 배열 (스킵 대상)
-  function getGuOptions(): { label: string; value: string }[] {
-    const sido = ch3Answers[sidoCh3Idx];
-    if (sido && GU_OPTIONS[sido]) return GU_OPTIONS[sido];
-    return [];
-  }
-
   function handleBack() {
     // 시·도 "그 외 지역" 입력 모드 → 시·도 선택 화면으로 복귀
-    if (phase === 'chapter3' && step === sidoCh3Idx && otherRegionInput) {
+    if (phase === 'chapter2' && step === sidoCh2Idx && otherRegionInput) {
       setOtherRegionInput(false);
       return;
     }
@@ -714,11 +757,10 @@ export default function StartPage() {
   function handleStartChapter2() {
     setStep(0);
     setCh2Answers([]);
-    setMbti(['', '', '', '']);
-    setAge('');
-    setHeight('');
     setReligionSubStep('pref');
     setReligionOther('');
+    setOtherRegionInput(false);
+    setOtherRegion('');
     setPhase('chapter2');
   }
 
@@ -727,6 +769,9 @@ export default function StartPage() {
     setCh3Answers([]);
     setJobDetail('');
     setMajorDetail('');
+    setMbti(['', '', '', '']);
+    setAge('');
+    setHeight('');
     setPhase('chapter3');
   }
 
@@ -899,7 +944,13 @@ export default function StartPage() {
                 onChange={(e) => {
                   if (e.target.value.length <= 2000) setMessage(e.target.value);
                 }}
-                placeholder={'예) 난 이런 거에 까다로워... \n예) 상대에게 나를 표현하는 말도 좋아 \n자유롭게 적어줘'}
+                placeholder={
+                  ch1Answers[0] === 'female'
+                    ? '예) 난 아랍상이 좋아\n예) 난 ENTP랑 잘 맞더라\n예) 내 이상형을 더 말해주자면...'
+                    : ch1Answers[0] === 'male'
+                    ? '예) 난 귀엽게 생긴 사람이 좋아\n예) 내가 스케줄 근무라 상대도 비슷했으면 해\n예) 내 이상형을 더 말해주자면...'
+                    : '예) 내 이상형을 더 말해주자면...'
+                }
                 rows={6}
                 className="w-full px-5 py-4 rounded-2xl text-base font-medium outline-none transition-shadow focus:shadow-lg resize-none"
                 style={{
@@ -1017,13 +1068,13 @@ export default function StartPage() {
 
   // ── Question step (chapter1 / chapter2 / chapter3) ──
   const currentQ = questions[step];
-  const isMbtiStep = phase === 'chapter2' && currentQ?.type === 'mbti';
-  const isAgeStep = phase === 'chapter2' && currentQ?.type === 'age';
-  const isHeightStep = phase === 'chapter2' && currentQ?.type === 'height';
+  const isMbtiStep = phase === 'chapter3' && currentQ?.type === 'mbti';
+  const isAgeStep = phase === 'chapter3' && currentQ?.type === 'age';
+  const isHeightStep = phase === 'chapter3' && currentQ?.type === 'height';
   const isJobStep = phase === 'chapter3' && currentQ?.type === 'job';
   const isMajorStep = phase === 'chapter3' && currentQ?.type === 'major';
-  const isGuStep = phase === 'chapter3' && currentQ?.type === 'gu';
-  const isSidoStep = phase === 'chapter3' && step === sidoCh3Idx;
+  const isGuStep = false;
+  const isSidoStep = phase === 'chapter2' && step === sidoCh2Idx;
   const isReligionSelfStep = phase === 'chapter2' && step === RELIGION_STEP_IDX && religionSubStep === 'self';
   const isReligionOtherStep = phase === 'chapter2' && step === RELIGION_STEP_IDX && religionSubStep === 'other';
 
@@ -1031,7 +1082,7 @@ export default function StartPage() {
   let displayTitle = currentQ?.title || '';
   let displaySubtitle = currentQ?.subtitle || '';
   if (isReligionSelfStep) {
-    const prefAnswer = ch2Answers[ch2Answers.length - 1]; // 직전 답변
+    const prefAnswer = ch2Answers[RELIGION_STEP_IDX]; // 종교 step의 pref 답변
     displayTitle =
       prefAnswer === 'pref_same_religion'
         ? '넌 종교가\n뭐야?'
@@ -1048,10 +1099,17 @@ export default function StartPage() {
     else if (occupation === 'public') displaySubtitle = '예: 7급 공무원, 교사, 경찰관...';
     else if (occupation === 'freelance') displaySubtitle = '예: 카페 운영, 크리에이터, 일러스트레이터...';
     else if (occupation === 'other_job') displaySubtitle = '어떤 일인지 자세히 적어줘!';
+  } else if (isSidoStep && otherRegionInput) {
+    displaySubtitle = '자세히 알려줘!';
   }
 
-  // 구·시 옵션 (시/도 답변에 따라 동적)
-  const guOptions = isGuStep ? getGuOptions() : [];
+  const guOptions: { label: string; value: string }[] = [];
+
+  // 성별 분기 옵션: optionsByGender 있으면 ch1Answers[0]으로 분기
+  const userGender = ch1Answers[0] === 'male' || ch1Answers[0] === 'female' ? ch1Answers[0] : null;
+  const renderOptions = currentQ?.optionsByGender && userGender
+    ? currentQ.optionsByGender[userGender]
+    : currentQ?.options;
 
   return (
     <main className="min-h-screen flex flex-col" style={{ background: C.bg }}>
@@ -1344,7 +1402,7 @@ export default function StartPage() {
                       if (e.target.value.length <= 30) setOtherRegion(e.target.value);
                     }}
                     onKeyDown={(e) => { if (e.key === 'Enter') handleOtherRegionSubmit(); }}
-                    placeholder="예: 대전, 제주도, 일본..."
+                    placeholder="예: 전주, 대구, 제주도..."
                     autoFocus
                     className="w-full px-5 py-4 rounded-2xl text-base font-medium outline-none transition-shadow focus:shadow-lg"
                     style={{
@@ -1423,7 +1481,7 @@ export default function StartPage() {
               </div>
             ) : (
               <div className="flex flex-col gap-3">
-                {currentQ.options?.map((opt) => {
+                {renderOptions?.map((opt) => {
                   const currentAnswer =
                     phase === 'chapter1' ? ch1Answers[step]
                     : phase === 'chapter2' ? ch2Answers[step]
