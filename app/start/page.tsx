@@ -144,6 +144,16 @@ const CHAPTER2_QUESTIONS: Question[] = [
     ],
   },
   {
+    title: '어떤 데이트가\n좋아?',
+    subtitle: '끌리는 거 하나만',
+    options: [
+      { label: '카페·영화·문화', value: 'culture' },
+      { label: '집에서 편하게', value: 'home' },
+      { label: '액티비티·야외', value: 'outdoor' },
+      { label: '술자리·핫플', value: 'nightlife' },
+    ],
+  },
+  {
     title: '넌 지금\n얼마나 진지해?',
     subtitle: '어떤 만남을 원하는지',
     options: [
@@ -872,10 +882,12 @@ export default function StartPage() {
               letterSpacing: '-0.5px',
             }}
           >
-            마지막으로,
+            너에 대해
+            <br />
+            더 들려줄래?
           </h1>
           <p className="text-center text-lg mb-8 opacity-70" style={{ color: C.ink }}>
-            나한테 하고 싶은 말 있어?
+            너에 대해 소개해줄수록 매칭이 잘돼!
           </p>
 
           <div className="w-full max-w-md flex flex-col gap-4">
@@ -883,14 +895,14 @@ export default function StartPage() {
               <textarea
                 value={message}
                 onChange={(e) => {
-                  if (e.target.value.length <= 2000) setMessage(e.target.value);
+                  if (e.target.value.length <= 1000) setMessage(e.target.value);
                 }}
                 placeholder={
                   ch1Answers[0] === 'female'
-                    ? '예) 난 아랍상이 좋아\n예) 난 ENTP랑 잘 맞더라\n예) 내 이상형을 더 말해주자면...'
+                    ? '예) 평일엔 직장인, 주말엔 카페 죽돌이ㅎㅎ\n예) 첨엔 좀 낯가리는데 친해지면 진짜 잘 웃어\n예) ENFP라 그런가 새로운 거 시도하는 거 너무 좋아해'
                     : ch1Answers[0] === 'male'
-                    ? '예) 난 귀엽게 생긴 사람이 좋아\n예) 내가 스케줄 근무라 상대도 비슷했으면 해\n예) 내 이상형을 더 말해주자면...'
-                    : '예) 내 이상형을 더 말해주자면...'
+                    ? '예) 운동 좋아하고 요즘은 골프 빠져있어ㅋㅋ\n예) 말수 적은 편인데 게임 얘기만 나오면 시간 가는 줄 몰라\n예) 일 끝나면 집순이라서 넷플릭스 정주행 자주 해'
+                    : '예) 평소 어떤 사람인지 편하게 들려줘!'
                 }
                 rows={6}
                 className="w-full px-5 py-4 rounded-2xl text-base font-medium outline-none transition-shadow focus:shadow-lg resize-none"
@@ -904,7 +916,7 @@ export default function StartPage() {
                 className="absolute bottom-3 right-4 text-xs"
                 style={{ color: C.ink, opacity: 0.4 }}
               >
-                {message.length} / 2,000
+                {message.length} / 1,000
               </span>
             </div>
             <button
