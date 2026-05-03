@@ -42,7 +42,11 @@ export function Chapter4Simulation({ match, sceneImage, number = 'CHAPTER 3' }: 
           </div>
         )}
         <div className="p-5 text-[14px] text-brand-ink leading-[1.7] [&_b]:font-display [&_b]:font-bold">
-          <SafeText>{match.simulation}</SafeText>
+          {match.simulation.split('\n\n').map((para, i) => (
+            <p key={i} className={i > 0 ? 'mt-3' : ''}>
+              <SafeText>{para}</SafeText>
+            </p>
+          ))}
         </div>
       </div>
     </ChapterCard>

@@ -14,13 +14,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.92.0",
+    "@google/generative-ai": "^0.24.1",
     "chart.js": "^4.5.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.38.0",
     "next": "^15.5.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "tailwind-merge": "^3.0.2"
+    "tailwind-merge": "^3.0.2",
+    "zod": "^4.4.2"
   },
   "devDependencies": {
     "@types/node": "^20.17.22",

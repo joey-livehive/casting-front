@@ -1,13 +1,14 @@
 import type { ReactNode } from 'react';
 import { ReportData } from '@/lib/report/types';
 
-interface HuntBoxProps {
+interface HuntBoxV2Props {
   stats: ReportData['huntStats'];
-  /** 박스 안 stats 그리드 아래에 들어가는 추가 콘텐츠 (선택). v2 매칭 페이지에서 earth 이미지 슬롯으로 사용. */
   footer?: ReactNode;
 }
 
-export function HuntBox({ stats, footer }: HuntBoxProps) {
+// HuntBox v2 매칭 페이지 전용. v1 HuntBox와 동일하지만 "찾은 장소: 캐스팅 내부 POOL" 부분을
+// 우표(stamp) 스타일로 강조 — mustard pill + 살짝 회전 + drop shadow
+export function HuntBoxV2({ stats, footer }: HuntBoxV2Props) {
   const items: { n: number; unit: string; label: string }[] = [
     { n: stats.offlineGyms, unit: '곳', label: '오프라인 헬스장' },
     { n: stats.instagramProfiles, unit: '명', label: 'Instagram 프로필' },
@@ -30,11 +31,14 @@ export function HuntBox({ stats, footer }: HuntBoxProps) {
           📍 찾아온 경로
         </div>
 
-        <div className="mt-2 mb-3">
-          <div className="font-hand text-[14px] text-brand-orange-deep tracking-[0.18em] uppercase mb-2">
+        <div className="mt-2 mb-4">
+          <div className="font-hand text-[13px] text-brand-orange-deep tracking-[0.18em] uppercase mb-2">
             찾은 장소
           </div>
-          <div className="font-display font-extrabold text-[18px] text-brand-ink tracking-[-0.02em]">
+          <div
+            className="inline-block font-display font-extrabold text-[22px] text-brand-ink
+                       tracking-[-0.02em]"
+          >
             캐스팅 내부 POOL
           </div>
         </div>

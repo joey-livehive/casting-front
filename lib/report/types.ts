@@ -48,6 +48,8 @@ export interface Candidate {
   chapter2Photo?: string;
   /** MBTI 16 유형 (예: 'ENFP'). 폼에 없으면 undefined → 칸 자체 안 그림. */
   mbti?: string;
+  /** 키 (예: '178cm'). v2 매칭 페이지 카드에 노출. */
+  height?: string;
   /** 디렉터 추천사 한 줄. 폼에 없으면 undefined → 칸 자체 안 그림. */
   recommendation?: string;
 }
