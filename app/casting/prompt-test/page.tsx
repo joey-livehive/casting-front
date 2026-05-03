@@ -20,7 +20,6 @@ import {
   type DealbreakerCheck,
 } from '@/lib/casting/radar';
 import type {
-  PersonBundleOutput,
   PairBundleOutput,
   CandidateBundle,
   ViewerBundle,
@@ -40,7 +39,7 @@ import { TeaserCardV2 } from '../template-preview/_components/TeaserCardV2';
 import { Chapter2V2 } from '../template-preview/_components/Chapter2V2';
 import { ReadingCardV2 } from '../template-preview/_components/ReadingCardV2';
 import { Chapter3V2 } from '../template-preview/_components/Chapter3V2';
-import { answersToUserAnswers, answersToCandidate, deriveMatchedAxes } from './mapping';
+import { answersToUserAnswers, answersToCandidate } from './mapping';
 
 type Mode = 'person' | 'pair';
 
@@ -60,6 +59,8 @@ const MOCK_HUNT_STATS = {
   linkedinProfiles: 18,
   communities: 5,
 };
+
+const PROMPT_TEST_API_BASE = process.env.NEXT_PUBLIC_CASTING_PROMPT_API_URL || 'http://localhost:8000';
 
 const LS_KEY_PERSON = 'casting.prompt-test.personSystemPrompt';
 const LS_KEY_PAIR = 'casting.prompt-test.pairSystemPrompt';
@@ -102,36 +103,29 @@ export default function CastingPromptTestPage() {
   const viewer = getPersona(viewerId)!;
   const candidate = getPersona(mode === 'person' ? viewerId : candidateId)!;
 
-  async function callPerson(answers: CastingAnswers) {
-    const res = await fetch('/api/casting/prompt-test', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ mode: 'person', input: { answers }, systemPrompt: personPrompt }),
-    });
-    if (!res.ok) throw new Error(`person api ${res.status}`);
-    return (await res.json()) as { ok: true; output: PersonBundleOutput; raw: string; latencyMs: number; model: string };
-  }
-
-  async function callPair(args: {
-    viewer: CastingAnswers;
-    candidate: CastingAnswers;
-    matchedAxes: ReturnType<typeof deriveMatchedAxes>;
+  async function callBackendPreview(args: {
+    ownerAnswers: CastingAnswers;
+    partnerAnswers: CastingAnswers;
   }) {
-    const res = await fetch('/api/casting/prompt-test', {
+    const started = performance.now();
+    const res = await fetch(`${PROMPT_TEST_API_BASE}/casting/admin/recommendation-reports/preview`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        mode: 'pair',
-        input: {
-          viewer: { answers: args.viewer },
-          candidate: { answers: args.candidate },
-          matchedAxes: args.matchedAxes,
-        },
-        systemPrompt: pairPrompt,
+        owner_answers: args.ownerAnswers,
+        partner_answers: args.partnerAnswers,
       }),
     });
-    if (!res.ok) throw new Error(`pair api ${res.status}`);
-    return (await res.json()) as { ok: true; output: PairBundleOutput; raw: string; latencyMs: number; model: string };
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      throw new Error(`backend preview api ${res.status}: ${text}`);
+    }
+    const data = await res.json();
+    return {
+      data,
+      latencyMs: Math.round(performance.now() - started),
+      model: data?.report_json?.meta?.bundle_model ?? 'backend',
+    };
   }
 
   async function onGenerate() {
@@ -143,31 +137,16 @@ export default function CastingPromptTestPage() {
       let candidateBundle: CandidateBundle | null = null;
       let pairBundle: PairBundleOutput | null = null;
 
-      if (mode === 'person') {
-        const r = await callPerson(viewer.answers);
-        viewerBundle = r.output.viewerBundle;
-        candidateBundle = r.output.candidateBundle;
-        meta.push({ latencyMs: r.latencyMs, model: r.model });
-        rawParts.push(`[person/${viewer.id}]\n${r.raw}`);
-      } else {
-        const [vRes, cRes] = await Promise.all([callPerson(viewer.answers), callPerson(candidate.answers)]);
-        viewerBundle = vRes.output.viewerBundle;
-        candidateBundle = cRes.output.candidateBundle;
-        meta.push({ latencyMs: vRes.latencyMs, model: vRes.model });
-        meta.push({ latencyMs: cRes.latencyMs, model: cRes.model });
-        rawParts.push(`[person/viewer/${viewer.id}]\n${vRes.raw}`);
-        rawParts.push(`[person/candidate/${candidate.id}]\n${cRes.raw}`);
-
-        const matchedAxes = deriveMatchedAxes(viewer.answers, candidate.answers);
-        const pRes = await callPair({
-          viewer: viewer.answers,
-          candidate: candidate.answers,
-          matchedAxes,
-        });
-        pairBundle = pRes.output;
-        meta.push({ latencyMs: pRes.latencyMs, model: pRes.model });
-        rawParts.push(`[pair]\n${pRes.raw}`);
-      }
+      const r = await callBackendPreview({
+        ownerAnswers: viewer.answers,
+        partnerAnswers: candidate.answers,
+      });
+      const reportJson = r.data.report_json;
+      viewerBundle = reportJson.viewer_bundle;
+      candidateBundle = reportJson.candidate_bundle;
+      pairBundle = reportJson.pair_bundle;
+      meta.push({ latencyMs: r.latencyMs, model: r.model });
+      rawParts.push(`[backend/${mode}/${viewer.id}/${candidate.id}]\n${JSON.stringify(r.data, null, 2)}`);
 
       setGen({
         loading: false,
@@ -360,7 +339,8 @@ export default function CastingPromptTestPage() {
                 onChange={setPairPrompt}
               />
               <p className="text-[10px] text-zinc-500">
-                💾 변경사항은 localStorage 에 자동 저장됩니다 (이 브라우저만).
+                💾 변경사항은 localStorage 에 자동 저장됩니다. 현재 Generate 는 백엔드 preview API를 타므로
+                서버에 배포된 기본 프롬프트가 사용됩니다.
               </p>
             </div>
           )}
