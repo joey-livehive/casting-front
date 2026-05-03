@@ -60,8 +60,6 @@ const MOCK_HUNT_STATS = {
   communities: 5,
 };
 
-const PROMPT_TEST_API_BASE = process.env.NEXT_PUBLIC_CASTING_PROMPT_API_URL || 'http://localhost:8000';
-
 const LS_KEY_PERSON = 'casting.prompt-test.personSystemPrompt';
 const LS_KEY_PAIR = 'casting.prompt-test.pairSystemPrompt';
 
@@ -108,10 +106,12 @@ export default function CastingPromptTestPage() {
     partnerAnswers: CastingAnswers;
   }) {
     const started = performance.now();
-    const res = await fetch(`${PROMPT_TEST_API_BASE}/casting/admin/recommendation-reports/preview`, {
+    const res = await fetch('/api/casting/prompt-test', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
+        owner_uid: viewer.id,
+        partner_uid: candidate.id,
         owner_answers: args.ownerAnswers,
         partner_answers: args.partnerAnswers,
       }),
@@ -124,7 +124,11 @@ export default function CastingPromptTestPage() {
     return {
       data,
       latencyMs: Math.round(performance.now() - started),
-      model: data?.report_json?.meta?.bundle_model ?? 'backend',
+      model: [
+        data?.report_json?.meta?.viewer_bundle_model,
+        data?.report_json?.meta?.candidate_bundle_model,
+        data?.report_json?.meta?.pair_bundle_model,
+      ].filter(Boolean).join(' / ') || 'backend',
     };
   }
 
@@ -340,7 +344,7 @@ export default function CastingPromptTestPage() {
               />
               <p className="text-[10px] text-zinc-500">
                 💾 변경사항은 localStorage 에 자동 저장됩니다. 현재 Generate 는 백엔드 preview API를 타므로
-                서버에 배포된 기본 프롬프트가 사용됩니다.
+                서버 route가 백엔드 preview API를 호출하므로 배포된 기본 프롬프트가 사용됩니다.
               </p>
             </div>
           )}
