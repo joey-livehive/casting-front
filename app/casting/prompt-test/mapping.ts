@@ -97,6 +97,10 @@ function label(code: string | undefined): string {
   return LABELS[code] ?? code;
 }
 
+function candidateImageForGender(gender: string | undefined): string {
+  return gender === 'female' ? '/images/teaser/m01-card1.webp' : '/images/teaser/f01-card1.webp';
+}
+
 // CastingAnswers → 기존 v2 ApplicationSummary 가 받는 UserAnswers 구조로 변환
 export function answersToUserAnswers(a: CastingAnswers): UserAnswers {
   return {
@@ -128,6 +132,7 @@ export function answersToUserAnswers(a: CastingAnswers): UserAnswers {
 // CastingAnswers + (선택) candidateBundle → TeaserCardV2 / Chapter2V2 가 쓰는 Candidate 객체
 export function answersToCandidate(a: CastingAnswers, bundle?: CandidateBundle): Candidate {
   const age = a['넌 나이가 어떻게 돼?'];
+  const candidateImage = candidateImageForGender(a['반가워! 성별이 어떻게 돼?']);
   return {
     nickname: '○○○',
     faceType: bundle?.teaserFaceType ?? '(faceType placeholder)',
@@ -142,8 +147,8 @@ export function answersToCandidate(a: CastingAnswers, bundle?: CandidateBundle):
     daySchedule: [{ time: '—', activity: '<red>내용 없음</red>' }],
     background: '',
     secretAppeal: '',
-    teaserPhoto: '/images/teaser/male-illustration.webp',
-    chapter2Photo: '/images/teaser/male-illustration.webp',
+    teaserPhoto: candidateImage,
+    chapter2Photo: candidateImage,
     mbti: a['MBTI 뭐야?'],
     height: a['키가 어떻게 돼?'] ? `${a['키가 어떻게 돼?']}cm` : undefined,
     recommendation: bundle?.casterHeadline ?? '(Generate 클릭 시 LLM 출력으로 채워짐)',
