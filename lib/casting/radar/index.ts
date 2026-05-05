@@ -40,15 +40,15 @@ export interface AxisPairResult {
   alignment: number;
   /** pairScore = min(viewer, candidate) × alignment */
   pairScore: number;
+  /** matchValue = max(viewer, candidate) × alignment — radar chart 표시값 */
+  matchValue: number;
   weight: number;
 }
 
 export interface PairRadar {
   labels: string[];
-  /** viewer 의 6축 점수 (radar chart "userDesired") */
-  userDesired: number[];
-  /** candidate 의 6축 점수 (radar chart "candidateActual") */
-  candidateActual: number[];
+  /** 일치도 기반 6축 표시값 (radar chart "values"). max(viewer, candidate) × alignment */
+  values: number[];
   axes: AxisPairResult[];
   /** 0~100 정수 % */
   matchRate: number;
@@ -67,13 +67,7 @@ export function deriveTopPercent(matchRate: number): number {
   if (matchRate >= 85) return 5;
   if (matchRate >= 80) return 8;
   if (matchRate >= 75) return 12;
-  if (matchRate >= 70) return 18;
-  if (matchRate >= 65) return 25;
-  if (matchRate >= 60) return 35;
-  if (matchRate >= 55) return 45;
-  if (matchRate >= 50) return 55;
-  if (matchRate >= 40) return 70;
-  return 85;
+  return 15;
 }
 
 export function computePairRadar(viewer: CastingAnswers, candidate: CastingAnswers): PairRadar {
@@ -82,6 +76,7 @@ export function computePairRadar(viewer: CastingAnswers, candidate: CastingAnswe
     const c = rule.score(candidate);
     const alignment = rule.alignment(viewer, candidate);
     const pairScore = Math.min(v, c) * alignment;
+    const matchValue = Math.max(v, c) * alignment;
     return {
       axisId: rule.id,
       label: rule.label,
@@ -89,6 +84,7 @@ export function computePairRadar(viewer: CastingAnswers, candidate: CastingAnswe
       candidateScore: c,
       alignment,
       pairScore,
+      matchValue,
       weight: rule.weight,
     };
   });
@@ -102,8 +98,7 @@ export function computePairRadar(viewer: CastingAnswers, candidate: CastingAnswe
 
   return {
     labels: AXIS_LABELS,
-    userDesired: axes.map((a) => a.viewerScore),
-    candidateActual: axes.map((a) => a.candidateScore),
+    values: axes.map((a) => Number(a.matchValue.toFixed(1))),
     axes,
     matchRate,
     topPercent: deriveTopPercent(matchRate),

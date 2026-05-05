@@ -74,24 +74,19 @@ function MatchRadar({
 }) {
   const radarData = {
     labels: report.scoreBreakdown.map((item) => item.label),
-    userDesired: report.scoreBreakdown.map(() => 9),
-    candidateActual: report.scoreBreakdown.map((item) => Number((item.score / 10).toFixed(1))),
+    values: report.scoreBreakdown.map((item) => Number((item.score / 10).toFixed(1))),
   };
 
   return (
     <ChapterCard
       number="CHAPTER 2"
       title="점수로 겹쳐보면"
-      lead={`의뢰인님이 원하는 기준과 이 후보의 실제 신호를 같은 축에 올려봤어요. 현재 데이터 기준 <b>${report.score}% 일치</b>로 잡힙니다.`}
+      lead={`의뢰인님과 이 후보의 6축 일치도를 같은 축에 올려봤어요. 현재 데이터 기준 <b>${report.score}% 일치</b>로 잡힙니다.`}
     >
       <div className="flex justify-center gap-5 mb-1.5 text-[13px]">
         <span className="flex items-center gap-1.5">
           <span className="inline-block w-3 h-3 rounded-[3px] bg-brand-orange" />
-          의뢰인님 기준
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="inline-block w-3 h-3 rounded-[3px] bg-brand-mustard" />
-          이 사람
+          일치도
         </span>
       </div>
 

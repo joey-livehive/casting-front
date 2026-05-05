@@ -45,11 +45,7 @@ export function Chapter3V2({ match, number = 'CHAPTER 3' }: Chapter3V2Props) {
       <div className="flex justify-center gap-5 mt-3 mb-4 text-[13px] text-brand-ink-soft">
         <span className="flex items-center gap-1.5">
           <span className="inline-block w-3 h-3 rounded-[3px] bg-brand-orange" />
-          의뢰인님
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="inline-block w-3 h-3 rounded-[3px] bg-brand-mustard" />
-          이 사람
+          일치도
         </span>
       </div>
 

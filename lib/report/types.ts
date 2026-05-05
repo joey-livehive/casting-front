@@ -64,8 +64,8 @@ export interface MatchAnalysis {
   topPercent: number;
   radarData: {
     labels: string[];
-    userDesired: number[];
-    candidateActual: number[];
+    /** 일치도 기반 6축 값 (0~10). max(viewer, candidate) × alignment */
+    values: number[];
   };
   simulation: string;
   notes: string[];

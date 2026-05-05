@@ -19,8 +19,8 @@ export function Chapter3({
   const tone = useTone();
   const lead =
     tone === 'formal'
-      ? `${userName}님이 원하시는 6가지 축과 이 사람의 실제 점수를 겹쳐봤어요. <b>${match.matchRate}% 일치해요.</b> 이건 상위 ${match.topPercent}%의 매칭 점수예요.`
-      : `${userName}님이 원하는 6가지 축과 이 사람의 실제 점수를 겹쳐봤어. <b>${match.matchRate}% 일치해.</b> 이건 상위 ${match.topPercent}%의 매칭 점수야.`;
+      ? `${userName}님과 이 사람의 6축 일치도를 펼쳐봤어요. <b>${match.matchRate}% 일치해요.</b> 이건 상위 ${match.topPercent}%의 매칭 점수예요.`
+      : `${userName}님이랑 이 사람의 6축 일치도를 펼쳐봤어. <b>${match.matchRate}% 일치해.</b> 이건 상위 ${match.topPercent}%의 매칭 점수야.`;
   const title =
     tone === 'formal' ? '왜 잘 맞는지 알려드릴게요' : '너랑 왜 잘 맞냐면';
   return (
@@ -28,11 +28,7 @@ export function Chapter3({
       <div className="flex justify-center gap-5 mb-1.5 text-[13px]">
         <span className="flex items-center gap-1.5">
           <span className="inline-block w-3 h-3 rounded-[3px] bg-brand-orange" />
-          {userName}님이 원하는 사람
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="inline-block w-3 h-3 rounded-[3px] bg-brand-mustard" />
-          이 사람
+          일치도
         </span>
       </div>
 

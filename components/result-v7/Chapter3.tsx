@@ -49,8 +49,7 @@ export function Chapter3({ match }: { userName: string; match: MatchAnalysis }) 
         </div>
 
         <div className="radar-legend">
-          <span className="you">의뢰인님의 기준</span>
-          <span className="them">엄선된 상대</span>
+          <span className="them">일치도</span>
         </div>
         <div className="radar-wrap">
           <RadarChart data={match.radarData} />

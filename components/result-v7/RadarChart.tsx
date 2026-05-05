@@ -18,18 +18,9 @@ export function RadarChart({ data }: { data: MatchAnalysis['radarData'] }) {
         labels: data.labels,
         datasets: [
           {
-            label: '의뢰인님의 기준',
-            data: data.userDesired,
-            backgroundColor: 'rgba(10,10,10,0.15)',
-            borderColor: '#0A0A0A',
-            borderWidth: 2,
-            pointBackgroundColor: '#0A0A0A',
-            pointRadius: 4,
-          },
-          {
-            label: '엄선된 상대',
-            data: data.candidateActual,
-            backgroundColor: 'rgba(201,169,97,0.25)',
+            label: '일치도',
+            data: data.values,
+            backgroundColor: 'rgba(201,169,97,0.3)',
             borderColor: '#C9A961',
             borderWidth: 2,
             pointBackgroundColor: '#C9A961',
