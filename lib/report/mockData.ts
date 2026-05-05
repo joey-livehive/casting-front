@@ -40,7 +40,7 @@ const femaleReport: ReportData = {
     background: '서울에서 자랐고, <blur>◯◯대학교</blur>에서 <blur>◯◯공학</blur>을 전공. 첫 직장은 대기업이었지만 2년 만에 나와서 지금 스타트업으로 옮긴 케이스야. 변화를 두려워하지 않는 사람.',
     secretAppeal: '의뢰인님이 좋아할 만한 <blur>◯◯◯◯</blur>한 ◯◯ 한 가지',
     teaserPhoto: '/images/casting/casting_man.webp',
-    chapter2Photo: '/images/casting/casting_man.webp',
+    detailPhoto: '/images/casting/casting_man.webp',
   },
   match: {
     matchRate: 93,
@@ -105,7 +105,7 @@ const maleReport: ReportData = {
     background: '부산에서 자랐고, <blur>◯◯미대</blur> 졸업 후 서울에서 에이전시 3년 → 지금은 인하우스 브랜드팀. <blur>◯◯◯◯</blur> 브랜드에서 아이덴티티 작업을 맡고 있어. 감각이 뚜렷한 사람.',
     secretAppeal: '의뢰인님이 끌릴 만한 <blur>◯◯◯◯</blur>한 ◯◯ 한 가지',
     teaserPhoto: '/images/casting/casting_woman_1.webp',
-    chapter2Photo: '/images/casting/casting_woman_1.webp',
+    detailPhoto: '/images/casting/casting_woman_1.webp',
   },
   match: {
     matchRate: 91,

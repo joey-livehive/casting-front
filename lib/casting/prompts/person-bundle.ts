@@ -71,9 +71,9 @@ function buildUserPrompt(input: PersonBundleInput): string {
   lines.push('    "casterHeadline": "...",');
   lines.push('    "casterCharmBullets": ["...", "...", "..."],');
   lines.push('    "teaserFaceType": "...",');
-  lines.push('    "chapter2Personality": "...",');
-  lines.push('    "chapter2DatingStyle": "...",');
-  lines.push('    "chapter2WeekendStyle": "...",');
+  lines.push('    "personality": "...",');
+  lines.push('    "datingStyle": "...",');
+  lines.push('    "weekendStyle": "...",');
   lines.push('    "readingMatchOpening": "...",');
   lines.push('    "readingCandidateMatch": "..."');
   lines.push('  },');
@@ -104,9 +104,9 @@ function mockPersonBundle(input: PersonBundleInput) {
           '<b>옷핏 좋은 체형</b>에 단정하고 깔끔한 분위기',
         ] as [string, string, string],
         teaserFaceType: '단정하고 깔끔한 분위기',
-        chapter2Personality: longCandidate('성격'),
-        chapter2DatingStyle: longCandidate('연애 스타일'),
-        chapter2WeekendStyle: longCandidate('주말'),
+        personality: longCandidate('성격'),
+        datingStyle: longCandidate('연애 스타일'),
+        weekendStyle: longCandidate('주말'),
         readingMatchOpening:
           '[MOCK] 그래서 이 분이 잘 어울릴 것 같아요. 이 사람은 비흡연에 차분한 라이프를 가진 분이라, 일상의 작은 디테일을 자연스럽게 챙길 수 있는 분이에요.',
         readingCandidateMatch: longCandidate('인물평'),

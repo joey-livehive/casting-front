@@ -7,7 +7,7 @@ import { useTone } from '@/components/report/toneContext';
 
 const LOCKED_SHAPES = ['◯◯◯', '◯◯◯◯', '◯◯'];
 
-export interface Chapter2V2Narratives {
+export interface CandidateDetailNarratives {
   /** 이 사람의 성격 (4~5문장) — MBTI + 직업 + 자기소개 + 사진 인상 */
   personality: string;
   /** 연애 스타일 (4~5문장) — 만남 빈도 + 연락 빈도 + MBTI */
@@ -16,13 +16,13 @@ export interface Chapter2V2Narratives {
   weekendStyle: string;
 }
 
-interface Chapter2V2Props {
+interface CandidateDetailSectionProps {
   userName: string;
   candidate: Candidate;
-  narratives: Chapter2V2Narratives;
+  narratives: CandidateDetailNarratives;
 }
 
-export function Chapter2V2({ userName, candidate, narratives }: Chapter2V2Props) {
+export function CandidateDetailSection({ userName, candidate, narratives }: CandidateDetailSectionProps) {
   const tone = useTone();
   const lead =
     tone === 'formal'

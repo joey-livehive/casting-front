@@ -18,7 +18,7 @@ import { CasterNoteSection } from './_components/CasterNoteSection';
 import { HeroV2 } from './_components/HeroV2';
 import { HuntBoxV2 } from './_components/HuntBoxV2';
 import { TeaserCardV2 } from './_components/TeaserCardV2';
-import { Chapter2V2 } from './_components/Chapter2V2';
+import { CandidateDetailSection } from './_components/CandidateDetailSection';
 import { ReadingCardV2 } from './_components/ReadingCardV2';
 
 // ── Mock data ─────────────────────────────────────────────────────────────
@@ -83,7 +83,7 @@ const MOCK_CANDIDATE: Candidate = {
     '시끌시끌한 자리보단 조용한 카페나 산책으로 한 주를 비우는 차분한 타입이에요. 주말이면 <b>집에서 영화 한 편이나 동네 산책</b>으로 자기만의 리듬을 챙기는 사람이라, 의뢰인님처럼 집에서 충전하시는 분과 자연스럽게 호흡이 맞을 거예요.',
   secretAppeal: '',
   teaserPhoto: '/images/casting/casting_man.webp',
-  chapter2Photo: '/images/casting/casting_man.webp',
+  detailPhoto: '/images/casting/casting_man.webp',
   mbti: 'ISFJ',
   height: '178cm',
   recommendation: CASTER_HEADLINE,
@@ -186,7 +186,7 @@ const MOCK_CASTER_NOTE = {
   ],
 };
 
-// 4. Chapter2V2 narratives — 후보 설문 답변 + 자기소개 + 사진 기반 LLM 생성. 각 4~5문장.
+// 4. CandidateDetailSection narratives — 후보 설문 답변 + 자기소개 + 사진 기반 LLM 생성. 각 4~5문장.
 const MOCK_CHAPTER2_NARRATIVES = {
   personality:
     '조용히 자기 일에 몰입하는 ISFJ답게, 회사원으로서 매일을 안정감 있게 굴려가는 분이에요. 본인을 소개하실 때 차분하고 정돈된 말투를 쓰고, 사진에서도 같은 결의 단정한 분위기가 일관되게 보여서 인상이 흔들리지 않아요. 한번 마음을 정한 사람한테는 <b>말보다 행동으로 챙기는</b> 타입이라, 약속한 건 빠뜨리지 않고 사소한 디테일도 놓치지 않아요. 처음엔 말수가 적어 보여도, 같이 시간을 보낼수록 자기 사람을 위한 다정함이 자연스럽게 드러나는 분이에요.',
@@ -248,7 +248,7 @@ export default function CastingTemplatePreviewPage() {
 
         {/* 4. 상대 설명 챕터 */}
         <TrackSection section="chapter1" reportId={reportUid}>
-          <Chapter2V2
+          <CandidateDetailSection
             userName={MOCK_USER_NAME}
             candidate={MOCK_CANDIDATE}
             narratives={MOCK_CHAPTER2_NARRATIVES}

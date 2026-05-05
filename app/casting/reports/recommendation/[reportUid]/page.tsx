@@ -10,7 +10,7 @@ import { CasterNoteSection } from '../../../template-preview/_components/CasterN
 import { HeroV2 } from '../../../template-preview/_components/HeroV2';
 import { HuntBoxV2 } from '../../../template-preview/_components/HuntBoxV2';
 import { TeaserCardV2 } from '../../../template-preview/_components/TeaserCardV2';
-import { Chapter2V2 } from '../../../template-preview/_components/Chapter2V2';
+import { CandidateDetailSection } from '../../../template-preview/_components/CandidateDetailSection';
 import { ReadingCardV2 } from '../../../template-preview/_components/ReadingCardV2';
 import { Chapter3V2 } from '../../../template-preview/_components/Chapter3V2';
 import { candidateImageForGender } from '@/lib/casting/reportImages';
@@ -56,7 +56,7 @@ export default async function CastingRecommendationReportPage({
     ...(candidateGenderImage
       ? {
           teaserPhoto: candidateGenderImage,
-          chapter2Photo: candidateGenderImage,
+          detailPhoto: candidateGenderImage,
         }
       : {}),
   };
@@ -106,13 +106,13 @@ export default async function CastingRecommendationReportPage({
         />
 
         <TrackSection section="chapter1" reportId={reportUid}>
-          <Chapter2V2
+          <CandidateDetailSection
             userName={userName}
             candidate={candidate}
             narratives={{
-              personality: candidateBundle.chapter2Personality,
-              datingStyle: candidateBundle.chapter2DatingStyle,
-              weekendStyle: candidateBundle.chapter2WeekendStyle,
+              personality: candidateBundle.personality,
+              datingStyle: candidateBundle.datingStyle,
+              weekendStyle: candidateBundle.weekendStyle,
             }}
           />
         </TrackSection>

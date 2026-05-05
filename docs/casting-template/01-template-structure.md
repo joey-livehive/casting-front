@@ -20,7 +20,7 @@
 | 4 | `HuntBoxV2` | 📍 찾아온 경로 |
 | 5 | `TeaserCardV2` | 캐스팅된 사람 카드 |
 | 6 | `ReadingCardV2` | 💌 의뢰인에게 쓰는 메모 |
-| 7 | `Chapter2V2` | CHAPTER 1: 이 사람에 대해 더 자세히 |
+| 7 | `CandidateDetailSection` | CHAPTER 1: 이 사람에 대해 더 자세히 |
 | 8 | `Chapter3V2` | CHAPTER 2: 매칭도 (radar + notes) |
 | 9 | `Chapter4Simulation` | CHAPTER 3: 만약 두 사람이 만난다면 |
 | 10 | `ApplicationSummary` | 의뢰서 복기 |
@@ -162,7 +162,7 @@ candidateMatch:
 
 ---
 
-## 6. Chapter2V2 — CHAPTER 1: 이 사람에 대해 더 자세히
+## 6. CandidateDetailSection — CHAPTER 1: 이 사람에 대해 더 자세히
 
 **고정 카피:** ChapterCard 헤더 (number/title/lead)
 

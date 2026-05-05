@@ -138,8 +138,8 @@
 {% if candidate.cached_bundle %}
 ### (참고) 후보 candidateBundle 캐시
 - casterHeadline: {{ candidate.cached_bundle.casterHeadline }}
-- chapter2Personality: {{ candidate.cached_bundle.chapter2Personality }}
-- chapter2DatingStyle: {{ candidate.cached_bundle.chapter2DatingStyle }}
+- personality: {{ candidate.cached_bundle.personality }}
+- datingStyle: {{ candidate.cached_bundle.datingStyle }}
 {% endif %}
 
 ---

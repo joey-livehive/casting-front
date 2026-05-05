@@ -43,7 +43,7 @@ const routine: { time: string; body: React.ReactNode }[] = [
   },
 ];
 
-export function Chapter2({ candidate }: { userName: string; candidate: Candidate }) {
+export function CandidateDetail({ candidate }: { userName: string; candidate: Candidate }) {
   return (
     <>
       <Section>
@@ -67,15 +67,15 @@ export function Chapter2({ candidate }: { userName: string; candidate: Candidate
       >
         <div className="person-grid">
           <div className="p-card photo wide">
-            {candidate.chapter2Photo && (
+            {candidate.detailPhoto && (
               <Image
-                src={candidate.chapter2Photo}
+                src={candidate.detailPhoto}
                 alt=""
                 fill
                 sizes="(max-width: 480px) 100vw, 480px"
                 draggable={false}
                 onContextMenu={(e) => e.preventDefault()}
-                className="chapter2-photo-img"
+                className="detail-photo-img"
                 style={
                   {
                     objectFit: 'cover',

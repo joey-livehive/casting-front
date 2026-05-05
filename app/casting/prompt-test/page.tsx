@@ -36,7 +36,7 @@ import { CasterNoteSection } from '../template-preview/_components/CasterNoteSec
 import { HeroV2 } from '../template-preview/_components/HeroV2';
 import { HuntBoxV2 } from '../template-preview/_components/HuntBoxV2';
 import { TeaserCardV2 } from '../template-preview/_components/TeaserCardV2';
-import { Chapter2V2 } from '../template-preview/_components/Chapter2V2';
+import { CandidateDetailSection } from '../template-preview/_components/CandidateDetailSection';
 import { ReadingCardV2 } from '../template-preview/_components/ReadingCardV2';
 import { Chapter3V2 } from '../template-preview/_components/Chapter3V2';
 import { answersToUserAnswers, answersToCandidate } from './mapping';
@@ -408,13 +408,13 @@ export default function CastingPromptTestPage() {
             />
 
             <TrackSection section="chapter1" reportId="PROMPT-TEST">
-              <Chapter2V2
+              <CandidateDetailSection
                 userName="의뢰인"
                 candidate={candidateForCard}
                 narratives={{
-                  personality: candidateBundle?.chapter2Personality ?? '(성격 묘사 placeholder)',
-                  datingStyle: candidateBundle?.chapter2DatingStyle ?? '(연애 스타일 placeholder)',
-                  weekendStyle: candidateBundle?.chapter2WeekendStyle ?? '(주말 모습 placeholder)',
+                  personality: candidateBundle?.personality ?? '(성격 묘사 placeholder)',
+                  datingStyle: candidateBundle?.datingStyle ?? '(연애 스타일 placeholder)',
+                  weekendStyle: candidateBundle?.weekendStyle ?? '(주말 모습 placeholder)',
                 }}
               />
             </TrackSection>

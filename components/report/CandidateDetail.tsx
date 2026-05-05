@@ -7,7 +7,7 @@ import { useTone } from './toneContext';
 
 const LOCKED_SHAPES = ['◯◯◯', '◯◯◯◯', '◯◯'];
 
-export function Chapter2({
+export function CandidateDetail({
   userName,
   candidate,
 }: {

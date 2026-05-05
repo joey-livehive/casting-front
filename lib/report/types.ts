@@ -44,8 +44,8 @@ export interface Candidate {
   secretAppeal: string;
   /** 맛보기 카드용 인물 사진 (4:5). 없으면 그라디언트 placeholder. 블러는 파일 자체에 pre-blur 적용. */
   teaserPhoto?: string;
-  /** Chapter 2용 분위기 사진 (16:9). 없으면 그라디언트 placeholder. */
-  chapter2Photo?: string;
+  /** 상세 영역용 분위기 사진 (16:9). 없으면 그라디언트 placeholder. */
+  detailPhoto?: string;
   /** MBTI 16 유형 (예: 'ENFP'). 폼에 없으면 undefined → 칸 자체 안 그림. */
   mbti?: string;
   /** 키 (예: '178cm'). v2 매칭 페이지 카드에 노출. */

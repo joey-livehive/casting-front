@@ -58,17 +58,17 @@ export const CandidateBundleSchema = z.object({
     .min(8)
     .max(24)
     .refine(noForbiddenWords, { message: '금지어 사용' }),
-  chapter2Personality: z
+  personality: z
     .string()
     .min(120, { message: '4~5문장 필요' })
     .max(600)
     .refine(noForbiddenWords, { message: '금지어 사용' }),
-  chapter2DatingStyle: z
+  datingStyle: z
     .string()
     .min(120, { message: '4~5문장 필요, 한 문장 끝 금지' })
     .max(600)
     .refine(noForbiddenWords, { message: '금지어 사용' }),
-  chapter2WeekendStyle: z
+  weekendStyle: z
     .string()
     .min(120, { message: '4~5문장 필요' })
     .max(600)

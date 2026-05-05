@@ -10,7 +10,7 @@ import { HuntBox } from '@/components/report/HuntBox';
 import { TeaserCard } from '@/components/report/TeaserCard';
 import { ReadingCard } from '@/components/report/ReadingCard';
 import { Chapter1 } from '@/components/report/Chapter1';
-import { Chapter2 } from '@/components/report/Chapter2';
+import { CandidateDetail } from '@/components/report/CandidateDetail';
 import { Chapter3 } from '@/components/report/Chapter3';
 import { ScarcityBlock } from '@/components/report/ScarcityBlock';
 import { RemainingCandidates } from '@/components/report/RemainingCandidates';
@@ -91,9 +91,9 @@ export default async function ReportPage({
         </TrackSection>
         <ReadingCard userName={data.userName} personalized={personalized.readingCard} />
         <TrackSection section="chapter1" reportId={reportId}>
-          <Chapter2 userName={data.userName} candidate={data.teaserCandidate} />
+          <CandidateDetail userName={data.userName} candidate={data.teaserCandidate} />
         </TrackSection>
-        <TrackSection section="chapter2" reportId={reportId}>
+        <TrackSection section="candidate_detail" reportId={reportId}>
           <Chapter1 userName={data.userName} personalized={personalized.chapter1Traits} />
         </TrackSection>
         <TrackSection section="chapter3" reportId={reportId}>

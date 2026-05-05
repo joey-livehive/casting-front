@@ -10,7 +10,7 @@ import { ApplicationSummary } from '@/components/report/ApplicationSummary';
 import { HuntBox } from '@/components/report/HuntBox';
 import { TeaserCard } from '@/components/report/TeaserCard';
 import { ReadingCard } from '@/components/report/ReadingCard';
-import { Chapter2 } from '@/components/report/Chapter2';
+import { CandidateDetail } from '@/components/report/CandidateDetail';
 import { Chapter3 } from '@/components/report/Chapter3';
 import { Chapter4Simulation } from '@/components/report/Chapter4Simulation';
 import { ReportShell } from '@/components/report/ReportShell';
@@ -96,7 +96,7 @@ export default async function CastingMatchReportPage({
     data.teaserCandidate = {
       ...data.teaserCandidate,
       teaserPhoto: candidateImage,
-      chapter2Photo: candidateImage,
+      detailPhoto: candidateImage,
     };
   }
 
@@ -113,7 +113,7 @@ export default async function CastingMatchReportPage({
         </TrackSection>
         <ReadingCard userName={data.userName} personalized={personalized.readingCard} />
         <TrackSection section="chapter1" reportId={reportUid}>
-          <Chapter2 userName={data.userName} candidate={data.teaserCandidate} />
+          <CandidateDetail userName={data.userName} candidate={data.teaserCandidate} />
         </TrackSection>
         <TrackSection section="chapter3" reportId={reportUid}>
           <Chapter3 userName={data.userName} match={data.match} number="CHAPTER 2" />
