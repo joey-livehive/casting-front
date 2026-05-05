@@ -1,18 +1,18 @@
 import { notFound } from 'next/navigation';
 import { CASTING_API_BASE } from '@/lib/casting/api';
 import { TopNav } from '@/components/report/TopNav';
+import { Hero } from '@/components/report/Hero';
 import { ApplicationSummary } from '@/components/report/ApplicationSummary';
+import { HuntBox } from '@/components/report/HuntBox';
+import { TeaserCard } from '@/components/report/TeaserCard';
+import { ReadingCard } from '@/components/report/ReadingCard';
+import { CandidateDetail } from '@/components/report/CandidateDetail';
+import { Chapter3 } from '@/components/report/Chapter3';
 import { Chapter4Simulation } from '@/components/report/Chapter4Simulation';
 import { ReportShell } from '@/components/report/ReportShell';
 import { TrackSection } from '@/components/report/TrackSection';
 import { MeetOrPassCta } from '@/components/report/MeetOrPassCta';
 import { CasterNoteSection } from '../../../template-preview/_components/CasterNoteSection';
-import { HeroV2 } from '../../../template-preview/_components/HeroV2';
-import { HuntBoxV2 } from '../../../template-preview/_components/HuntBoxV2';
-import { TeaserCardV2 } from '../../../template-preview/_components/TeaserCardV2';
-import { CandidateDetailSection } from '../../../template-preview/_components/CandidateDetailSection';
-import { ReadingCardV2 } from '../../../template-preview/_components/ReadingCardV2';
-import { Chapter3V2 } from '../../../template-preview/_components/Chapter3V2';
 import { candidateImageForGender } from '@/lib/casting/reportImages';
 
 export const dynamic = 'force-dynamic';
@@ -65,6 +65,14 @@ export default async function CastingRecommendationReportPage({
   const sceneImage = reportJson.scene_image ?? DEFAULT_CAFE_SCENE_IMAGE;
   const userAnswers = reportJson.user_answers ?? { idealType: {} };
   const userName = reportJson.user_name ?? '의뢰인';
+  const personalized = {
+    chapter1Traits: { trait01Intro: '', trait02Intro: '', trait03Intro: '', trait04Intro: '' },
+    readingCard: {
+      paragraph1Opening: ownerPersonContent.summary,
+      paragraph2Opening: pairContent.matchOpening,
+      candidateMatch: partnerPersonContent.summary,
+    },
+  };
   const huntStats = reportJson.hunt_stats ?? {
     offlineGyms: 0,
     instagramProfiles: 0,
@@ -76,59 +84,31 @@ export default async function CastingRecommendationReportPage({
     <main className="max-w-[480px] mx-auto pb-[60px] relative bg-brand-bg min-h-screen font-body text-brand-ink">
       <ReportShell reportId={reportUid} tone="formal" variant="paid">
         <TopNav publishedAt={reportJson.published_at ?? dbReport.generated_at ?? 'LIVE'} />
-        <HeroV2 userName={userName} />
+        <Hero userName={userName} />
 
         <CasterNoteSection
           headline={partnerPersonContent.casterHeadline}
           charmBullets={partnerPersonContent.casterCharmBullets}
         />
 
-        <HuntBoxV2
-          stats={huntStats}
-          footer={
-            <div className="relative w-full overflow-hidden rounded-[12px] mt-4" style={{ paddingTop: '33.125%' }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/earth.webp" alt="찾아온 경로" className="absolute inset-x-0 top-0 w-full block" />
-            </div>
-          }
-        />
+        <ApplicationSummary userAnswers={userAnswers} />
+        <HuntBox stats={huntStats} />
 
         <TrackSection section="teaser_card" reportId={reportUid}>
-          <TeaserCardV2 candidate={candidate} />
+          <TeaserCard candidate={candidate} />
         </TrackSection>
 
-        <ReadingCardV2
-          userName={userName}
-          narratives={{
-            viewerInsight: ownerPersonContent.summary,
-            matchOpening: pairContent.matchOpening,
-            candidateMatch: partnerPersonContent.summary,
-          }}
-        />
+        <ReadingCard userName={userName} personalized={personalized.readingCard} />
 
         <TrackSection section="chapter1" reportId={reportUid}>
-          <CandidateDetailSection
-            userName={userName}
-            candidate={candidate}
-            narratives={{
-              personality: partnerPersonContent.personality,
-              datingStyle: partnerPersonContent.datingStyle,
-              weekendStyle: partnerPersonContent.weekendStyle,
-            }}
-          />
+          <CandidateDetail userName={userName} candidate={candidate} />
         </TrackSection>
 
         <TrackSection section="chapter3" reportId={reportUid}>
-          <Chapter3V2 match={match} number="CHAPTER 2" />
+          <Chapter3 userName={userName} match={match} number="CHAPTER 2" />
         </TrackSection>
 
         <Chapter4Simulation match={match} number="CHAPTER 3" sceneImage={sceneImage} />
-
-        <div className="px-7 mt-14 mb-3">
-          <div className="border-t border-dashed border-brand-ink/30" />
-        </div>
-
-        <ApplicationSummary userAnswers={userAnswers} />
         <MeetOrPassCta reportId={reportUid} initialCta={cta} />
       </ReportShell>
     </main>
