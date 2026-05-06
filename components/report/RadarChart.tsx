@@ -5,9 +5,10 @@ import Chart from 'chart.js/auto';
 import { MatchAnalysis } from '@/lib/report/types';
 
 const MIN_VISIBLE_RADAR_VALUE = 5.5;
+const MAX_RADAR_VALUE = 10;
 
 function visibleRadarValues(values: number[]) {
-  return values.map((value) => Math.max(MIN_VISIBLE_RADAR_VALUE, value));
+  return values.map((value) => MIN_VISIBLE_RADAR_VALUE + (value / MAX_RADAR_VALUE) * (MAX_RADAR_VALUE - MIN_VISIBLE_RADAR_VALUE));
 }
 
 export function RadarChart({ data }: { data: MatchAnalysis['radarData'] }) {
