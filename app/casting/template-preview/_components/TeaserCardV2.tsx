@@ -6,12 +6,20 @@ import { Section, SectionLabel, SectionTitle, HL } from '@/components/report/Sec
 import { useTone } from '@/components/report/toneContext';
 import { SafeText } from '@/components/report/SafeText';
 
+interface TeaserCardV2Props {
+  candidate: Candidate;
+  /** 인스타 변형: 캐스터의 추천사 아래 작은 각주 (예: 인스타 추정 안내) */
+  recommendationFootnote?: string;
+}
+
 // TeaserCard v2 — 4행 메타 레이아웃
 // Row 1: 외모상 (full)
 // Row 2: 나이 / 키 / 직업 (3 cols)
 // Row 3: 거주지역 / MBTI (2 cols)
 // Row 4: 캐스터의 추천사 (full)
-export function TeaserCardV2({ candidate }: { candidate: Candidate }) {
+//
+// 인스타 변형 (recommendationFootnote 전달 시): 추천사 아래 작은 각주 추가
+export function TeaserCardV2({ candidate, recommendationFootnote }: TeaserCardV2Props) {
   const tone = useTone();
   return (
     <Section>
@@ -99,7 +107,14 @@ export function TeaserCardV2({ candidate }: { candidate: Candidate }) {
 
             {/* Row 4: 캐스터의 추천사 (full) */}
             {candidate.recommendation && (
-              <MetaItem label="캐스터의 추천사" value={candidate.recommendation} />
+              <div>
+                <MetaItem label="캐스터의 추천사" value={candidate.recommendation} />
+                {recommendationFootnote && (
+                  <p className="mt-2 text-[11.5px] text-brand-ink-mute leading-[1.55] italic">
+                    <SafeText>{recommendationFootnote}</SafeText>
+                  </p>
+                )}
+              </div>
             )}
           </div>
         </div>
