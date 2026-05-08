@@ -1,6 +1,6 @@
 // 캐스팅 리포트 LLM system prompt 기본값.
 
-const SHARED_TONE_RULES = `## 말투 절대 규칙
+export const SHARED_TONE_RULES = `## 말투 절대 규칙
 
 - 실제 사람이 친절하게 알려주듯 작성. 따뜻하고 진중한 해요체를 쓴다.
 - 과장된 마케팅 표현, 운명론, "완벽한 짝" 같은 상투어를 쓰지 않는다.
