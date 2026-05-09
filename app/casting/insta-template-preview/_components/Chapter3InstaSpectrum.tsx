@@ -16,23 +16,27 @@ interface Chapter3InstaSpectrumProps {
   axes: BipolarAxis[];
   notes?: string[];
   number?: string;
+  /** lead 카피 override. 미지정 시 인스타 전제 카피 기본. */
+  lead?: string;
 }
 
 export function Chapter3InstaSpectrum({
   axes,
   notes = [],
   number = 'CHAPTER 2',
+  lead,
 }: Chapter3InstaSpectrumProps) {
   const tone = useTone();
 
   const title = tone === 'formal' ? '이 사람은 어떤 사람일까요' : '이 사람 어떤 사람이냐면';
-  const lead =
-    tone === 'formal'
+  const leadText =
+    lead ??
+    (tone === 'formal'
       ? '인스타에서 살펴본 이 분의 4가지 성향 축을 보여드릴게요.'
-      : '인스타에서 살펴본 이 분의 4가지 성향 축을 보여줄게.';
+      : '인스타에서 살펴본 이 분의 4가지 성향 축을 보여줄게.');
 
   return (
-    <ChapterCard number={number} title={title} lead={lead}>
+    <ChapterCard number={number} title={title} lead={leadText}>
       <div className="mt-3 flex flex-col gap-7">
         {axes.map((axis) => {
           const left = Math.round(Math.max(0, Math.min(100, axis.leftPercent)));

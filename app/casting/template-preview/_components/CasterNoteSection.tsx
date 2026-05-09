@@ -6,9 +6,11 @@ import { useTone } from '@/components/report/toneContext';
 interface CasterNoteSectionProps {
   headline: string;
   charmBullets: string[];
+  /** charmBullets 위 작은 fixed 헤더 (예: "✨ 이 사람을 놓치면 안 되는 3가지 이유"). 미지정 시 노출 안 함. */
+  bulletsHeading?: string;
 }
 
-export function CasterNoteSection({ headline, charmBullets }: CasterNoteSectionProps) {
+export function CasterNoteSection({ headline, charmBullets, bulletsHeading }: CasterNoteSectionProps) {
   const tone = useTone();
   return (
     <div className="px-7 mt-8">
@@ -24,6 +26,12 @@ export function CasterNoteSection({ headline, charmBullets }: CasterNoteSectionP
         <p className="font-display font-bold text-[17px] leading-[1.55] text-brand-ink mb-[18px]">
           &ldquo;<SafeText>{headline}</SafeText>&rdquo; {tone === 'formal' ? '어떠세요?' : '어때?'}
         </p>
+
+        {bulletsHeading && (
+          <div className="font-hand text-[14.5px] text-brand-orange-deep mb-2.5">
+            {bulletsHeading}
+          </div>
+        )}
 
         <ul className="space-y-[10px]">
           {charmBullets.map((b, i) => (
