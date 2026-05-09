@@ -1,10 +1,23 @@
 'use client';
 
 import Image from 'next/image';
+import { Fragment, type ReactNode } from 'react';
 import { Candidate } from '@/lib/report/types';
 import { Section, SectionLabel, SectionTitle, HL } from '@/components/report/SectionFrame';
 import { useTone } from '@/components/report/toneContext';
 import { SafeText } from '@/components/report/SafeText';
+
+// "이 사람,\n가볍게..." 같은 문자열의 '\n' 을 <br /> 로 변환.
+// flatMap 으로 줄 사이에만 <br /> 끼워 넣어 빈 노드 없이 깔끔하게.
+function withLineBreaks(text: string): ReactNode[] {
+  return text
+    .split('\n')
+    .flatMap((part, i) =>
+      i === 0
+        ? [<Fragment key={`p-${i}`}>{part}</Fragment>]
+        : [<br key={`br-${i}`} />, <Fragment key={`p-${i}`}>{part}</Fragment>],
+    );
+}
 
 interface TeaserCardV2Props {
   candidate: Candidate;
@@ -34,18 +47,11 @@ export function TeaserCardV2({
   const labelText = sectionLabel ?? '캐스팅 된 사람!';
   const titlePlain = sectionTitle?.plain ?? '이 사람, ';
   const titleHighlight = sectionTitle?.highlight ?? (tone === 'formal' ? '어떠세요?' : '어때?');
-  // plain 안의 '\n' 을 <br /> 로 변환 — receiver 변형에서 "이 사람,\n가볍게 대화해볼까요?" 같은 줄바꿈 지원.
-  const titlePlainNodes = titlePlain.split('\n').map((part, i) => (
-    <span key={i}>
-      {i > 0 && <br />}
-      {part}
-    </span>
-  ));
   return (
     <Section>
       <SectionLabel>{labelText}</SectionLabel>
       <SectionTitle>
-        {titlePlainNodes}
+        {withLineBreaks(titlePlain)}
         <HL>{titleHighlight}</HL>
       </SectionTitle>
 

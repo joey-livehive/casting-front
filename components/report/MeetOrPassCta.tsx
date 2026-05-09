@@ -3,15 +3,39 @@
 import { useState } from 'react';
 
 type Mode = 'caster' | 'receiver';
+type Stage = 'idle' | 'meet_done' | 'pass_done';
+type ApiActionType = 'contact_request' | 'pass' | 'receiver_accept' | 'receiver_decline';
 
-// mode 별 카피·API action 한 묶음으로 관리. caster 는 PR #16 까지의 기본,
-// receiver 는 like 받은 사람용. nextStep.note 는 step 본문 아래 mustard 강조 박스로 렌더.
-type Step = { text: string; note?: string };
+interface Step {
+  text: string;
+  /** 본문 아래 mustard 강조 박스로 렌더. receiver 의 "부담 갖지 마세요" 같은 안심 카피. */
+  note?: string;
+}
 
-const COPY_BY_MODE = {
+interface ModeCopy {
+  headline: { line1: string; line2: string };
+  nextSteps: Step[];
+  meetButton: string;
+  passButton: { main: string; sub: string };
+  afterMeetHeading: string;
+  afterMeetSub: string;
+  afterPassHeading: string;
+  afterPassSub: string;
+  feedbackHeadingMeet: string;
+  feedbackHeadingPass: string;
+  feedbackHelper: string;
+  feedbackPlaceholderMeet: string;
+  feedbackPlaceholderPass: string;
+  submittedFollowup: string;
+  submittedEchoLabel: string;
+  apiAction: { meet: ApiActionType; pass: ApiActionType };
+}
+
+// mode 별 카피·API action 한 묶음. caster 는 PR #16 까지의 기본, receiver 는 like 받은 사람용.
+const COPY_BY_MODE: Record<Mode, ModeCopy> = {
   caster: {
     headline: { line1: '어때요?', line2: '대화해볼래요?' },
-    nextSteps: (_senderName?: string): Step[] => [
+    nextSteps: [
       { text: '의뢰인님의 마음을 후보에게 전달해요.' },
       { text: '상대 수락 시 대화방이 개설되고, 저희 캐스터가 대화를 리드해 드려요!' },
       { text: '카드 패스 시, 의뢰인님의 피드백을 받고 더 좋은 사람을 찾아나서요!' },
@@ -24,12 +48,16 @@ const COPY_BY_MODE = {
     afterPassSub: '다음 카드를 더 정교하게 골라드릴게요🥺',
     feedbackHeadingMeet: '좋았던 이유를 알려줄래요?',
     feedbackHeadingPass: '이유를 알려줄래요?',
+    feedbackHelper: '피드백을 주시면, 다음 카드가 더 좋아질 확률이 81% 증가해요.',
     feedbackPlaceholderMeet: '예) 날 챙겨주려는 안정감이 있어 보여서 만나고 싶었어!',
     feedbackPlaceholderPass: '예) 난 옷을 더 잘입는 사람이 좋아',
+    submittedFollowup: '남겨주신 의견 그대로 다음 카드 큐레이션에 반영할게요.',
+    submittedEchoLabel: '의뢰인님의 의견',
+    apiAction: { meet: 'contact_request', pass: 'pass' },
   },
   receiver: {
     headline: { line1: '어때요?', line2: '한번 만나볼래요?' },
-    nextSteps: (_senderName?: string): Step[] => [
+    nextSteps: [
       { text: '어떤 분이 당신을 마음에 두고 캐스팅했어요.' },
       {
         text: '수락하시면 대화방을 열고, 저희 캐스터가 첫 대화를 리드해드려요!',
@@ -45,13 +73,14 @@ const COPY_BY_MODE = {
     afterPassSub: '발신자에게 정중히 전달드릴게요🥺',
     feedbackHeadingMeet: '한 마디 남겨줄래요?',
     feedbackHeadingPass: '이유를 알려줄래요?',
+    feedbackHelper: '한 마디 남겨주시면 발신자가 더 잘 이해할 수 있어요.',
     feedbackPlaceholderMeet: '예) 사진에서 분위기가 마음에 들었어요!',
     feedbackPlaceholderPass: '예) 지금은 다른 분과 이야기 중이에요',
+    submittedFollowup: '남기신 의견은 발신자에게 정중히 전달드릴게요.',
+    submittedEchoLabel: '남기신 의견',
+    apiAction: { meet: 'receiver_accept', pass: 'receiver_decline' },
   },
-} as const;
-
-type Stage = 'idle' | 'meet_done' | 'pass_done';
-type ApiActionType = 'contact_request' | 'pass' | 'receiver_accept' | 'receiver_decline';
+};
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.publicvoid.im';
 
@@ -91,24 +120,9 @@ interface Props {
   step1Note?: string;
   /** caster(기본) = 의뢰인이 후보 카드 결정. receiver = like 받은 사람이 만남 결정. */
   mode?: Mode;
-  /** receiver 모드에서 NEXT_STEPS 의 ○○ 자리에 들어갈 발신자 이름. 미지정 시 ○○. */
-  senderName?: string;
 }
 
-function actionFor(mode: Mode, decision: 'meet_done' | 'pass_done'): ApiActionType {
-  if (mode === 'receiver') {
-    return decision === 'meet_done' ? 'receiver_accept' : 'receiver_decline';
-  }
-  return decision === 'meet_done' ? 'contact_request' : 'pass';
-}
-
-export function MeetOrPassCta({
-  reportId,
-  initialCta,
-  step1Note,
-  mode = 'caster',
-  senderName,
-}: Props) {
+export function MeetOrPassCta({ reportId, initialCta, step1Note, mode = 'caster' }: Props) {
   const [stage, setStage] = useState<Stage>(() => stageFromCta(initialCta));
   const [feedback, setFeedback] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -116,14 +130,14 @@ export function MeetOrPassCta({
   const [pending, setPending] = useState(false);
 
   const copy = COPY_BY_MODE[mode];
-  const nextSteps = copy.nextSteps(senderName);
 
   const decide = async (next: 'meet_done' | 'pass_done') => {
     if (pending) return;
     setPending(true);
     setError(null);
     try {
-      await postCta(reportId, actionFor(mode, next));
+      const action = next === 'meet_done' ? copy.apiAction.meet : copy.apiAction.pass;
+      await postCta(reportId, action);
       setStage(next);
     } catch {
       setError('네트워크 오류가 났어요. 잠시 뒤 다시 시도해주세요.');
@@ -142,7 +156,7 @@ export function MeetOrPassCta({
             {copy.headline.line2}
           </div>
           <ol className="space-y-3">
-            {nextSteps.map((step, index) => (
+            {copy.nextSteps.map((step, index) => (
               <li
                 key={step.text}
                 className="flex gap-3 text-[13.5px] leading-[1.6] text-brand-cream/85"
@@ -158,7 +172,7 @@ export function MeetOrPassCta({
                       {step1Note}
                     </div>
                   )}
-                  {/* mode 별 fixed step note — receiver 모드의 "부담 갖지 마세요" 같은 안심 카피. mustard 톤. */}
+                  {/* mode 별 fixed step note — receiver 의 "부담 갖지 마세요" 같은 안심 카피. mustard 톤. */}
                   {step.note && (
                     <div className="mt-2 px-3 py-2.5 bg-brand-mustard/15 border-l-[3px] border-brand-mustard rounded-r-md text-brand-mustard text-[13px] leading-[1.6] font-medium">
                       💛 {step.note}
@@ -207,6 +221,25 @@ export function MeetOrPassCta({
 
   const canSubmit = feedback.trim().length > 0 && !submitted;
 
+  const submitFeedback = async () => {
+    if (!feedback.trim()) {
+      setError('한 줄만 남겨주세요!');
+      return;
+    }
+    if (pending) return;
+    setPending(true);
+    setError(null);
+    try {
+      const action = isMeet ? copy.apiAction.meet : copy.apiAction.pass;
+      await postCta(reportId, action, feedback.trim());
+      setSubmitted(true);
+    } catch {
+      setError('전송에 실패했어요. 잠시 뒤 다시 시도해주세요.');
+    } finally {
+      setPending(false);
+    }
+  };
+
   return (
     <div className="px-7 mt-10">
       <div className="bg-brand-ink text-brand-cream rounded-[20px] p-5 border-[1.5px] border-brand-line">
@@ -225,13 +258,11 @@ export function MeetOrPassCta({
               </div>
             </div>
             <div className="text-[12.5px] text-brand-cream/65 leading-[1.6] mb-3">
-              {mode === 'receiver'
-                ? '남기신 의견은 발신자에게 정중히 전달드릴게요.'
-                : '남겨주신 의견 그대로 다음 카드 큐레이션에 반영할게요.'}
+              {copy.submittedFollowup}
             </div>
             <div className="bg-brand-ink/40 rounded-xl border border-brand-mustard/40 px-4 py-3">
               <div className="font-hand text-[11px] text-brand-mustard/80 tracking-[0.18em] uppercase mb-1.5">
-                {mode === 'receiver' ? '남기신 의견' : '의뢰인님의 의견'}
+                {copy.submittedEchoLabel}
               </div>
               <div className="text-[14px] text-brand-cream leading-[1.65] whitespace-pre-wrap break-words">
                 &ldquo;{feedback.trim()}&rdquo;
@@ -244,9 +275,7 @@ export function MeetOrPassCta({
               {isMeet ? copy.feedbackHeadingMeet : copy.feedbackHeadingPass}
             </div>
             <div className="text-[12.5px] text-brand-mustard/90 leading-[1.55] mb-3">
-              {mode === 'receiver'
-                ? '한 마디 남겨주시면 발신자가 더 잘 이해할 수 있어요.'
-                : '피드백을 주시면, 다음 카드가 더 좋아질 확률이 81% 증가해요.'}
+              {copy.feedbackHelper}
             </div>
             <textarea
               value={feedback}
@@ -266,27 +295,7 @@ export function MeetOrPassCta({
             )}
             <button
               type="button"
-              onClick={async () => {
-                if (!feedback.trim()) {
-                  setError('한 줄만 남겨주세요!');
-                  return;
-                }
-                if (pending) return;
-                setPending(true);
-                setError(null);
-                try {
-                  await postCta(
-                    reportId,
-                    actionFor(mode, isMeet ? 'meet_done' : 'pass_done'),
-                    feedback.trim(),
-                  );
-                  setSubmitted(true);
-                } catch {
-                  setError('전송에 실패했어요. 잠시 뒤 다시 시도해주세요.');
-                } finally {
-                  setPending(false);
-                }
-              }}
+              onClick={submitFeedback}
               disabled={!canSubmit || pending}
               className="mt-3 w-full h-12 rounded-2xl bg-brand-mustard font-display font-bold text-brand-ink text-[15px] active:scale-[0.97] transition-transform disabled:opacity-50 disabled:active:scale-100"
             >

@@ -47,7 +47,7 @@ const RECEIVER_COPY = {
   summaryHeaderLabel: '📋 답변 정리',
   summaryHeading: '당신의 취향',
   summarySubheading: '당신이 남겨 주신 그대로 담아왔어요.',
-};
+} as const;
 
 interface ReceiverMatchReportProps {
   reportUid: string;
