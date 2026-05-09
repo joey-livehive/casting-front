@@ -22,6 +22,8 @@ interface CandidateDetailSectionProps {
   narratives: CandidateDetailNarratives;
   /** 인스타 변형: 전달 시 '📅 이 사람의 주말' 슬롯이 '✨ 이 사람의 매력' 산문으로 교체됨 (4~5문장) */
   feedCharm?: string;
+  /** lead 카피 override. 미지정 시 caster 톤 ("왜 이 분이 선정됐는지"). */
+  lead?: string;
 }
 
 export function CandidateDetailSection({
@@ -29,18 +31,20 @@ export function CandidateDetailSection({
   candidate,
   narratives,
   feedCharm,
+  lead,
 }: CandidateDetailSectionProps) {
   const tone = useTone();
-  const lead =
-    tone === 'formal'
+  const leadText =
+    lead ??
+    (tone === 'formal'
       ? `자, 그럼 왜 이 분이 선정됐는지 더 자세히 알아볼까요? ${userName}님께 필요한 부분을 중심으로 정리했어요.`
-      : `자, 그럼 왜 이 분이 선정됐는지 더 자세히 알아볼까? ${userName}한테 필요한 부분을 중심으로 정리했어.`;
+      : `자, 그럼 왜 이 분이 선정됐는지 더 자세히 알아볼까? ${userName}한테 필요한 부분을 중심으로 정리했어.`);
 
   const hasRealHobby = candidate.hobbies.visible.some((h) => !h.includes('<red>'));
   const showHobby = hasRealHobby || candidate.hobbies.hidden > 0;
 
   return (
-    <ChapterCard number="CHAPTER 1" title="이 사람에 대해 더 자세히" lead={lead}>
+    <ChapterCard number="CHAPTER 1" title="이 사람에 대해 더 자세히" lead={leadText}>
       <div className="grid grid-cols-2 gap-2.5">
         {/* 🎨 취미 (선택) */}
         {showHobby && (

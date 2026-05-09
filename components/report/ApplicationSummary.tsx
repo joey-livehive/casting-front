@@ -98,7 +98,22 @@ function formatPersonalityAnswer(key: PersonalityKey, raw: string): string {
   return formatAnswer(raw);
 }
 
-export function ApplicationSummary({ userAnswers }: { userAnswers: UserAnswers }) {
+interface ApplicationSummaryProps {
+  userAnswers: UserAnswers;
+  /** 상단 stamp 라벨 override. 미지정 시 "📋 의뢰서 복기". */
+  headerLabel?: string;
+  /** 헤더 제목 override. 미지정 시 "의뢰인님의 취향". */
+  heading?: string;
+  /** 헤더 부제 override. 미지정 시 "의뢰인님이 남겨 주신 그대로 담아왔어요." */
+  subheading?: string;
+}
+
+export function ApplicationSummary({
+  userAnswers,
+  headerLabel = '📋 의뢰서 복기',
+  heading = '의뢰인님의 취향',
+  subheading = '의뢰인님이 남겨 주신 그대로 담아왔어요.',
+}: ApplicationSummaryProps) {
   const idealRows = IDEAL_TYPE_QUESTIONS.flatMap(({ q, k }) => {
     const a = userAnswers.idealType[k];
     return a ? [{ q, a: formatAnswer(a), key: k as string }] : [];
@@ -170,14 +185,14 @@ export function ApplicationSummary({ userAnswers }: { userAnswers: UserAnswers }
                      font-hand text-[15px] px-[13px] py-1 rounded-[14px]
                      border-[1.5px] border-brand-line"
         >
-          📋 의뢰서 복기
+          {headerLabel}
         </div>
 
         <h3 className="font-display font-bold text-[21px] leading-[1.35] tracking-[-0.025em] mb-1.5 text-brand-ink">
-          의뢰인님의 취향
+          {heading}
         </h3>
         <p className="text-[13px] text-brand-ink-soft leading-[1.6] mb-5">
-          의뢰인님이 남겨 주신 그대로 담아왔어요.
+          {subheading}
         </p>
 
         {groups.map(({ label, node }, i) => (

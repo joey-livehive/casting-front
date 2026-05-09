@@ -1,15 +1,32 @@
 'use client';
 
 import Image from 'next/image';
+import { Fragment, type ReactNode } from 'react';
 import { Candidate } from '@/lib/report/types';
 import { Section, SectionLabel, SectionTitle, HL } from '@/components/report/SectionFrame';
 import { useTone } from '@/components/report/toneContext';
 import { SafeText } from '@/components/report/SafeText';
 
+// "이 사람,\n가볍게..." 같은 문자열의 '\n' 을 <br /> 로 변환.
+// flatMap 으로 줄 사이에만 <br /> 끼워 넣어 빈 노드 없이 깔끔하게.
+function withLineBreaks(text: string): ReactNode[] {
+  return text
+    .split('\n')
+    .flatMap((part, i) =>
+      i === 0
+        ? [<Fragment key={`p-${i}`}>{part}</Fragment>]
+        : [<br key={`br-${i}`} />, <Fragment key={`p-${i}`}>{part}</Fragment>],
+    );
+}
+
 interface TeaserCardV2Props {
   candidate: Candidate;
   /** 인스타 변형: 캐스터의 추천사 아래 작은 각주 (예: 인스타 추정 안내) */
   recommendationFootnote?: string;
+  /** 상단 SectionLabel 카피 override. 미지정 시 "캐스팅 된 사람!" (caster 기본). */
+  sectionLabel?: string;
+  /** 상단 SectionTitle 카피 override. <HL> 강조 부분만 highlight 로 받음. */
+  sectionTitle?: { plain: string; highlight: string };
 }
 
 // TeaserCard v2 — 4행 메타 레이아웃
@@ -19,13 +36,23 @@ interface TeaserCardV2Props {
 // Row 4: 캐스터의 추천사 (full)
 //
 // 인스타 변형 (recommendationFootnote 전달 시): 추천사 아래 작은 각주 추가
-export function TeaserCardV2({ candidate, recommendationFootnote }: TeaserCardV2Props) {
+// receiver 변형 (sectionLabel/sectionTitle 전달 시): 상단 헤더 카피 override
+export function TeaserCardV2({
+  candidate,
+  recommendationFootnote,
+  sectionLabel,
+  sectionTitle,
+}: TeaserCardV2Props) {
   const tone = useTone();
+  const labelText = sectionLabel ?? '캐스팅 된 사람!';
+  const titlePlain = sectionTitle?.plain ?? '이 사람, ';
+  const titleHighlight = sectionTitle?.highlight ?? (tone === 'formal' ? '어떠세요?' : '어때?');
   return (
     <Section>
-      <SectionLabel>캐스팅 된 사람!</SectionLabel>
+      <SectionLabel>{labelText}</SectionLabel>
       <SectionTitle>
-        이 사람, <HL>{tone === 'formal' ? '어떠세요?' : '어때?'}</HL>
+        {withLineBreaks(titlePlain)}
+        <HL>{titleHighlight}</HL>
       </SectionTitle>
 
       <div className="[perspective:1000px]">
