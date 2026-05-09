@@ -45,9 +45,11 @@ interface Props {
   reportId: string;
   /** 디자인 검수용 진입(`?cta=meet|pass`). 서버에서 props 로 주입. */
   initialCta?: string;
+  /** 인스타 변형: 1번 단계 아래에 빨간 보조 안내(예: 스토리 태그/DM 연락 안내) */
+  step1Note?: string;
 }
 
-export function MeetOrPassCta({ reportId, initialCta }: Props) {
+export function MeetOrPassCta({ reportId, initialCta, step1Note }: Props) {
   const [stage, setStage] = useState<Stage>(() => stageFromCta(initialCta));
   const [feedback, setFeedback] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -86,7 +88,14 @@ export function MeetOrPassCta({ reportId, initialCta }: Props) {
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-mustard text-[12px] font-bold text-brand-ink">
                   {index + 1}
                 </span>
-                <span>{step}</span>
+                <div className="flex-1">
+                  <span>{step}</span>
+                  {index === 0 && step1Note && (
+                    <div className="mt-1.5 pl-2.5 border-l-2 border-red-400 text-red-300 text-[12.5px] leading-[1.55]">
+                      {step1Note}
+                    </div>
+                  )}
+                </div>
               </li>
             ))}
           </ol>

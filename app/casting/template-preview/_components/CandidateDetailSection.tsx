@@ -20,9 +20,16 @@ interface CandidateDetailSectionProps {
   userName: string;
   candidate: Candidate;
   narratives: CandidateDetailNarratives;
+  /** 인스타 변형: 전달 시 '📅 이 사람의 주말' 슬롯이 '✨ 이 사람의 매력' 산문으로 교체됨 (4~5문장) */
+  feedCharm?: string;
 }
 
-export function CandidateDetailSection({ userName, candidate, narratives }: CandidateDetailSectionProps) {
+export function CandidateDetailSection({
+  userName,
+  candidate,
+  narratives,
+  feedCharm,
+}: CandidateDetailSectionProps) {
   const tone = useTone();
   const lead =
     tone === 'formal'
@@ -73,10 +80,11 @@ export function CandidateDetailSection({ userName, candidate, narratives }: Cand
           </div>
         </PCard>
 
-        {/* 📅 이 사람의 주말 — LLM Inputs: 데이트 스타일 + 라이프 + 자기소개 */}
-        <PCard wide label="📅 이 사람의 주말">
+        {/* 📅 이 사람의 주말 — LLM Inputs: 데이트 스타일 + 라이프 + 자기소개
+            인스타 변형: feedCharm 전달 시 '✨ 이 사람의 매력' 산문으로 교체 */}
+        <PCard wide label={feedCharm ? '✨ 이 사람의 매력' : '📅 이 사람의 주말'}>
           <div className="[&_b]:font-display [&_b]:font-bold leading-[1.6]">
-            <SafeText>{narratives.weekendStyle}</SafeText>
+            <SafeText>{feedCharm ?? narratives.weekendStyle}</SafeText>
           </div>
         </PCard>
       </div>
