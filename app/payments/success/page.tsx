@@ -78,7 +78,6 @@ function SuccessInner() {
     try {
       await castingFetch('/casting/auth/magic-link/request', {
         method: 'POST',
-        auth: false,
         body: JSON.stringify({ email, password, order_id: orderId }),
       });
       setSignupStatus('sent');
