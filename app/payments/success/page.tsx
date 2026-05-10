@@ -16,6 +16,7 @@ function SuccessInner() {
 
   // signup form state
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [signupStatus, setSignupStatus] = useState<SignupStatus>('idle');
   const [signupError, setSignupError] = useState('');
 
@@ -67,19 +68,26 @@ function SuccessInner() {
       setSignupStatus('error');
       return;
     }
+    if (password.length < 8) {
+      setSignupError('비밀번호는 8자 이상이어야 해요.');
+      setSignupStatus('error');
+      return;
+    }
     setSignupStatus('sending');
     setSignupError('');
     try {
       await castingFetch('/casting/auth/magic-link/request', {
         method: 'POST',
         auth: false,
-        body: JSON.stringify({ email, order_id: orderId }),
+        body: JSON.stringify({ email, password, order_id: orderId }),
       });
       setSignupStatus('sent');
     } catch (err) {
       const msg = (err as Error).message || '';
       if (msg.includes('429')) {
         setSignupError('잠시 후 다시 시도해 주세요. (1분 제한)');
+      } else if (msg.includes('422')) {
+        setSignupError('이메일/비밀번호 형식을 확인해 주세요. (비밀번호는 8자 이상)');
       } else if (msg.includes('502')) {
         setSignupError('이메일 발송에 실패했어요. 잠시 후 다시 시도해 주세요.');
       } else {
@@ -154,12 +162,21 @@ function SuccessInner() {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full h-12 px-4 rounded-[12px] bg-white border border-[#1C1A17]/15 text-[15px] text-[#1C1A17] placeholder:text-[#8A8275]"
             />
+            <input
+              type="password"
+              autoComplete="new-password"
+              placeholder="비밀번호 (8자 이상)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              minLength={8}
+              className="w-full h-12 px-4 rounded-[12px] bg-white border border-[#1C1A17]/15 text-[15px] text-[#1C1A17] placeholder:text-[#8A8275]"
+            />
             {signupStatus === 'error' && signupError && (
               <p className="text-red-600 text-[13px]">{signupError}</p>
             )}
             <button
               type="submit"
-              disabled={signupStatus === 'sending' || !email}
+              disabled={signupStatus === 'sending' || !email || password.length < 8}
               className="w-full h-12 rounded-full bg-[#E37A3A] text-white font-display font-bold disabled:opacity-50"
             >
               {signupStatus === 'sending' ? '발송 중...' : '가입 링크 받기'}
