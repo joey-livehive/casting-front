@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { castingFetch, setCastingUserSession } from '@/lib/casting/api';
 
@@ -10,13 +10,18 @@ function VerifyInner() {
   const router = useRouter();
   const params = useSearchParams();
   const [status, setStatus] = useState<Status>('verifying');
+  // 매직링크 토큰은 1회용이라 두 번째 호출은 410 을 받는다.
+  // React StrictMode 와 리렌더로 중복 실행되지 않도록 ref 로 보호.
+  const consumedRef = useRef(false);
 
   useEffect(() => {
+    if (consumedRef.current) return;
     const token = params.get('token');
     if (!token) {
       setStatus('invalid');
       return;
     }
+    consumedRef.current = true;
 
     castingFetch<{
       user_uid: string;
