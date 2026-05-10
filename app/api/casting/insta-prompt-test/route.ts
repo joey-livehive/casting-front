@@ -8,7 +8,7 @@ import { NextResponse } from 'next/server';
 import { callLLM, extractJsonObject, detectProvider } from '@/lib/casting/prompts/llm-client';
 import { InstaContentSchema } from '@/lib/casting/insta/schema';
 import { DEFAULT_INSTA_SYSTEM_PROMPT } from '@/lib/casting/insta/system-prompt';
-import type { InstaContentInput } from '@/lib/casting/insta/types';
+import type { InstaCandidateInput, InstaContentInput } from '@/lib/casting/insta/types';
 
 export const runtime = 'nodejs';
 
