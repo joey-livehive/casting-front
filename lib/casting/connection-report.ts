@@ -137,9 +137,10 @@ export type AxisNote = {
   narrative: string;
 };
 
+// v5: ConnectionContent 는 narrative-only (opening + simulation).
+// axisNotes 는 ConnectionReport.axisNotes top-level (Optional, insta 시점만).
 export type ConnectionContent = {
   opening: string;
-  axisNotes: AxisNote[];
   simulation: string;
 };
 
@@ -179,7 +180,13 @@ export type ConnectionReport = {
   owner: ConnectionParticipant;
   partner: ConnectionParticipant;
   content: ConnectionContent;
-  radar: RadarResult;
+
+  // v5: radar / axisNotes 는 alternate. partner.source 가 어느 쪽 채울지 결정.
+  //   partner.source=internal → radar 채움, axisNotes=null
+  //   partner.source=insta    → axisNotes 채움, radar=null
+  radar: RadarResult | null;
+  axisNotes: AxisNote[] | null;
+
   meta: ConnectionReportMeta;
 };
 

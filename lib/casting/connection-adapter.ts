@@ -96,20 +96,26 @@ export function adaptChapter2Narratives(report: ConnectionReport): {
 }
 
 export function adaptMatchAnalysis(report: ConnectionReport): MatchAnalysis {
-  const { radar, content } = report;
-  const labels = radar.axes.map(a => a.label);
-  // radar.axes.values 는 owner/partner 각 0~100. MatchAnalysis.values 는 0~10 스케일
-  // (radar-rules.md). 두 점수의 평균을 10 스케일로.
-  const values = radar.axes.map(a => {
-    const avg = (a.values.owner + a.values.partner) / 2;
-    return Math.round((avg / 10) * 10) / 10;
-  });
+  const { radar, axisNotes, content } = report;
+
+  // v5: partner.source=internal 이면 radar 가 있음, =insta 면 axisNotes 가 있음 (alternate).
+  // MatchAnalysis 는 옛 컴포넌트 호환 위해 radar+notes 합쳐서 채움.
+  const labels = radar?.axes.map(a => a.label) ?? (axisNotes?.map(n => n.axis) ?? []);
+  const values =
+    radar?.axes.map(a => {
+      const avg = (a.values.owner + a.values.partner) / 2;
+      return Math.round((avg / 10) * 10) / 10;
+    }) ?? (axisNotes?.map(() => 5) ?? []);
+  const notes =
+    axisNotes?.map(n => n.narrative)
+    ?? (radar ? radar.axes.map(a => `${a.label}: owner ${a.values.owner} / partner ${a.values.partner}`) : []);
+
   return {
-    matchRate: Math.round(radar.score),
-    topPercent: radar.top_percent ?? 0,
+    matchRate: Math.round(radar?.score ?? 0),
+    topPercent: radar?.top_percent ?? 0,
     radarData: { labels, values },
     simulation: content.simulation,
-    notes: content.axisNotes.map(n => n.narrative),
+    notes,
   };
 }
 
