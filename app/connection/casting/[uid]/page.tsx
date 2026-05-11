@@ -1,15 +1,14 @@
-// Owner 시점 매칭 리포트 페이지 (PR 2 commit 3b — 실제 렌더).
+// Owner 시점 매칭 리포트 페이지.
 //
 // 라우트: /connection/casting/{uid}
-// perspective: 'owner'  (PROMPT_ARCHITECTURE.md v4 § 1 / § 3)
+// perspective: 'owner' — 의뢰인이 보는 매칭 리포트
 //
-// 흐름:
-//   1. server-side fetch — GET /casting/connection/casting/{uid}
-//   2. ConnectionReport JSON → adapter 헬퍼로 기존 컴포넌트 props 변환
-//   3. template-preview 와 동일 컴포넌트 마운트 (cross-route _components import)
-//
-// 매핑 안 되는 필드 (hobbies, daySchedule, secretAppeal 등) 는 빈 값으로 둠.
-// 3c 에서 인스타 합본 분해 + 4축 라벨 통일 시 보강 예정.
+// partner.source 분기:
+//   - internal (게스트): Chapter3V2 (radar 6축, deterministic 매칭 점수)
+//   - insta:             Chapter3InstaSpectrum (4축 양극 막대, LLM axisNotes)
+//                        + 사진 무조건 성별별 default (실제 인스타 사진 노출 X)
+//                        + HuntBox sourceLabel="인스타그램"
+//                        + 추천 footnote (인스타 추정값 안내)
 
 import { notFound } from 'next/navigation';
 
@@ -26,20 +25,35 @@ import { HeroV2 } from '@/app/casting/template-preview/_components/HeroV2';
 import { HuntBoxV2 } from '@/app/casting/template-preview/_components/HuntBoxV2';
 import { ReadingCardV2 } from '@/app/casting/template-preview/_components/ReadingCardV2';
 import { TeaserCardV2 } from '@/app/casting/template-preview/_components/TeaserCardV2';
+import { Chapter3InstaSpectrum } from '@/app/casting/insta-template-preview/_components/Chapter3InstaSpectrum';
 import {
   ConnectionReportFetchError,
   fetchOwnerConnectionReport,
 } from '@/lib/casting/connection-report';
+import type { Candidate } from '@/lib/report/types';
 import {
   FIXED_USER_NAME,
+  adaptBipolarAxes,
   adaptCandidate,
   adaptCasterNote,
   adaptChapter2Narratives,
   adaptHuntStats,
   adaptMatchAnalysis,
   adaptReadingCard,
+  adaptSpectrumNotes,
   adaptUserAnswers,
 } from '@/lib/casting/connection-adapter';
+
+const INSTA_RECOMMENDATION_FOOTNOTE =
+  '*인스타그램에서 찾아온 분이라 일부는 추정값이지만, 정확도는 약 73%에 달해요.';
+const INSTA_CTA_STEP1_NOTE =
+  '인스타그램에서 엄선해서 찾아온 분에요! 저희가 스토리 태그·DM 등 가능한 모든 경로로 연락 시도할 예정입니다! 최선을 다해 연락망 확보해서 꼭 연결해드릴게요.';
+
+// partner.source=insta 시 실제 사진 노출 X — 성별별 default 강제.
+const INSTA_DEFAULT_PHOTO_BY_GENDER = {
+  male: '/images/casting/casting_man.webp',
+  female: '/images/casting/casting_woman_1.webp',
+} as const;
 
 type PageProps = {
   params: Promise<{ uid: string }>;
@@ -58,13 +72,24 @@ export default async function OwnerCastingPage({ params }: PageProps) {
     throw err;
   }
 
+  const isInsta = report.partner.profile.source === 'insta';
   const candidate = adaptCandidate(report);
+  // insta 케이스는 사진 무조건 default (실제 인스타 사진 노출 X)
+  const finalCandidate: Candidate = isInsta
+    ? {
+        ...candidate,
+        teaserPhoto: defaultPhotoFor(report.partner.profile.basics.gender),
+        detailPhoto: defaultPhotoFor(report.partner.profile.basics.gender),
+      }
+    : candidate;
   const casterNote = adaptCasterNote(report);
   const huntStats = adaptHuntStats(report);
   const readingCard = adaptReadingCard(report);
   const chapter2Narratives = adaptChapter2Narratives(report);
   const match = adaptMatchAnalysis(report);
   const userAnswers = adaptUserAnswers(report);
+  const bipolarAxes = adaptBipolarAxes(report);
+  const spectrumNotes = adaptSpectrumNotes(report);
 
   const publishedAt = formatPublishedAt(report.meta.generated_at);
 
@@ -81,6 +106,14 @@ export default async function OwnerCastingPage({ params }: PageProps) {
 
         <HuntBoxV2
           stats={huntStats}
+          sourceLabel={isInsta ? '인스타그램' : '캐스팅 내부 POOL'}
+          sourceFootnote={
+            isInsta ? (
+              <p className="mt-2 font-hand text-[13px] leading-[1.65] text-brand-orange-deep">
+                {INSTA_CTA_STEP1_NOTE}
+              </p>
+            ) : undefined
+          }
           footer={
             <div
               className="relative w-full overflow-hidden rounded-[12px] mt-4"
@@ -97,7 +130,10 @@ export default async function OwnerCastingPage({ params }: PageProps) {
         />
 
         <TrackSection section="teaser_card" reportId={uid}>
-          <TeaserCardV2 candidate={candidate} />
+          <TeaserCardV2
+            candidate={finalCandidate}
+            recommendationFootnote={isInsta ? INSTA_RECOMMENDATION_FOOTNOTE : undefined}
+          />
         </TrackSection>
 
         <ReadingCardV2
@@ -108,13 +144,21 @@ export default async function OwnerCastingPage({ params }: PageProps) {
         <TrackSection section="chapter1" reportId={uid}>
           <CandidateDetailSection
             userName={FIXED_USER_NAME}
-            candidate={candidate}
+            candidate={finalCandidate}
             narratives={chapter2Narratives}
           />
         </TrackSection>
 
         <TrackSection section="chapter3" reportId={uid}>
-          <Chapter3V2 match={match} number="CHAPTER 2" />
+          {isInsta ? (
+            <Chapter3InstaSpectrum
+              axes={bipolarAxes}
+              notes={spectrumNotes}
+              number="CHAPTER 2"
+            />
+          ) : (
+            <Chapter3V2 match={match} number="CHAPTER 2" />
+          )}
         </TrackSection>
 
         <Chapter4Simulation
@@ -129,6 +173,7 @@ export default async function OwnerCastingPage({ params }: PageProps) {
 
         <ApplicationSummary userAnswers={userAnswers} />
 
+        {/* 인스타 안내 카피는 HuntBox sourceLabel 아래로 이동 — CTA 에는 미노출 */}
         <MeetOrPassCta reportId={uid} />
 
         <div className="px-7 mt-10 mb-2 text-center text-[12px] text-brand-ink-mute">
@@ -140,6 +185,12 @@ export default async function OwnerCastingPage({ params }: PageProps) {
       </ReportShell>
     </main>
   );
+}
+
+function defaultPhotoFor(gender: 'male' | 'female' | null | undefined): string {
+  return gender === 'female'
+    ? INSTA_DEFAULT_PHOTO_BY_GENDER.female
+    : INSTA_DEFAULT_PHOTO_BY_GENDER.male;
 }
 
 function formatPublishedAt(iso: string | null | undefined): string {

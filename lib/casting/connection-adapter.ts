@@ -11,6 +11,7 @@
 
 import type { Candidate, MatchAnalysis } from '@/lib/report/types';
 import type { UserAnswers } from '@/lib/personalization/types';
+import type { BipolarAxis } from '@/app/casting/insta-template-preview/_components/Chapter3InstaSpectrum';
 import type { AxisName, ConnectionReport } from './connection-report';
 
 export const FIXED_USER_NAME = '의뢰인';
@@ -23,19 +24,75 @@ const AXIS_LABEL: Record<AxisName, string> = {
   action: '행동 성향',
 };
 
+// partner 사진 없을 때 성별별 default placeholder (blur 처리는 컴포넌트 측)
+const DEFAULT_PHOTO_BY_GENDER: Record<'male' | 'female', string> = {
+  male: '/images/casting/casting_man.webp',
+  female: '/images/casting/casting_woman_1.webp',
+};
+
+// v5 4축 → BipolarAxis (Chapter3InstaSpectrum 의 양극 막대용)
+// 스키마 컨벤션: leftPercent = 100 - bipolarValue
+// (bipolarValue 0=좌측 fully, 100=우측 fully → leftPercent 가 좌측 비율)
+const AXIS_BIPOLAR: Record<AxisName, { name: string; left: string; right: string }> = {
+  energy: { name: '에너지', left: '내향적', right: '외향적' },
+  judgment: { name: '판단', left: '감성적', right: '이성적' },
+  sociability: { name: '관계의 폭', left: '좁고 깊게', right: '넓고 폭넓게' },
+  action: { name: '행동', left: '안정 추구', right: '모험 추구' },
+};
+
+export function adaptBipolarAxes(report: ConnectionReport): BipolarAxis[] {
+  const bv = report.partner.person_content.bipolarValues;
+  const axes: AxisName[] = ['energy', 'judgment', 'sociability', 'action'];
+  return axes.map((axis) => {
+    const meta = AXIS_BIPOLAR[axis];
+    return {
+      axisName: meta.name,
+      leftLabel: meta.left,
+      rightLabel: meta.right,
+      leftPercent: 100 - bv[axis],
+    };
+  });
+}
+
+export function adaptSpectrumNotes(report: ConnectionReport): string[] {
+  // v5 alternate: axisNotes 가 있으면 그 narrative 사용 (insta partner).
+  // 없으면 spectrumNotes (PersonContent) fallback.
+  if (report.axisNotes && report.axisNotes.length > 0) {
+    return report.axisNotes.map((n) => n.narrative);
+  }
+  return report.partner.person_content.spectrumNotes ?? [];
+}
+
+// 직업 enum 코드 → 화면 라벨 (start/page.tsx 의 응답 옵션과 정합)
+const OCCUPATION_LABEL: Record<string, string> = {
+  student: '학생',
+  office: '회사원',
+  professional: '전문직',
+  public: '공직',
+  freelance: '사업/프리랜서',
+  other_job: '기타',
+};
+
 export function adaptCandidate(report: ConnectionReport): Candidate {
   const { partner } = report;
   const { person_content: pc, profile } = partner;
   const basics = profile.basics;
 
-  const photoUrl = profile.photos?.[0]?.url;
+  const photoUrl =
+    profile.photos?.[0]?.url ??
+    (basics.gender ? DEFAULT_PHOTO_BY_GENDER[basics.gender] : undefined);
 
   return {
     nickname: '○○○', // 캐스팅은 이름 안 받음 — 고정
     faceType: pc.faceType,
     ageRange: basics.age_band || (basics.age ? `${basics.age}세` : ''),
     ageDetail: '',
-    occupation: basics.occupation || basics.occupation_band || '',
+    // 직업 우선순위: 사용자가 적은 job_detail → occupation 한국어 매핑 → occupation_band
+    occupation:
+      basics.job_detail ||
+      (basics.occupation ? OCCUPATION_LABEL[basics.occupation] ?? basics.occupation : '') ||
+      basics.occupation_band ||
+      '',
     occupationDetail: basics.job_detail || '',
     personality: '',
     location: basics.region_code || '',
@@ -104,34 +161,42 @@ export function adaptChapter2Narratives(report: ConnectionReport): {
 }
 
 export function adaptMatchAnalysis(report: ConnectionReport): MatchAnalysis {
-  const { radar, axisNotes, content, partner } = report;
+  const { radar, axisNotes, content, owner, partner } = report;
 
   // v5 alternate: partner.source=internal → radar(6축, deterministic) 채움, axisNotes=null
   //                partner.source=insta    → axisNotes(4축, LLM narrative) 채움, radar=null
+  //
+  // RadarChart 는 owner(의뢰인 원하는 사람 형태) + partner(실제 상대 형태) 두 dataset
+  // 겹쳐 그린다. 0~100 → 0~10 스케일.
   let labels: string[] = [];
-  let values: number[] = [];
+  let ownerValues: number[] = [];
+  let partnerValues: number[] = [];
   let notes: string[] = [];
 
+  const toTen = (n: number) => Math.round((n / 10) * 10) / 10;
+
   if (radar) {
-    // internal 시점: radar 의 라벨/값 그대로 사용. notes 는 비움 (라벨만 차트에 표시).
+    // internal 시점: radar.axes 의 owner/partner 값은 이미 0~10 스케일. 그대로 사용.
+    // notes 는 v5 axisNotes (4축 narrative) 가 있으면 그 narrative 사용 — radar(6축
+    // 시각화) 와 axisNotes(4축 매칭 분석 카피) 가 함께 노출되는 패턴.
     labels = radar.axes.map(a => a.label);
-    values = radar.axes.map(a => {
-      const avg = (a.values.owner + a.values.partner) / 2;
-      return Math.round((avg / 10) * 10) / 10;
-    });
-    notes = [];
+    ownerValues = radar.axes.map(a => a.values.owner);
+    partnerValues = radar.axes.map(a => a.values.partner);
+    notes = axisNotes?.map(n => n.narrative) ?? [];
   } else if (axisNotes) {
-    // insta 시점: 한국어 라벨 + partner.bipolarValues 의 4축 정량값(0~100 → 0~10 스케일) 사용.
-    const bv = partner.person_content.bipolarValues;
+    // insta 시점: 한국어 라벨 + owner/partner 의 bipolarValues 4축 값(0~100 → 0~10)
+    const ob = owner.person_content.bipolarValues;
+    const pb = partner.person_content.bipolarValues;
     labels = axisNotes.map(n => AXIS_LABEL[n.axis] ?? n.axis);
-    values = axisNotes.map(n => Math.round((bv[n.axis] / 10) * 10) / 10);
+    ownerValues = axisNotes.map(n => toTen(ob[n.axis]));
+    partnerValues = axisNotes.map(n => toTen(pb[n.axis]));
     notes = axisNotes.map(n => n.narrative);
   }
 
   return {
     matchRate: Math.round(radar?.score ?? 0),
     topPercent: radar?.top_percent ?? 0,
-    radarData: { labels, values },
+    radarData: { labels, ownerValues, partnerValues },
     simulation: content.simulation,
     notes,
   };
