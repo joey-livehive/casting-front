@@ -11,9 +11,17 @@
 
 import type { Candidate, MatchAnalysis } from '@/lib/report/types';
 import type { UserAnswers } from '@/lib/personalization/types';
-import type { ConnectionReport } from './connection-report';
+import type { AxisName, ConnectionReport } from './connection-report';
 
 export const FIXED_USER_NAME = '의뢰인';
+
+// v5: AxisName → 화면 라벨 (INSTA_AXIS_NOTES 의 _AXIS_LABEL 과 정합)
+const AXIS_LABEL: Record<AxisName, string> = {
+  energy: '사회적 에너지',
+  judgment: '판단 무게중심',
+  sociability: '관계의 폭',
+  action: '행동 성향',
+};
 
 export function adaptCandidate(report: ConnectionReport): Candidate {
   const { partner } = report;
@@ -96,19 +104,29 @@ export function adaptChapter2Narratives(report: ConnectionReport): {
 }
 
 export function adaptMatchAnalysis(report: ConnectionReport): MatchAnalysis {
-  const { radar, axisNotes, content } = report;
+  const { radar, axisNotes, content, partner } = report;
 
-  // v5: partner.source=internal 이면 radar 가 있음, =insta 면 axisNotes 가 있음 (alternate).
-  // MatchAnalysis 는 옛 컴포넌트 호환 위해 radar+notes 합쳐서 채움.
-  const labels = radar?.axes.map(a => a.label) ?? (axisNotes?.map(n => n.axis) ?? []);
-  const values =
-    radar?.axes.map(a => {
+  // v5 alternate: partner.source=internal → radar(6축, deterministic) 채움, axisNotes=null
+  //                partner.source=insta    → axisNotes(4축, LLM narrative) 채움, radar=null
+  let labels: string[] = [];
+  let values: number[] = [];
+  let notes: string[] = [];
+
+  if (radar) {
+    // internal 시점: radar 의 라벨/값 그대로 사용. notes 는 비움 (라벨만 차트에 표시).
+    labels = radar.axes.map(a => a.label);
+    values = radar.axes.map(a => {
       const avg = (a.values.owner + a.values.partner) / 2;
       return Math.round((avg / 10) * 10) / 10;
-    }) ?? (axisNotes?.map(() => 5) ?? []);
-  const notes =
-    axisNotes?.map(n => n.narrative)
-    ?? (radar ? radar.axes.map(a => `${a.label}: owner ${a.values.owner} / partner ${a.values.partner}`) : []);
+    });
+    notes = [];
+  } else if (axisNotes) {
+    // insta 시점: 한국어 라벨 + partner.bipolarValues 의 4축 정량값(0~100 → 0~10 스케일) 사용.
+    const bv = partner.person_content.bipolarValues;
+    labels = axisNotes.map(n => AXIS_LABEL[n.axis] ?? n.axis);
+    values = axisNotes.map(n => Math.round((bv[n.axis] / 10) * 10) / 10);
+    notes = axisNotes.map(n => n.narrative);
+  }
 
   return {
     matchRate: Math.round(radar?.score ?? 0),
