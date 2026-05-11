@@ -1,15 +1,22 @@
-// 인스타 발견 후보 매칭 LLM system prompt (현재 호출처).
-// docs/casting-template/insta/02-prompt.md 와 sync 유지.
+// @deprecated 인스타 합본 LLM system prompt — PR 2 commit 3c-2-b 에서 분해 완료.
 //
-// ⚠️ 이 파일은 PERSON + PAIR + 4축 변환을 한 호출에 합친 *합본* 프롬프트입니다.
-// PR 2 에서 다음과 같이 분해/이전됩니다:
-//   - PROFILE_INSTA 부분  → darakbang-backend/.../prompts/profile_insta.py (이미 박제됨)
-//   - PERSON 부분          → darakbang-backend/.../prompts/person.py (source-agnostic)
-//   - PAIR 부분            → darakbang-backend/.../prompts/pair_for_owner.py
-//   - 4축 라벨 통일         → energy/judgment/sociability/action (selfExpression/behavior 폐기)
+// 새 운영 라우트 (`/connection/casting/{uid}`) 는 본 합본을 호출하지 않고
+// 백엔드의 분해된 프롬프트 6종을 직접 호출합니다:
+//   - FILTER_INSTA         → darakbang-backend/.../prompts/filter_insta.py
+//   - PROFILE_INSTA        → darakbang-backend/.../prompts/profile_insta.py
+//   - PERSON               → darakbang-backend/.../prompts/person.py (source-agnostic, 합본의 PERSON 부분 흡수)
+//   - CONNECTION_FOR_OWNER → darakbang-backend/.../prompts/connection_for_owner.py
+//   - INSTA_AXIS_NOTES     → darakbang-backend/.../prompts/insta_axis_notes.py (4축 narrative, insta 시점만)
+// 4축 라벨도 v5 표준 (energy/judgment/sociability/action) 으로 통일.
+// `selfExpression / behavior` 는 폐기 (시각화 컴포넌트 갱신은 3c-2-c).
 //
-// PR 1 단계에서는 호출 동작을 보존하기 위해 이 파일을 그대로 유지합니다.
-// 전체 아키텍처: docs/casting-template/PROMPT_ARCHITECTURE.md
+// 본 파일은 아직 dev/admin 도구가 의존:
+//   - app/casting/insta-template-preview     (옛 디자인 검증용)
+//   - app/casting/insta-prompt-test          (옛 prompt 테스트 UI)
+//   - app/api/casting/insta-prompt-test      (옛 prompt 테스트 API)
+// 위 라우트 + 본 파일은 PR 3 의 dead 일괄 삭제 대상.
+//
+// 전체 아키텍처: docs/casting-template/PROMPT_ARCHITECTURE.md (§ 4 / § 8.3)
 
 import { SHARED_TONE_RULES } from '@/lib/casting/prompts/system-prompts';
 
