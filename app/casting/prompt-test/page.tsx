@@ -194,7 +194,8 @@ export default function CastingPromptTestPage() {
       topPercent: radar.topPercent,
       radarData: {
         labels: radar.labels,
-        values: radar.values,
+        ownerValues: radar.values,
+        partnerValues: radar.values,
       },
       simulation:
         gen.pairContent?.simulation ??

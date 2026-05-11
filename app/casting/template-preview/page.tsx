@@ -149,7 +149,8 @@ const MOCK_MATCH: MatchAnalysis = {
   topPercent: RADAR.topPercent,
   radarData: {
     labels: RADAR.labels,
-    values: RADAR.values,
+    ownerValues: RADAR.values,
+    partnerValues: RADAR.values,
   },
   simulation:
     '첫 만남은 <b>조용한 카페</b>가 어울릴 거예요. 두 분 다 카페에서 천천히 시작하는 걸 좋아하셔서, 자리만 잡으시면 시간 가는 줄 모르실 거예요. ISFJ 특유의 차분한 응대 덕분에 의뢰인님이 편하게 말을 꺼낼 수 있게 만들어 주실 분이에요.\n\n이 분의 <b>답변과 자기소개를 기반으로 보면, 처음 만났을 때 이렇게 말할 것 같아요</b>.\n"오늘 오시는 길 안 막혔어요? 저는 좀 일찍 와서 자리 잡고 있었어요. 음료는 뭐 드시고 싶으세요?"\n큰 이벤트 없이도 작은 디테일을 챙기는 분이라, 첫 대화부터 편안한 거리감이 만들어질 거예요.',

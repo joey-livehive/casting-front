@@ -72,9 +72,11 @@ function MatchRadar({
 }: {
   report: NonNullable<ReturnType<typeof getCastingMatchReport>>;
 }) {
+  const values = report.scoreBreakdown.map((item) => Number((item.score / 10).toFixed(1)));
   const radarData = {
     labels: report.scoreBreakdown.map((item) => item.label),
-    values: report.scoreBreakdown.map((item) => Number((item.score / 10).toFixed(1))),
+    ownerValues: values,
+    partnerValues: values,
   };
 
   return (

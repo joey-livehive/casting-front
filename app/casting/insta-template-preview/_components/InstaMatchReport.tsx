@@ -64,7 +64,7 @@ export function InstaMatchReport({
   const simulationMatch: MatchAnalysis = {
     matchRate: 0,
     topPercent: 0,
-    radarData: { labels: [], values: [] },
+    radarData: { labels: [], ownerValues: [], partnerValues: [] },
     simulation: content.simulation,
     notes: [],
   };
