@@ -70,9 +70,9 @@ export default function LoginPage() {
 
   return (
     <main className="max-w-[480px] mx-auto min-h-screen bg-[#F5EFE4] px-6 pt-12 pb-16">
-      <h1 className="font-bold text-[22px] text-[#1C1A17] mb-2">로그인</h1>
+      <h1 className="font-bold text-[22px] text-[#1C1A17] mb-2">가입 / 로그인</h1>
       <p className="text-[#4A443B] text-[14px] leading-[1.6] mb-6">
-        가입 시 입력한 이메일·비밀번호로 로그인해주세요.
+        기존 회원은 이메일·비밀번호로 로그인하고, 처음이라면 매직링크로 가입을 시작해주세요.
       </p>
 
       {status === 'sent' ? (
@@ -129,7 +129,7 @@ export default function LoginPage() {
             className="w-full text-center text-[12.5px] text-[#4A443B] underline pt-2"
           >
             {mode === 'password'
-              ? '비밀번호를 모르세요? 매직링크로 로그인'
+              ? '처음이거나 비밀번호를 모르세요? 매직링크 받기'
               : '비밀번호로 로그인'}
           </button>
         </form>
