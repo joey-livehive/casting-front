@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import { track } from '@/lib/report/tracking';
-import { castingFetch, getCastingGuestUid } from '@/lib/casting/api';
+import { castingFetch, getCastingGuestUid, setCastingUserSession } from '@/lib/casting/api';
 
 type ConfirmStatus = 'confirming' | 'paid' | 'error';
-type SignupStatus = 'idle' | 'sending' | 'sent' | 'error';
+type SignupStatus = 'idle' | 'sending' | 'completed' | 'error';
 type PhoneStatus = 'idle' | 'sending' | 'codeSent' | 'verifying' | 'verified' | 'error';
 const GUEST_PHONE_KEY = 'casting_guest_phone';
 
@@ -23,6 +23,7 @@ function formatPhone(value: string): string {
 }
 
 function SuccessInner() {
+  const router = useRouter();
   const params = useSearchParams();
   const [confirmStatus, setConfirmStatus] = useState<ConfirmStatus>('confirming');
   const [orderId, setOrderId] = useState<string | null>(null);
@@ -197,7 +198,12 @@ function SuccessInner() {
     setSignupStatus('sending');
     setSignupError('');
     try {
-      await castingFetch('/casting/auth/magic-link/request', {
+      const data = await castingFetch<{
+        user_uid: string;
+        auth_token: string;
+        email: string;
+        redirect_to: string | null;
+      }>('/casting/auth/magic-link/request', {
         method: 'POST',
         body: JSON.stringify({
           email,
@@ -207,7 +213,9 @@ function SuccessInner() {
           phone_verification_token: phoneVerificationToken,
         }),
       });
-      setSignupStatus('sent');
+      setCastingUserSession(data.user_uid, data.auth_token);
+      setSignupStatus('completed');
+      router.replace(data.redirect_to || '/casting/me');
     } catch (err) {
       const msg = (err as Error).message || '';
       if (msg.includes('429')) {
@@ -215,9 +223,9 @@ function SuccessInner() {
       } else if (msg.includes('422')) {
         setSignupError('이메일/비밀번호 형식을 확인해 주세요. (비밀번호는 8자 이상)');
       } else if (msg.includes('502')) {
-        setSignupError('이메일 발송에 실패했어요. 잠시 후 다시 시도해 주세요.');
+        setSignupError('가입 처리에 실패했어요. 잠시 후 다시 시도해 주세요.');
       } else {
-        setSignupError('요청에 실패했어요.');
+        setSignupError('가입에 실패했어요.');
       }
       setSignupStatus('error');
     }
@@ -234,48 +242,25 @@ function SuccessInner() {
           </div>
           <h1 className="font-bold text-[22px] text-[#1C1A17] mb-2">결제 완료!</h1>
           <p className="text-[#4A443B] text-[15px] leading-[1.6]">
-            마지막 단계 — 본인 인증 후<br />
-            매칭 카드를 받아볼 가입 링크를 보내드려요.
+            마지막 단계 — 가입 완료후<br />
+            매칭 카드를 보내드려요.
           </p>
         </div>
 
-        {signupStatus === 'sent' ? (
+        {signupStatus === 'completed' ? (
           <div className="mx-auto max-w-[360px] bg-white rounded-[18px] p-5 border border-[#1C1A17]/10">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-[#E37A3A] flex items-center justify-center text-white text-[18px]">
-                📨
+              <div className="w-10 h-10 rounded-full bg-[#E37A3A] flex items-center justify-center text-white text-[18px] font-bold">
+                ✓
               </div>
               <div>
-                <div className="font-semibold text-[15px] text-[#1C1A17]">가입 링크를 보냈어요</div>
+                <div className="font-semibold text-[15px] text-[#1C1A17]">가입이 완료됐어요</div>
                 <div className="text-[13px] text-[#4A443B] mt-0.5">{email}</div>
               </div>
             </div>
-            <ol className="space-y-2.5 text-[13.5px] text-[#1C1A17] leading-[1.55] mt-4">
-              <li className="flex gap-2.5">
-                <span className="shrink-0 w-5 h-5 rounded-full bg-[#1C1A17] text-white text-[11px] font-bold flex items-center justify-center">1</span>
-                <span>받은 메일에 있는 <b>“가입 완료”</b> 버튼을 눌러주세요.</span>
-              </li>
-              <li className="flex gap-2.5">
-                <span className="shrink-0 w-5 h-5 rounded-full bg-[#1C1A17] text-white text-[11px] font-bold flex items-center justify-center">2</span>
-                <span>로그인되면 매칭 카드 페이지로 자동 이동돼요.</span>
-              </li>
-              <li className="flex gap-2.5">
-                <span className="shrink-0 w-5 h-5 rounded-full bg-[#1C1A17] text-white text-[11px] font-bold flex items-center justify-center">3</span>
-                <span>매칭 카드 준비에 <b>2~3일</b>이 걸려요. 준비되면 안내드려요.</span>
-              </li>
-            </ol>
-            <p className="text-[#8A8275] text-[12px] mt-4">
-              메일이 안 보이면 스팸함도 확인해주세요. 링크는 <b>24시간</b> 후 만료됩니다.
+            <p className="text-[#4A443B] text-[13.5px] leading-[1.55] mt-4">
+              매칭 카드 페이지로 이동 중이에요.
             </p>
-            <button
-              onClick={() => {
-                setSignupStatus('idle');
-                setEmail('');
-              }}
-              className="mt-4 w-full text-center text-[12px] text-[#4A443B] underline"
-            >
-              다른 이메일로 다시 받기
-            </button>
           </div>
         ) : (
           <form onSubmit={onSubmitSignup} className="mx-auto max-w-[360px] space-y-3">
@@ -371,11 +356,8 @@ function SuccessInner() {
               disabled={signupStatus === 'sending' || !email || password.length < 8 || phoneStatus !== 'verified'}
               className="w-full h-12 rounded-full bg-[#E37A3A] text-white font-display font-bold disabled:opacity-50"
             >
-              {signupStatus === 'sending' ? '발송 중...' : '가입 링크 받기'}
+              {signupStatus === 'sending' ? '가입 중...' : '가입하기'}
             </button>
-            <p className="text-center text-[12px] text-[#8A8275] pt-2">
-              결제 완료 후 24시간 안에 가입을 완료해주세요.
-            </p>
           </form>
         )}
 
