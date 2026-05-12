@@ -4,7 +4,7 @@
 //   darakbang-backend/darakbang/casting/prompts/{person,pair_for_owner,_shared_tone}.py
 //
 // 이 파일은 /casting/prompt-test 페이지의 textarea default 값으로만 쓰이고,
-// 실제 LLM 호출은 백엔드 `/casting/admin/recommendation-reports/preview`
+// 실제 LLM 호출은 백엔드 `/casting/admin/reports/recommendation/preview`
 // 가 백엔드 prompt 를 사용한다(편집해도 호출에 닿지 않음).
 //
 // 텍스트 변경은 백엔드에서 한 뒤 dump 스크립트로 동기화하세요.

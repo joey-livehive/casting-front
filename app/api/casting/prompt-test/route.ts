@@ -26,7 +26,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    const res = await fetch(`${CASTING_API_BASE}/casting/admin/recommendation-reports/preview`, {
+    const res = await fetch(`${CASTING_API_BASE}/casting/admin/reports/recommendation/preview`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
