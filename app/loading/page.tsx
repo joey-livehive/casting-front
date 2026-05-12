@@ -216,6 +216,9 @@ export default function LoadingPage() {
       ? sessionStorage.getItem('sto_guest_uid')
       : null;
     if (guestUid) {
+      try {
+        sessionStorage.setItem('casting_guest_phone', digits);
+      } catch {}
       const token = typeof window !== 'undefined' ? sessionStorage.getItem('casting_guest_token') : null;
       fetch(`${API_BASE}/casting/guests/${guestUid}/phone`, {
         method: 'PATCH',

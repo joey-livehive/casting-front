@@ -94,7 +94,7 @@ export async function castingFetch<T = unknown>(
 
 /**
  * 회원(매직링크 인증된 사용자) 전용 fetcher.
- * x-casting-user-token 헤더 자동 주입.
+ * Authorization: Bearer 토큰과 레거시 x-casting-user-token 헤더를 함께 주입한다.
  */
 export async function castingFetchUser<T = unknown>(
   path: string,
@@ -106,7 +106,10 @@ export async function castingFetchUser<T = unknown>(
     ...(headers as Record<string, string>),
   };
   const token = getCastingUserToken();
-  if (token) finalHeaders['x-casting-user-token'] = token;
+  if (token) {
+    finalHeaders.Authorization = `Bearer ${token}`;
+    finalHeaders['x-casting-user-token'] = token;
+  }
   const res = await fetch(`${CASTING_API_BASE}${path}`, {
     ...rest,
     headers: finalHeaders,

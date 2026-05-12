@@ -1,14 +1,15 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { castingFetch, setCastingUserSession } from '@/lib/casting/api';
 
 type Mode = 'password' | 'magic';
 type Status = 'idle' | 'sending' | 'sent' | 'error';
 
-export default function LoginPage() {
+function LoginInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [mode, setMode] = useState<Mode>('password');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -41,7 +42,7 @@ export default function LoginPage() {
           },
         );
         setCastingUserSession(data.user_uid, data.auth_token);
-        router.replace('/casting/me');
+        router.replace(searchParams.get('next') || '/casting/me');
         return;
       }
       // magic link mode (비번 모름 / 비번 미설정 회원)
@@ -70,9 +71,9 @@ export default function LoginPage() {
 
   return (
     <main className="max-w-[480px] mx-auto min-h-screen bg-[#F5EFE4] px-6 pt-12 pb-16">
-      <h1 className="font-bold text-[22px] text-[#1C1A17] mb-2">가입 / 로그인</h1>
+      <h1 className="font-bold text-[22px] text-[#1C1A17] mb-2">이메일 로그인</h1>
       <p className="text-[#4A443B] text-[14px] leading-[1.6] mb-6">
-        기존 회원은 이메일·비밀번호로 로그인하고, 처음이라면 매직링크로 가입을 시작해주세요.
+        가입한 이메일과 비밀번호로 로그인해주세요. 처음이라면 결제 완료 후 가입을 마쳐야 해요.
       </p>
 
       {status === 'sent' ? (
@@ -135,5 +136,19 @@ export default function LoginPage() {
         </form>
       )}
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="max-w-[480px] mx-auto min-h-screen bg-[#F5EFE4] px-6 pt-12 pb-16">
+          <p className="text-[#4A443B] text-[14px]">로그인 화면을 불러오는 중...</p>
+        </main>
+      }
+    >
+      <LoginInner />
+    </Suspense>
   );
 }

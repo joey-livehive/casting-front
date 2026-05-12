@@ -6,6 +6,7 @@ import { Chapter4Simulation } from '@/components/report/Chapter4Simulation';
 import { ReportShell } from '@/components/report/ReportShell';
 import { TrackSection } from '@/components/report/TrackSection';
 import { MeetOrPassCta } from '@/components/report/MeetOrPassCta';
+import { ReportAuthGate } from '@/components/casting/ReportAuthGate';
 import { CasterNoteSection } from '../../../template-preview/_components/CasterNoteSection';
 import { HeroV2 } from '../../../template-preview/_components/HeroV2';
 import { HuntBoxV2 } from '../../../template-preview/_components/HuntBoxV2';
@@ -73,7 +74,8 @@ export default async function CastingRecommendationReportPage({
   };
 
   return (
-    <main className="max-w-[480px] mx-auto pb-[60px] relative bg-brand-bg min-h-screen font-body text-brand-ink">
+    <ReportAuthGate>
+      <main className="max-w-[480px] mx-auto pb-[60px] relative bg-brand-bg min-h-screen font-body text-brand-ink">
       <ReportShell reportId={reportUid} tone="formal" variant="paid">
         <TopNav publishedAt={reportJson.published_at ?? dbReport.generated_at ?? 'LIVE'} />
         <HeroV2 userName={userName} />
@@ -131,6 +133,7 @@ export default async function CastingRecommendationReportPage({
         <ApplicationSummary userAnswers={userAnswers} />
         <MeetOrPassCta reportId={reportUid} initialCta={cta} />
       </ReportShell>
-    </main>
+      </main>
+    </ReportAuthGate>
   );
 }

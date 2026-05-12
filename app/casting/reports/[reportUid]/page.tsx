@@ -7,6 +7,7 @@ import { RadarChart } from '@/components/report/RadarChart';
 import { ReadingCard } from '@/components/report/ReadingCard';
 import { SafeText } from '@/components/report/SafeText';
 import { TopNav } from '@/components/report/TopNav';
+import { ReportAuthGate } from '@/components/casting/ReportAuthGate';
 import { getCastingMatchReport } from '@/lib/casting/matchReports';
 import type { UserAnswers, PersonalizedContent } from '@/lib/personalization/types';
 import { FormalTone } from './FormalTone';
@@ -165,7 +166,8 @@ export default async function CastingMatchReportPage({
   if (!report) notFound();
 
   return (
-    <FormalTone>
+    <ReportAuthGate>
+      <FormalTone>
       <main className="max-w-[480px] mx-auto pb-[90px] relative bg-brand-bg min-h-screen font-body text-brand-ink">
         <TopNav publishedAt={report.generatedAt} />
         <Hero userName="의뢰인" />
@@ -227,6 +229,7 @@ export default async function CastingMatchReportPage({
           </div>
         </div>
       </main>
-    </FormalTone>
+      </FormalTone>
+    </ReportAuthGate>
   );
 }

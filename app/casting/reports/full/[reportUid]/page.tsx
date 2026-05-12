@@ -16,6 +16,7 @@ import { Chapter4Simulation } from '@/components/report/Chapter4Simulation';
 import { ReportShell } from '@/components/report/ReportShell';
 import { TrackSection } from '@/components/report/TrackSection';
 import { MeetOrPassCta } from '@/components/report/MeetOrPassCta';
+import { ReportAuthGate } from '@/components/casting/ReportAuthGate';
 import { getFixture } from '@/lib/casting/fixtures';
 import { oppositeCandidateImageForViewerGender } from '@/lib/casting/reportImages';
 
@@ -101,7 +102,8 @@ export default async function CastingMatchReportPage({
   }
 
   return (
-    <main className="max-w-[480px] mx-auto pb-[60px] relative bg-brand-bg min-h-screen font-body text-brand-ink">
+    <ReportAuthGate>
+      <main className="max-w-[480px] mx-auto pb-[60px] relative bg-brand-bg min-h-screen font-body text-brand-ink">
       <ReportShell reportId={reportUid} tone={data.tone} variant="paid">
         <TopNav publishedAt={data.publishedAt} />
         <Hero userName={data.userName} />
@@ -126,6 +128,7 @@ export default async function CastingMatchReportPage({
           문의: <a href="mailto:hello@livehivecorp.com" className="underline">hello@livehivecorp.com</a>
         </div>
       </ReportShell>
-    </main>
+      </main>
+    </ReportAuthGate>
   );
 }
