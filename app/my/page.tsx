@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
 
-export default function CastingMeRedirect() {
+export default function MyRedirect() {
   redirect('/me');
 }
