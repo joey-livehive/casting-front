@@ -202,10 +202,12 @@ export class ConnectionReportFetchError extends Error {
 async function _fetchConnectionReport(
   path: string,
   uid: string,
+  phone: string,
 ): Promise<ConnectionReport> {
+  const qs = new URLSearchParams({ phone });
   const res = await fetch(
-    `${CASTING_API_BASE}${path}${encodeURIComponent(uid)}`,
-    { next: { revalidate: 30 } },
+    `${CASTING_API_BASE}${path}${encodeURIComponent(uid)}?${qs.toString()}`,
+    { cache: 'no-store' },
   );
   if (!res.ok) {
     let detail = res.statusText;
@@ -228,8 +230,9 @@ async function _fetchConnectionReport(
  */
 export async function fetchOwnerConnectionReport(
   uid: string,
+  phone: string,
 ): Promise<ConnectionReport> {
-  return _fetchConnectionReport('/casting/connection/casting/', uid);
+  return _fetchConnectionReport('/casting/connection/casting/', uid, phone);
 }
 
 /**
@@ -237,6 +240,7 @@ export async function fetchOwnerConnectionReport(
  */
 export async function fetchPartnerConnectionReport(
   uid: string,
+  phone: string,
 ): Promise<ConnectionReport> {
-  return _fetchConnectionReport('/casting/connection/cast/', uid);
+  return _fetchConnectionReport('/casting/connection/cast/', uid, phone);
 }
