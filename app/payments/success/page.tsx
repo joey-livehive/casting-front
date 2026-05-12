@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from 'react';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import { track } from '@/lib/report/tracking';
@@ -232,6 +233,8 @@ function SuccessInner() {
       const msg = (err as Error).message || '';
       if (msg.includes('429')) {
         setSignupError('잠시 후 다시 시도해 주세요. (1분 제한)');
+      } else if (msg.includes('409')) {
+        setSignupError('이미 가입된 이메일이에요. 로그인 후 이용해주세요.');
       } else if (msg.includes('422')) {
         setSignupError('이메일/비밀번호 형식을 확인해 주세요. (비밀번호는 8자 이상)');
       } else if (msg.includes('502')) {
@@ -373,6 +376,12 @@ function SuccessInner() {
             >
               {signupStatus === 'sending' ? '가입 중...' : '가입하기'}
             </button>
+            <p className="text-center text-[13px] text-[#6E6254]">
+              이미 가입했나요?{' '}
+              <Link href="/casting/auth/login?next=/casting/me" className="font-semibold text-[#1C1A17] underline">
+                로그인하기
+              </Link>
+            </p>
           </form>
         )}
 
