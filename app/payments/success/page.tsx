@@ -8,6 +8,7 @@ import { castingFetch, getCastingGuestUid, setCastingUserSession } from '@/lib/c
 
 type ConfirmStatus = 'confirming' | 'paid' | 'error';
 type SignupStatus = 'idle' | 'sending' | 'completed' | 'error';
+type PhoneStatus = 'idle' | 'sending' | 'codeSent' | 'verifying' | 'verified' | 'error';
 const GUEST_PHONE_KEY = 'casting_guest_phone';
 
 function normalizePhone(value: string): string {
@@ -33,7 +34,10 @@ function SuccessInner() {
   const [signupStatus, setSignupStatus] = useState<SignupStatus>('idle');
   const [signupError, setSignupError] = useState('');
   const [phone, setPhone] = useState('');
+  const [phoneCode, setPhoneCode] = useState('');
+  const [phoneStatus, setPhoneStatus] = useState<PhoneStatus>('idle');
   const [phoneError, setPhoneError] = useState('');
+  const [phoneVerificationToken, setPhoneVerificationToken] = useState('');
 
   useEffect(() => {
     const orderIdParam = params.get('orderId');
@@ -82,11 +86,96 @@ function SuccessInner() {
     const savedPhone = sessionStorage.getItem(GUEST_PHONE_KEY);
     if (!savedPhone) {
       setPhoneError('이전에 입력한 전화번호를 찾을 수 없어요.');
+      setPhoneStatus('error');
       return;
     }
     setPhone(formatPhone(savedPhone));
     setPhoneError('');
+    setPhoneStatus('idle');
   }, [orderId]);
+
+  const requestPhoneCode = async () => {
+    const digits = normalizePhone(phone);
+    if (digits.length < 10 || !orderId) {
+      setPhoneError('전화번호를 정확히 입력해주세요.');
+      setPhoneStatus('error');
+      return;
+    }
+    const guestUid = getCastingGuestUid();
+    if (!guestUid) {
+      setPhoneError('가입 정보를 찾을 수 없어요. 처음부터 다시 진행해주세요.');
+      setPhoneStatus('error');
+      return;
+    }
+    setPhoneStatus('sending');
+    setPhoneError('');
+    setPhoneVerificationToken('');
+    try {
+      await castingFetch(`/casting/guests/${guestUid}/phone`, {
+        method: 'PATCH',
+        body: JSON.stringify({ value: digits }),
+      });
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem(GUEST_PHONE_KEY, digits);
+      }
+      await castingFetch('/casting/auth/phone/request', {
+        method: 'POST',
+        body: JSON.stringify({ phone: digits, order_id: orderId }),
+      });
+      setPhoneStatus('codeSent');
+    } catch (err) {
+      const msg = (err as Error).message || '';
+      if (msg.includes('429')) {
+        setPhoneError('잠시 후 다시 시도해 주세요. (20초 제한)');
+      } else if (msg.includes('422')) {
+        setPhoneError('전화번호 형식을 확인해 주세요.');
+      } else if (msg.includes('502')) {
+        setPhoneError('인증번호 발송에 실패했어요. 잠시 후 다시 시도해 주세요.');
+      } else {
+        setPhoneError('인증번호 요청에 실패했어요.');
+      }
+      setPhoneStatus('error');
+    }
+  };
+
+  const onClickPhoneAction = () => {
+    if (phoneStatus === 'codeSent' || phoneCode.length === 6) {
+      void verifyPhoneCode();
+      return;
+    }
+    void requestPhoneCode();
+  };
+
+  const verifyPhoneCode = async () => {
+    const digits = normalizePhone(phone);
+    if (digits.length < 10 || phoneCode.replace(/\D/g, '').length !== 6 || !orderId) {
+      setPhoneError('전화번호와 인증번호를 확인해주세요.');
+      setPhoneStatus('error');
+      return;
+    }
+    setPhoneStatus('verifying');
+    setPhoneError('');
+    try {
+      const data = await castingFetch<{ phone_verification_token: string }>('/casting/auth/phone/verify', {
+        method: 'POST',
+        body: JSON.stringify({ phone: digits, code: phoneCode.replace(/\D/g, ''), order_id: orderId }),
+      });
+      setPhoneVerificationToken(data.phone_verification_token);
+      setPhoneStatus('verified');
+    } catch (err) {
+      const msg = (err as Error).message || '';
+      if (msg.includes('410')) {
+        setPhoneError('인증번호가 만료됐어요. 다시 받아주세요.');
+      } else if (msg.includes('400')) {
+        setPhoneError('인증번호가 올바르지 않아요.');
+      } else if (msg.includes('429')) {
+        setPhoneError('인증 시도 횟수를 초과했어요. 다시 받아주세요.');
+      } else {
+        setPhoneError('전화번호 인증에 실패했어요.');
+      }
+      setPhoneStatus('error');
+    }
+  };
 
   const onSubmitSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,28 +190,14 @@ function SuccessInner() {
       return;
     }
     const digits = normalizePhone(phone);
-    if (digits.length < 10) {
-      setSignupError('전화번호를 정확히 입력해주세요.');
-      setSignupStatus('error');
-      return;
-    }
-    const guestUid = getCastingGuestUid();
-    if (!guestUid) {
-      setSignupError('가입 정보를 찾을 수 없어요. 처음부터 다시 진행해주세요.');
+    if (phoneStatus !== 'verified' || !phoneVerificationToken || digits.length < 10) {
+      setSignupError('전화번호 인증을 완료해주세요.');
       setSignupStatus('error');
       return;
     }
     setSignupStatus('sending');
     setSignupError('');
-    setPhoneError('');
     try {
-      await castingFetch(`/casting/guests/${guestUid}/phone`, {
-        method: 'PATCH',
-        body: JSON.stringify({ value: digits }),
-      });
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem(GUEST_PHONE_KEY, digits);
-      }
       const data = await castingFetch<{
         user_uid: string;
         auth_token: string;
@@ -135,6 +210,7 @@ function SuccessInner() {
           password,
           order_id: orderId,
           phone: digits,
+          phone_verification_token: phoneVerificationToken,
         }),
       });
       setCastingUserSession(data.user_uid, data.auth_token);
@@ -214,11 +290,62 @@ function SuccessInner() {
               value={phone}
               onChange={(e) => {
                 setPhone(formatPhone(e.target.value));
+                setPhoneCode('');
+                setPhoneStatus('idle');
+                setPhoneVerificationToken('');
                 setPhoneError('');
               }}
               className="w-full h-12 px-4 rounded-[12px] bg-white border border-[#1C1A17]/15 text-[15px] text-[#1C1A17] placeholder:text-[#8A8275]"
             />
-            {phoneError && (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                placeholder="인증번호 6자리"
+                value={phoneCode}
+                onChange={(e) => {
+                  setPhoneCode(e.target.value.replace(/\D/g, '').slice(0, 6));
+                  if (phoneStatus === 'verified') {
+                    setPhoneStatus('codeSent');
+                    setPhoneVerificationToken('');
+                  }
+                }}
+                className="h-12 min-w-0 flex-1 px-4 rounded-[12px] bg-white border border-[#1C1A17]/15 text-[15px] text-[#1C1A17] placeholder:text-[#8A8275]"
+              />
+              <button
+                type="button"
+                onClick={onClickPhoneAction}
+                disabled={phoneStatus === 'sending' || phoneStatus === 'verifying' || phoneStatus === 'verified'}
+                className="h-12 shrink-0 rounded-[12px] bg-[#1C1A17] px-4 text-[13px] font-bold text-white disabled:opacity-50"
+              >
+                {phoneStatus === 'sending'
+                  ? '발송 중'
+                  : phoneStatus === 'verifying'
+                    ? '확인 중'
+                    : phoneStatus === 'verified'
+                      ? '인증됨'
+                      : phoneStatus === 'codeSent' || phoneCode
+                        ? '확인'
+                        : '인증번호'}
+              </button>
+            </div>
+            {phoneStatus === 'codeSent' && !phoneError && (
+              <p className="text-[#5F8F54] text-[13px]">인증번호를 보냈어요. 5분 안에 입력해주세요.</p>
+            )}
+            {(phoneStatus === 'codeSent' || phoneStatus === 'error') && (
+              <button
+                type="button"
+                onClick={requestPhoneCode}
+                className="text-[#6E6254] underline text-[13px]"
+              >
+                인증번호 다시 받기
+              </button>
+            )}
+            {phoneStatus === 'verified' && (
+              <p className="text-[#5F8F54] text-[13px]">전화번호 인증이 완료됐어요.</p>
+            )}
+            {phoneStatus === 'error' && phoneError && (
               <p className="text-red-600 text-[13px]">{phoneError}</p>
             )}
             {signupStatus === 'error' && signupError && (
@@ -226,7 +353,7 @@ function SuccessInner() {
             )}
             <button
               type="submit"
-              disabled={signupStatus === 'sending' || !email || password.length < 8 || normalizePhone(phone).length < 10}
+              disabled={signupStatus === 'sending' || !email || password.length < 8 || phoneStatus !== 'verified'}
               className="w-full h-12 rounded-full bg-[#E37A3A] text-white font-display font-bold disabled:opacity-50"
             >
               {signupStatus === 'sending' ? '가입 중...' : '가입하기'}
