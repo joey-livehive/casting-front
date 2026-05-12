@@ -6,6 +6,10 @@
 
 import type { DashboardOrder, DashboardResponse, Match } from './types';
 
+type MockDashboardResponse = Omit<DashboardResponse, 'matches'> & {
+  matches: Match[];
+};
+
 const HOURS = 1000 * 60 * 60;
 const DAYS = HOURS * 24;
 const iso = (msAgo: number) => new Date(Date.now() - msAgo).toISOString();
@@ -29,7 +33,7 @@ const STARTER_ORDER: DashboardOrder = {
   created_at: iso(30 * DAYS),
 };
 
-const CASE_A: DashboardResponse = {
+const CASE_A: MockDashboardResponse = {
   user: MOCK_USER,
   phone_verified: true,
   credits: { balance: 4, total_purchased: 5, total_used: 1, linked_guest_count: 1 },
@@ -58,7 +62,7 @@ const CASE_A: DashboardResponse = {
   ],
 };
 
-const CASE_B: DashboardResponse = {
+const CASE_B: MockDashboardResponse = {
   user: MOCK_USER,
   phone_verified: true,
   credits: { balance: 0, total_purchased: 5, total_used: 5, linked_guest_count: 1 },
@@ -167,7 +171,7 @@ const CASE_B: DashboardResponse = {
   ],
 };
 
-const CASE_C: DashboardResponse = {
+const CASE_C: MockDashboardResponse = {
   user: MOCK_USER,
   phone_verified: true,
   credits: { balance: 0, total_purchased: 5, total_used: 5, linked_guest_count: 1 },
@@ -279,7 +283,7 @@ const CASE_C: DashboardResponse = {
   ],
 };
 
-const EMPTY_CASE: DashboardResponse = {
+const EMPTY_CASE: MockDashboardResponse = {
   user: MOCK_USER,
   phone_verified: true,
   credits: { balance: 5, total_purchased: 5, total_used: 0, linked_guest_count: 1 },

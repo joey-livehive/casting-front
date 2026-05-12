@@ -51,13 +51,10 @@ function MeInner() {
       const token = getCastingUserToken();
       const shouldUseMock = !!caseKey || !token || token === DEV_MOCK_TOKEN;
       if (shouldUseMock) {
-        if (!token) {
-          localStorage.setItem('casting_user_token', DEV_MOCK_TOKEN);
-          localStorage.setItem('casting_user_uid', 'mock-user');
-        }
+        if (token === DEV_MOCK_TOKEN) clearCastingUserSession();
         const { CASES, DEFAULT_MOCK_KEY } = await import('./_lib/mock-cases');
         const key = caseKey && caseKey in CASES ? (caseKey as keyof typeof CASES) : DEFAULT_MOCK_KEY;
-        setUsingMock(!!caseKey);
+        setUsingMock(true);
         applyData(CASES[key].data);
         return;
       }
@@ -145,7 +142,13 @@ function MeInner() {
     }
   }
 
+  function logout() {
+    clearCastingUserSession();
+    router.replace('/casting/auth/login');
+  }
+
   if (state === 'loading') return <CenteredMessage>확인 중…</CenteredMessage>;
+
   if (state === 'unauth') return null;
 
   if (state === 'error' || !data) {
@@ -177,20 +180,32 @@ function MeInner() {
       {isDev && <DevCaseSwitcherSlot current={caseKey ?? ''} usingMock={usingMock} />}
 
       <div className="mx-auto max-w-xl px-5 pb-24 pt-8">
-        <header className="mb-8">
-          <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: C.accent }}>
-            Casting Status
-          </p>
-          <h1
-            className="mt-1 font-bold"
-            style={{ color: C.ink, fontSize: 'clamp(26px, 6vw, 34px)', lineHeight: 1.2, letterSpacing: '-0.5px' }}
-          >
-            캐스팅 현황
-          </h1>
-          <div className="mt-2 flex flex-col text-xs" style={{ color: C.muted }}>
-            <span>{data.user.email}</span>
-            {data.phone_verified && data.user.phone && <span>{formatPhone(data.user.phone)}</span>}
+        <header className="mb-8 flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: C.accent }}>
+              Casting Status
+            </p>
+            <h1
+              className="mt-1 font-bold"
+              style={{ color: C.ink, fontSize: 'clamp(26px, 6vw, 34px)', lineHeight: 1.2, letterSpacing: '-0.5px' }}
+            >
+              캐스팅 현황
+            </h1>
+            <div className="mt-2 flex flex-col text-xs" style={{ color: C.muted }}>
+              <span className="truncate">{data.user.email}</span>
+              {data.phone_verified && data.user.phone && (
+                <span>{formatPhone(data.user.phone)}</span>
+              )}
+            </div>
           </div>
+          <button
+            type="button"
+            onClick={logout}
+            className="shrink-0 rounded-full px-3 py-1.5 text-xs font-bold transition-transform hover:-translate-y-0.5"
+            style={{ background: '#FFFFFF', color: C.muted, border: `2px solid ${C.ink}`, boxShadow: `2px 2px 0 ${C.ink}` }}
+          >
+            로그아웃
+          </button>
         </header>
 
         {!data.phone_verified && (
