@@ -1,11 +1,11 @@
 // @deprecated 인스타 합본 LLM system prompt — PR 2 commit 3c-2-b 에서 분해 완료.
 //
-// 새 운영 라우트 (`/connection/casting/{uid}`) 는 본 합본을 호출하지 않고
+// 새 운영 라우트 (`/matching/casting/{uid}`) 는 본 합본을 호출하지 않고
 // 백엔드의 분해된 프롬프트 6종을 직접 호출합니다:
 //   - FILTER_INSTA         → darakbang-backend/.../prompts/filter_insta.py
 //   - PROFILE_INSTA        → darakbang-backend/.../prompts/profile_insta.py
 //   - PERSON               → darakbang-backend/.../prompts/person.py (source-agnostic, 합본의 PERSON 부분 흡수)
-//   - CONNECTION_FOR_OWNER → darakbang-backend/.../prompts/connection_for_owner.py
+//   - MATCHING_FOR_OWNER → darakbang-backend/.../prompts/matching_for_owner.py
 //   - INSTA_AXIS_NOTES     → darakbang-backend/.../prompts/insta_axis_notes.py (4축 narrative, insta 시점만)
 // 4축 라벨도 v5 표준 (energy/judgment/sociability/action) 으로 통일.
 // `selfExpression / behavior` 는 폐기 (시각화 컴포넌트 갱신은 3c-2-c).

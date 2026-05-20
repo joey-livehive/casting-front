@@ -16,12 +16,12 @@ import { HuntBoxV2 } from '@/app/casting/template-preview/_components/HuntBoxV2'
 import { ReadingCardV2 } from '@/app/casting/template-preview/_components/ReadingCardV2';
 import { TeaserCardV2 } from '@/app/casting/template-preview/_components/TeaserCardV2';
 import { Chapter3InstaSpectrum } from '@/app/casting/insta-template-preview/_components/Chapter3InstaSpectrum';
-import { ConnectionPhoneGate } from '@/app/connection/_components/ConnectionPhoneGate';
+import { MatchingPhoneGate } from '@/app/casting/report/_components/MatchingPhoneGate';
 import {
-  ConnectionReport,
-  ConnectionReportFetchError,
-  fetchOwnerConnectionReport,
-} from '@/lib/casting/connection-report';
+  MatchingReport,
+  MatchingReportFetchError,
+  fetchOwnerMatchingReport,
+} from '@/lib/casting/matching-report';
 import type { Candidate } from '@/lib/report/types';
 import {
   FIXED_USER_NAME,
@@ -35,15 +35,15 @@ import {
   adaptSpectrumNotes,
   adaptUserAnswers,
   defaultPhotoFor,
-} from '@/lib/casting/connection-adapter';
+} from '@/lib/casting/matching-adapter';
 
 const INSTA_RECOMMENDATION_FOOTNOTE =
   '*인스타그램에서 찾아온 분이라 일부는 추정값이지만, 정확도는 약 73%에 달해요.';
 const INSTA_CTA_STEP1_NOTE =
   '인스타그램에서 엄선해서 찾아온 분에요! 저희가 스토리 태그·DM 등 가능한 모든 경로로 연락 시도할 예정입니다! 최선을 다해 연락망 확보해서 꼭 연결해드릴게요.';
 
-export function OwnerConnectionPageClient({ uid }: { uid: string }) {
-  const [report, setReport] = useState<ConnectionReport | null>(null);
+export function OwnerMatchingPageClient({ uid }: { uid: string }) {
+  const [report, setReport] = useState<MatchingReport | null>(null);
   const [verifiedPhone, setVerifiedPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,12 +56,12 @@ export function OwnerConnectionPageClient({ uid }: { uid: string }) {
     setLoading(true);
     setError(null);
     try {
-      setReport(await fetchOwnerConnectionReport(uid, phone));
+      setReport(await fetchOwnerMatchingReport(uid, phone));
       setVerifiedPhone(phone);
     } catch (err) {
-      if (err instanceof ConnectionReportFetchError && err.status === 403) {
+      if (err instanceof MatchingReportFetchError && err.status === 403) {
         setError('전화번호가 일치하지 않아요.');
-      } else if (err instanceof ConnectionReportFetchError && err.status === 404) {
+      } else if (err instanceof MatchingReportFetchError && err.status === 404) {
         setError('리포트를 찾을 수 없어요.');
       } else {
         setError('리포트를 불러오지 못했어요. 잠시 뒤 다시 시도해주세요.');
@@ -73,7 +73,7 @@ export function OwnerConnectionPageClient({ uid }: { uid: string }) {
 
   if (!report) {
     return (
-      <ConnectionPhoneGate
+      <MatchingPhoneGate
         title="매칭 리포트 확인"
         error={error}
         loading={loading}

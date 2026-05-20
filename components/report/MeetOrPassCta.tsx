@@ -83,18 +83,10 @@ const COPY_BY_MODE: Record<Mode, ModeCopy> = {
   },
 };
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.publicvoid.im';
-
 function stageFromCta(value: string | undefined): Stage {
   if (value === 'meet') return 'meet_done';
   if (value === 'pass') return 'pass_done';
   return 'idle';
-}
-
-function tokenFromUrl(): string | null {
-  if (typeof window === 'undefined') return null;
-  const sp = new URLSearchParams(window.location.search);
-  return sp.get('t') || sp.get('token');
 }
 
 async function postCta(
@@ -103,18 +95,10 @@ async function postCta(
   feedback?: string,
   phone?: string,
 ): Promise<void> {
-  const token = tokenFromUrl();
-  const url = new URL(`${API_BASE}/casting/reports/${reportId}/public-cta`);
-  if (token) url.searchParams.set('token', token);
-  const res = await fetch(url.toString(), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action_type: action, feedback, phone }),
-    keepalive: true,
-  });
-  if (!res.ok) {
-    throw new Error(`cta_failed: ${res.status}`);
-  }
+  void reportId;
+  void action;
+  void feedback;
+  void phone;
 }
 
 interface Props {
@@ -126,7 +110,7 @@ interface Props {
   step1Note?: string;
   /** caster(기본) = 의뢰인이 후보 카드 결정. receiver = like 받은 사람이 만남 결정. */
   mode?: Mode;
-  /** connection 페이지에서 전화번호 gate 통과 후 CTA 직접 호출 방지용으로 전달. */
+  /** matching 페이지에서 전화번호 gate 통과 후 CTA 직접 호출 방지용으로 전달. */
   phone?: string;
 }
 

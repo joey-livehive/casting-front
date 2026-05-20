@@ -10,7 +10,7 @@ type Props = {
   children?: ReactNode;
 };
 
-export function ConnectionPhoneGate({
+export function MatchingPhoneGate({
   title,
   error,
   loading = false,

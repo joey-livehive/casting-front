@@ -1,12 +1,12 @@
 /**
- * ConnectionReport — 백엔드 `casting/profile/schema.py` 의 Pydantic ConnectionReport 와 1:1 매핑.
+ * MatchingReport — 백엔드 `casting/profile/schema.py` 의 Pydantic MatchingReport 와 1:1 매핑.
  *
  * 라우트:
- *   GET /casting/connection/casting/{uid}   → perspective='owner'
- *   GET /casting/connection/cast/{uid}      → perspective='partner' (commit 4)
+ *   GET /casting/report/{report_uid}/casting → perspective='owner'
+ *   GET /casting/report/{report_uid}/cast    → perspective='partner'
  *
  * 본 모듈은 타입 정의 + server-side fetch 함수만. 컴포넌트 props 매핑은
- * connection-adapter.ts 가 담당.
+ * matching-adapter.ts 가 담당.
  */
 
 import { CASTING_API_BASE } from './api';
@@ -137,9 +137,9 @@ export type AxisNote = {
   narrative: string;
 };
 
-// v5: ConnectionContent 는 narrative-only (opening + simulation).
-// axisNotes 는 ConnectionReport.axisNotes top-level (Optional, insta 시점만).
-export type ConnectionContent = {
+// v5: MatchingContent 는 narrative-only (opening + simulation).
+// axisNotes 는 MatchingReport.axisNotes top-level (Optional, insta 시점만).
+export type MatchingContent = {
   opening: string;
   simulation: string;
 };
@@ -156,13 +156,13 @@ export type RadarResult = {
   dealbreakers_passed: boolean;
 };
 
-export type ConnectionParticipant = {
+export type MatchingParticipant = {
   profile: Profile;
   person_content: PersonContent;
   ideal?: IdealCriteria | null;
 };
 
-export type ConnectionReportMeta = {
+export type MatchingReportMeta = {
   partner_source: Source;
   hunt_stats?: {
     offlineGyms?: number | null;
@@ -174,12 +174,12 @@ export type ConnectionReportMeta = {
   generated_at?: string | null;
 };
 
-export type ConnectionReport = {
-  connection_uid: string;
+export type MatchingReport = {
+  matching_uid: string;
   perspective: Perspective;
-  owner: ConnectionParticipant;
-  partner: ConnectionParticipant;
-  content: ConnectionContent;
+  owner: MatchingParticipant;
+  partner: MatchingParticipant;
+  content: MatchingContent;
 
   // v5: radar / axisNotes 는 alternate. partner.source 가 어느 쪽 채울지 결정.
   //   partner.source=internal → radar 채움, axisNotes=null
@@ -187,26 +187,26 @@ export type ConnectionReport = {
   radar: RadarResult | null;
   axisNotes: AxisNote[] | null;
 
-  meta: ConnectionReportMeta;
+  meta: MatchingReportMeta;
 };
 
 // ── Server-side fetch ─────────────────────────────────────────────────────
 
-export class ConnectionReportFetchError extends Error {
+export class MatchingReportFetchError extends Error {
   constructor(public status: number, message: string) {
     super(message);
-    this.name = 'ConnectionReportFetchError';
+    this.name = 'MatchingReportFetchError';
   }
 }
 
-async function _fetchConnectionReport(
-  path: string,
+async function _fetchMatchingReport(
   uid: string,
+  perspective: 'casting' | 'cast',
   phone: string,
-): Promise<ConnectionReport> {
+): Promise<MatchingReport> {
   const qs = new URLSearchParams({ phone });
   const res = await fetch(
-    `${CASTING_API_BASE}${path}${encodeURIComponent(uid)}?${qs.toString()}`,
+    `${CASTING_API_BASE}/casting/report/${encodeURIComponent(uid)}/${perspective}?${qs.toString()}`,
     { cache: 'no-store' },
   );
   if (!res.ok) {
@@ -217,30 +217,30 @@ async function _fetchConnectionReport(
     } catch {
       // ignore JSON parse failure
     }
-    throw new ConnectionReportFetchError(res.status, detail);
+    throw new MatchingReportFetchError(res.status, detail);
   }
-  return (await res.json()) as ConnectionReport;
+  return (await res.json()) as MatchingReport;
 }
 
 /**
- * Owner 시점 ConnectionReport (`/casting/{uid}`).
+ * Owner 시점 MatchingReport.
  *
  * Next.js server component 에서 호출한다. revalidate 30s — 백엔드 LLM 캐시가
  * 진실의 소스이므로 짧은 revalidate 안전.
  */
-export async function fetchOwnerConnectionReport(
+export async function fetchOwnerMatchingReport(
   uid: string,
   phone: string,
-): Promise<ConnectionReport> {
-  return _fetchConnectionReport('/casting/connection/casting/', uid, phone);
+): Promise<MatchingReport> {
+  return _fetchMatchingReport(uid, 'casting', phone);
 }
 
 /**
- * Partner 시점 ConnectionReport (`/cast/{uid}`) — 소개받은 사람 리포트.
+ * Partner 시점 MatchingReport — 소개받은 사람 리포트.
  */
-export async function fetchPartnerConnectionReport(
+export async function fetchPartnerMatchingReport(
   uid: string,
   phone: string,
-): Promise<ConnectionReport> {
-  return _fetchConnectionReport('/casting/connection/cast/', uid, phone);
+): Promise<MatchingReport> {
+  return _fetchMatchingReport(uid, 'cast', phone);
 }

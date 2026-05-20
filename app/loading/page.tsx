@@ -84,7 +84,7 @@ export default function LoadingPage() {
     stopPolling();
     pollRef.current = setInterval(async () => {
       try {
-        const res = await fetch(`${API_BASE}/casting/preview-reports/${reportId}`);
+        const res = await fetch(`${API_BASE}/casting/preview/${reportId}`);
         if (!res.ok) return;
         const data = await res.json();
         if (data.status === 'published') {
@@ -111,7 +111,7 @@ export default function LoadingPage() {
     if (!guestUid) return;
 
     try {
-      const res = await fetch(`${API_BASE}/casting/preview-reports`, {
+      const res = await fetch('/api/casting/preview', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ guest_uid: guestUid, version: '20' }),
@@ -146,9 +146,10 @@ export default function LoadingPage() {
     setStage('waiting');
 
     try {
-      const res = await fetch(`${API_BASE}/casting/preview-reports/${current.reportId}/retry`, {
+      const res = await fetch('/api/casting/preview', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ guest_uid: sessionStorage.getItem('sto_guest_uid'), version: '20' }),
       });
       if (!res.ok) throw new Error(`API ${res.status}`);
       pollReport(current.reportId);

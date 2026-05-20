@@ -1,9 +1,9 @@
 /**
- * ConnectionReport → 기존 매칭 페이지 컴포넌트 props 어댑터.
+ * MatchingReport → 기존 매칭 페이지 컴포넌트 props 어댑터.
  *
  * PR 2 commit 3b — 기존 컴포넌트 (HeroV2, CasterNoteSection, TeaserCardV2,
  * ReadingCardV2, CandidateDetailSection, Chapter3V2, Chapter4Simulation,
- * ApplicationSummary) 를 ConnectionReport 한 덩어리에서 채운다.
+ * ApplicationSummary) 를 MatchingReport 한 덩어리에서 채운다.
  *
  * 매핑 안 되는 필드 (hobbies, daySchedule 등) 는 빈 값으로. commit 3c 에서
  * 인스타 합본 분해 + 4축 라벨 통일 시 보강 예정.
@@ -12,7 +12,7 @@
 import type { Candidate, MatchAnalysis } from '@/lib/report/types';
 import type { UserAnswers } from '@/lib/personalization/types';
 import type { BipolarAxis } from '@/app/casting/insta-template-preview/_components/Chapter3InstaSpectrum';
-import type { AxisName, ConnectionReport, Gender, Perspective } from './connection-report';
+import type { AxisName, MatchingReport, Gender, Perspective } from './matching-report';
 import { formatAnswerLabel } from './answer-labels';
 
 export const FIXED_USER_NAME = '의뢰인';
@@ -66,7 +66,7 @@ const AXIS_BIPOLAR: Record<AxisName, { name: string; left: string; right: string
   action: { name: '행동', left: '안정 추구', right: '모험 추구' },
 };
 
-export function adaptBipolarAxes(report: ConnectionReport): BipolarAxis[] {
+export function adaptBipolarAxes(report: MatchingReport): BipolarAxis[] {
   const bv = report.partner.person_content.bipolarValues;
   const axes: AxisName[] = ['energy', 'judgment', 'sociability', 'action'];
   return axes.map((axis) => {
@@ -80,7 +80,7 @@ export function adaptBipolarAxes(report: ConnectionReport): BipolarAxis[] {
   });
 }
 
-export function adaptSpectrumNotes(report: ConnectionReport): string[] {
+export function adaptSpectrumNotes(report: MatchingReport): string[] {
   // v5 alternate: axisNotes 가 있으면 그 narrative 사용 (insta partner).
   // 없으면 spectrumNotes (PersonContent) fallback.
   if (report.axisNotes && report.axisNotes.length > 0) {
@@ -90,26 +90,26 @@ export function adaptSpectrumNotes(report: ConnectionReport): string[] {
 }
 
 /**
- * ConnectionReport.partner → Candidate (owner page 의 매칭 상대 카드).
+ * MatchingReport.partner → Candidate (owner page 의 매칭 상대 카드).
  *
  * 사진은 partner 의 실제 사진(있으면) 또는 성별별 default. owner page 의 insta
  * 분기는 호출처에서 한 번 더 default 로 override.
  */
-export function adaptCandidate(report: ConnectionReport): Candidate {
+export function adaptCandidate(report: MatchingReport): Candidate {
   return participantToCandidate(report.partner, '');
 }
 
 /**
- * ConnectionReport.owner → Candidate (cast page 의 의뢰인 소개 카드).
+ * MatchingReport.owner → Candidate (cast page 의 의뢰인 소개 카드).
  *
  * partner page 의 candidate = owner. 사진 우선순위는 동일 (real → gender default).
  */
-export function adaptOwnerCandidate(report: ConnectionReport): Candidate {
+export function adaptOwnerCandidate(report: MatchingReport): Candidate {
   return participantToCandidate(report.owner, '내부 POOL');
 }
 
 function participantToCandidate(
-  participant: ConnectionReport['partner'],
+  participant: MatchingReport['partner'],
   foundAt: string,
 ): Candidate {
   const { person_content: pc, profile } = participant;
@@ -144,7 +144,7 @@ function participantToCandidate(
  * owner 가 실제 업로드한 사진이 있는지. cast page(partner 시점) 의 blur 결정용.
  * 성별별 default placeholder 는 blur 대상이 아니다.
  */
-export function ownerHasRealPhoto(report: ConnectionReport): boolean {
+export function ownerHasRealPhoto(report: MatchingReport): boolean {
   return !!report.owner.profile.photos?.[0]?.url;
 }
 
@@ -154,7 +154,7 @@ export function ownerHasRealPhoto(report: ConnectionReport): boolean {
  * - 'partner' : partner.personality + "당신은 이런 분" prefix (인스타/내부 분기)
  */
 export function adaptViewerInsight(
-  report: ConnectionReport,
+  report: MatchingReport,
   perspective: Perspective,
 ): string {
   if (perspective === 'owner') return report.owner.person_content.personality;
@@ -165,7 +165,7 @@ export function adaptViewerInsight(
   return `${prefix}\n\n${report.partner.person_content.personality}`;
 }
 
-export function adaptCasterNote(report: ConnectionReport): {
+export function adaptCasterNote(report: MatchingReport): {
   headline: string;
   charmBullets: string[];
 } {
@@ -176,7 +176,7 @@ export function adaptCasterNote(report: ConnectionReport): {
   };
 }
 
-export function adaptHuntStats(report: ConnectionReport): {
+export function adaptHuntStats(report: MatchingReport): {
   offlineGyms: number;
   instagramProfiles: number;
   linkedinProfiles: number;
@@ -191,7 +191,7 @@ export function adaptHuntStats(report: ConnectionReport): {
   };
 }
 
-export function adaptReadingCard(report: ConnectionReport): {
+export function adaptReadingCard(report: MatchingReport): {
   viewerInsight: string;
   matchOpening: string;
   candidateMatch: string;
@@ -203,7 +203,7 @@ export function adaptReadingCard(report: ConnectionReport): {
   };
 }
 
-export function adaptChapter2Narratives(report: ConnectionReport): {
+export function adaptChapter2Narratives(report: MatchingReport): {
   personality: string;
   datingStyle: string;
   weekendStyle: string;
@@ -216,7 +216,7 @@ export function adaptChapter2Narratives(report: ConnectionReport): {
   };
 }
 
-export function adaptMatchAnalysis(report: ConnectionReport): MatchAnalysis {
+export function adaptMatchAnalysis(report: MatchingReport): MatchAnalysis {
   const { radar, axisNotes, content, owner, partner } = report;
 
   // 채움 정책:
@@ -250,7 +250,7 @@ export function adaptMatchAnalysis(report: ConnectionReport): MatchAnalysis {
   };
 }
 
-export function adaptUserAnswers(report: ConnectionReport): UserAnswers {
+export function adaptUserAnswers(report: MatchingReport): UserAnswers {
   const { owner } = report;
   const ideal = owner.ideal || {};
   const basics = owner.profile.basics;

@@ -15,12 +15,12 @@ import { TeaserCardV2 } from '@/app/casting/template-preview/_components/TeaserC
 import { Chapter3V2 } from '@/app/casting/template-preview/_components/Chapter3V2';
 import { Chapter3InstaSpectrum } from '@/app/casting/insta-template-preview/_components/Chapter3InstaSpectrum';
 import { ReceiverHero } from '@/app/casting/receiver-template-preview/_components/ReceiverHero';
-import { ConnectionPhoneGate } from '@/app/connection/_components/ConnectionPhoneGate';
+import { MatchingPhoneGate } from '@/app/casting/report/_components/MatchingPhoneGate';
 import {
-  ConnectionReport,
-  ConnectionReportFetchError,
-  fetchPartnerConnectionReport,
-} from '@/lib/casting/connection-report';
+  MatchingReport,
+  MatchingReportFetchError,
+  fetchPartnerMatchingReport,
+} from '@/lib/casting/matching-report';
 import {
   adaptBipolarAxes,
   adaptMatchAnalysis,
@@ -29,7 +29,7 @@ import {
   adaptUserAnswers,
   adaptViewerInsight,
   defaultPhotoFor,
-} from '@/lib/casting/connection-adapter';
+} from '@/lib/casting/matching-adapter';
 
 const RECEIVER_COPY = {
   casterNoteBulletsHeading: '✨ 이 사람을 놓치면 안 되는 3가지 이유',
@@ -46,8 +46,8 @@ const RECEIVER_COPY = {
   chapter2Lead: '이 분의 4가지 성향 축을 정리해봤어요.',
 } as const;
 
-export function PartnerConnectionPageClient({ uid }: { uid: string }) {
-  const [report, setReport] = useState<ConnectionReport | null>(null);
+export function PartnerMatchingPageClient({ uid }: { uid: string }) {
+  const [report, setReport] = useState<MatchingReport | null>(null);
   const [verifiedPhone, setVerifiedPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,12 +60,12 @@ export function PartnerConnectionPageClient({ uid }: { uid: string }) {
     setLoading(true);
     setError(null);
     try {
-      setReport(await fetchPartnerConnectionReport(uid, phone));
+      setReport(await fetchPartnerMatchingReport(uid, phone));
       setVerifiedPhone(phone);
     } catch (err) {
-      if (err instanceof ConnectionReportFetchError && err.status === 403) {
+      if (err instanceof MatchingReportFetchError && err.status === 403) {
         setError('전화번호가 일치하지 않아요.');
-      } else if (err instanceof ConnectionReportFetchError && err.status === 404) {
+      } else if (err instanceof MatchingReportFetchError && err.status === 404) {
         setError('리포트를 찾을 수 없어요.');
       } else {
         setError('리포트를 불러오지 못했어요. 잠시 뒤 다시 시도해주세요.');
@@ -77,7 +77,7 @@ export function PartnerConnectionPageClient({ uid }: { uid: string }) {
 
   if (!report) {
     return (
-      <ConnectionPhoneGate
+      <MatchingPhoneGate
         title="소개 리포트 확인"
         error={error}
         loading={loading}
