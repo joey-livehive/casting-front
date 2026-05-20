@@ -19,6 +19,7 @@ import { MatchingPhoneGate } from '@/app/casting/report/_components/MatchingPhon
 import {
   MatchingReport,
   MatchingReportFetchError,
+  fetchMatchingReport,
   fetchPartnerMatchingReport,
 } from '@/lib/casting/matching-report';
 import {
@@ -46,7 +47,13 @@ const RECEIVER_COPY = {
   chapter2Lead: '이 분의 4가지 성향 축을 정리해봤어요.',
 } as const;
 
-export function PartnerMatchingPageClient({ uid }: { uid: string }) {
+export function PartnerMatchingPageClient({
+  uid,
+  canonical = false,
+}: {
+  uid: string;
+  canonical?: boolean;
+}) {
   const [report, setReport] = useState<MatchingReport | null>(null);
   const [verifiedPhone, setVerifiedPhone] = useState('');
   const [loading, setLoading] = useState(false);
@@ -60,7 +67,9 @@ export function PartnerMatchingPageClient({ uid }: { uid: string }) {
     setLoading(true);
     setError(null);
     try {
-      setReport(await fetchPartnerMatchingReport(uid, phone));
+      setReport(
+        await (canonical ? fetchMatchingReport(uid, phone) : fetchPartnerMatchingReport(uid, phone)),
+      );
       setVerifiedPhone(phone);
     } catch (err) {
       if (err instanceof MatchingReportFetchError && err.status === 403) {

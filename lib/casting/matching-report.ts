@@ -2,8 +2,9 @@
  * MatchingReport — 백엔드 `casting/profile/schema.py` 의 Pydantic MatchingReport 와 1:1 매핑.
  *
  * 라우트:
- *   GET /casting/report/{report_uid}/casting → perspective='owner'
- *   GET /casting/report/{report_uid}/cast    → perspective='partner'
+ *   GET /casting/report/{report_uid}         → perspective from report_uid/row
+ *   GET /casting/report/{report_uid}/casting → legacy owner route
+ *   GET /casting/report/{report_uid}/cast    → legacy partner route
  *
  * 본 모듈은 타입 정의 + server-side fetch 함수만. 컴포넌트 props 매핑은
  * matching-adapter.ts 가 담당.
@@ -207,6 +208,28 @@ async function _fetchMatchingReport(
   const qs = new URLSearchParams({ phone });
   const res = await fetch(
     `${CASTING_API_BASE}/casting/report/${encodeURIComponent(uid)}/${perspective}?${qs.toString()}`,
+    { cache: 'no-store' },
+  );
+  if (!res.ok) {
+    let detail = res.statusText;
+    try {
+      const body = (await res.json()) as { detail?: string };
+      if (body.detail) detail = body.detail;
+    } catch {
+      // ignore JSON parse failure
+    }
+    throw new MatchingReportFetchError(res.status, detail);
+  }
+  return (await res.json()) as MatchingReport;
+}
+
+export async function fetchMatchingReport(
+  uid: string,
+  phone: string,
+): Promise<MatchingReport> {
+  const qs = new URLSearchParams({ phone });
+  const res = await fetch(
+    `${CASTING_API_BASE}/casting/report/${encodeURIComponent(uid)}?${qs.toString()}`,
     { cache: 'no-store' },
   );
   if (!res.ok) {

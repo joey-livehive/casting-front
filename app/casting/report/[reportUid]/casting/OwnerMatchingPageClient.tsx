@@ -20,6 +20,7 @@ import { MatchingPhoneGate } from '@/app/casting/report/_components/MatchingPhon
 import {
   MatchingReport,
   MatchingReportFetchError,
+  fetchMatchingReport,
   fetchOwnerMatchingReport,
 } from '@/lib/casting/matching-report';
 import type { Candidate } from '@/lib/report/types';
@@ -42,7 +43,13 @@ const INSTA_RECOMMENDATION_FOOTNOTE =
 const INSTA_CTA_STEP1_NOTE =
   '인스타그램에서 엄선해서 찾아온 분에요! 저희가 스토리 태그·DM 등 가능한 모든 경로로 연락 시도할 예정입니다! 최선을 다해 연락망 확보해서 꼭 연결해드릴게요.';
 
-export function OwnerMatchingPageClient({ uid }: { uid: string }) {
+export function OwnerMatchingPageClient({
+  uid,
+  canonical = false,
+}: {
+  uid: string;
+  canonical?: boolean;
+}) {
   const [report, setReport] = useState<MatchingReport | null>(null);
   const [verifiedPhone, setVerifiedPhone] = useState('');
   const [loading, setLoading] = useState(false);
@@ -56,7 +63,9 @@ export function OwnerMatchingPageClient({ uid }: { uid: string }) {
     setLoading(true);
     setError(null);
     try {
-      setReport(await fetchOwnerMatchingReport(uid, phone));
+      setReport(
+        await (canonical ? fetchMatchingReport(uid, phone) : fetchOwnerMatchingReport(uid, phone)),
+      );
       setVerifiedPhone(phone);
     } catch (err) {
       if (err instanceof MatchingReportFetchError && err.status === 403) {
