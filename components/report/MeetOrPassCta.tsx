@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { track } from '@/lib/report/tracking';
+import { CASTING_API_BASE } from '@/lib/casting/api';
 
 type Mode = 'caster' | 'receiver';
 type Stage = 'idle' | 'meet_done' | 'pass_done';
@@ -95,10 +96,23 @@ async function postCta(
   feedback?: string,
   phone?: string,
 ): Promise<void> {
-  void reportId;
-  void action;
-  void feedback;
-  void phone;
+  const res = await fetch(
+    `${CASTING_API_BASE}/casting/reports/${encodeURIComponent(reportId)}/cta`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        action_type: action,
+        feedback,
+        phone,
+      }),
+    },
+  );
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`casting_cta_${res.status}: ${text}`);
+  }
 }
 
 interface Props {
