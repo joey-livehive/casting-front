@@ -236,6 +236,32 @@ export async function fetchOwnerMatchingReport(
 }
 
 /**
+ * Canonical MatchingReport. Backend resolves owner/partner perspective from
+ * the report row, so public SMS links can use `/casting/report/{uid}`.
+ */
+export async function fetchMatchingReport(
+  uid: string,
+  phone: string,
+): Promise<MatchingReport> {
+  const qs = new URLSearchParams({ phone });
+  const res = await fetch(
+    `${CASTING_API_BASE}/casting/report/${encodeURIComponent(uid)}?${qs.toString()}`,
+    { cache: 'no-store' },
+  );
+  if (!res.ok) {
+    let detail = res.statusText;
+    try {
+      const body = (await res.json()) as { detail?: string };
+      if (body.detail) detail = body.detail;
+    } catch {
+      // ignore JSON parse failure
+    }
+    throw new MatchingReportFetchError(res.status, detail);
+  }
+  return (await res.json()) as MatchingReport;
+}
+
+/**
  * Partner 시점 MatchingReport — 소개받은 사람 리포트.
  */
 export async function fetchPartnerMatchingReport(
