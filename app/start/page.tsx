@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -1409,72 +1409,81 @@ export default function StartPage() {
   );
 }
 
-// ── 사진 단계 사회적 증거 toast (4개 문구 순환, 첫 문구는 숫자 롤업 누적) ──
+// ── 사진 단계 사회적 증거 toast ──
+// 타이밍(ms)
+const TOAST_ROLL_DELAY = 900; // 등장 후 숫자 +1 롤업까지의 대기
+const TOAST_HOLD_ROLL = 3200; // 숫자 문구 노출 시간 (롤링 + 확인 여유 포함)
+const TOAST_HOLD_PLAIN = 2200; // 일반 문구 노출 시간
+const TOAST_GAP = 450; // 퇴장 후 다음 문구 등장까지의 간격
+
+type ToastItem = {
+  emoji: string;
+  roll: boolean; // 숫자 롤업 문구 여부
+  render: (count: number) => ReactNode;
+};
+
+const TOAST_ITEMS: ToastItem[] = [
+  {
+    emoji: '🔥',
+    roll: true,
+    render: (count) => (
+      <span>
+        오늘{' '}
+        <span style={{ color: C.gold }}>
+          <RollingNumber value={count} />명
+        </span>
+        이 사진을 올렸어
+      </span>
+    ),
+  },
+  {
+    emoji: '💕',
+    roll: false,
+    render: () => (
+      <span>
+        오늘 <span style={{ color: C.gold }}>35쌍</span>의 <span style={{ color: C.gold }}>커플</span>이 매칭됐어
+      </span>
+    ),
+  },
+  {
+    emoji: '💛',
+    roll: false,
+    render: () => (
+      <span>
+        사진은 <span style={{ color: C.gold }}>1장</span>으로 충분해
+      </span>
+    ),
+  },
+  {
+    emoji: '💛',
+    roll: false,
+    render: () => (
+      <span>
+        사진은 <span style={{ color: C.gold }}>언제든 삭제</span>할 수 있어
+      </span>
+    ),
+  },
+];
+
+// 4개 문구를 순환하며 보여주고, 숫자 문구는 등장할 때마다 +1씩 누적해 롤업한다.
 function PhotoSocialToast() {
   const [idx, setIdx] = useState(0);
   const [visible, setVisible] = useState(false);
   const [count, setCount] = useState(197);
 
-  const items = [
-    {
-      emoji: '🔥',
-      roll: true,
-      render: () => (
-        <span>
-          오늘{' '}
-          <span style={{ color: C.gold }}>
-            <RollingNumber value={count} />명
-          </span>
-          이 사진을 올렸어
-        </span>
-      ),
-    },
-    {
-      emoji: '💕',
-      roll: false,
-      render: () => (
-        <span>
-          오늘 <span style={{ color: C.gold }}>35쌍</span>의 <span style={{ color: C.gold }}>커플</span>이 매칭됐어
-        </span>
-      ),
-    },
-    {
-      emoji: '💛',
-      roll: false,
-      render: () => (
-        <span>
-          사진은 <span style={{ color: C.gold }}>1장</span>으로 충분해
-        </span>
-      ),
-    },
-    {
-      emoji: '💛',
-      roll: false,
-      render: () => (
-        <span>
-          사진은 <span style={{ color: C.gold }}>언제든 삭제</span>할 수 있어
-        </span>
-      ),
-    },
-  ];
-
   useEffect(() => {
     setVisible(true);
-    const isRoll = items[idx].roll;
-    const timers: ReturnType<typeof setTimeout>[] = [];
-    // 숫자 문구: 등장 후 살짝 뒤에 +1 롤업 (197→198, 다음 등장 땐 198→199 …)
-    if (isRoll) {
-      timers.push(setTimeout(() => setCount((c) => c + 1), 900));
-    }
-    // 숫자 문구는 롤링 + 확인 시간을 더 길게 확보한 뒤 다음으로 넘어감
-    const HOLD = isRoll ? 3200 : 2200;
-    timers.push(setTimeout(() => setVisible(false), HOLD));
-    timers.push(setTimeout(() => setIdx((p) => (p + 1) % items.length), HOLD + 450));
-    return () => timers.forEach(clearTimeout);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const { roll } = TOAST_ITEMS[idx];
+    const hold = roll ? TOAST_HOLD_ROLL : TOAST_HOLD_PLAIN;
+    const timers = [
+      roll && setTimeout(() => setCount((c) => c + 1), TOAST_ROLL_DELAY),
+      setTimeout(() => setVisible(false), hold),
+      setTimeout(() => setIdx((p) => (p + 1) % TOAST_ITEMS.length), hold + TOAST_GAP),
+    ];
+    return () => timers.forEach((t) => t && clearTimeout(t));
   }, [idx]);
 
-  const cur = items[idx];
+  const cur = TOAST_ITEMS[idx];
 
   return (
     <div
@@ -1505,7 +1514,7 @@ function PhotoSocialToast() {
       }}
     >
       <span aria-hidden>{cur.emoji}</span>
-      {cur.render()}
+      {cur.render(count)}
     </div>
   );
 }
@@ -1519,37 +1528,38 @@ function RollingNumber({ value }: { value: number }) {
     return () => cancelAnimationFrame(r);
   }, []);
 
-  const digits = String(value).split('');
   return (
-    <span style={{ display: 'inline-flex', verticalAlign: '0' }}>
-      {digits.map((d, i) => (
-        <span
-          key={i}
-          style={{
-            display: 'inline-block',
-            height: '1em',
-            lineHeight: '1em',
-            overflow: 'hidden',
-          }}
-        >
+    <span style={{ display: 'inline-flex', verticalAlign: 'baseline' }}>
+      {String(value)
+        .split('')
+        .map((d, i) => (
           <span
+            key={i}
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              transform: `translateY(-${Number(d)}em)`,
-              transition: animate
-                ? 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)'
-                : 'none',
+              display: 'inline-block',
+              height: '1em',
+              lineHeight: '1em',
+              overflow: 'hidden',
             }}
           >
-            {Array.from({ length: 10 }, (_, n) => (
-              <span key={n} style={{ height: '1em', lineHeight: '1em' }}>
-                {n}
-              </span>
-            ))}
+            <span
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                transform: `translateY(-${Number(d)}em)`,
+                transition: animate
+                  ? 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)'
+                  : 'none',
+              }}
+            >
+              {Array.from({ length: 10 }, (_, n) => (
+                <span key={n} style={{ height: '1em', lineHeight: '1em' }}>
+                  {n}
+                </span>
+              ))}
+            </span>
           </span>
-        </span>
-      ))}
+        ))}
     </span>
   );
 }
