@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -765,10 +765,13 @@ export default function StartPage() {
   if (phase === 'photo') {
     return (
       <main
-        className="min-h-screen flex flex-col"
+        className="min-h-screen flex flex-col relative"
         style={{ background: C.bg }}
       >
-        <BackNav onBack={handleBack} />
+        {/* 헤더를 absolute로 띄워 콘텐츠 그룹이 화면(viewport) 세로 정중앙에 오도록 함 */}
+        <div className="absolute top-0 inset-x-0 z-10">
+          <BackNav onBack={handleBack} />
+        </div>
         <div className="flex-1 flex flex-col items-center justify-center px-6 py-12">
           <h1
             className="font-bold text-center mb-3"
@@ -784,11 +787,9 @@ export default function StartPage() {
             <span style={{ color: C.accent }}>사진 한 장</span>
           </h1>
           <p className="text-center text-base mb-8 opacity-70 max-w-sm" style={{ color: C.ink }}>
-            네 허락 없이 절대 공개 안 해!
+            절대! 전체 공개되지 않아
             <br />
-            누군가 너와 비슷한 스타일을 찾는다면,
-            <br />
-            너에게 알려줄게
+            너와 딱 맞는 사람 몇 명에게만 널 소개할게
           </p>
 
           {photo ? (
@@ -844,7 +845,7 @@ export default function StartPage() {
                     className="text-xs font-semibold"
                     style={{ color: C.accent }}
                   >
-                    사진 올리면 매칭률이 6.8배 올라가!
+                    매칭률이 9.8배 올라가
                   </span>
                 </div>
               )}
@@ -863,6 +864,7 @@ export default function StartPage() {
             </button>
           </div>
         </div>
+        <PhotoSocialToast />
       </main>
     );
   }
@@ -1404,5 +1406,160 @@ export default function StartPage() {
         ) : null}
       </div>
     </main>
+  );
+}
+
+// ── 사진 단계 사회적 증거 toast ──
+// 타이밍(ms)
+const TOAST_ROLL_DELAY = 900; // 등장 후 숫자 +1 롤업까지의 대기
+const TOAST_HOLD_ROLL = 3200; // 숫자 문구 노출 시간 (롤링 + 확인 여유 포함)
+const TOAST_HOLD_PLAIN = 2200; // 일반 문구 노출 시간
+const TOAST_GAP = 450; // 퇴장 후 다음 문구 등장까지의 간격
+
+type ToastItem = {
+  emoji: string;
+  roll: boolean; // 숫자 롤업 문구 여부
+  render: (count: number) => ReactNode;
+};
+
+const TOAST_ITEMS: ToastItem[] = [
+  {
+    emoji: '🔥',
+    roll: true,
+    render: (count) => (
+      <span>
+        오늘{' '}
+        <span style={{ color: C.gold }}>
+          <RollingNumber value={count} />명
+        </span>
+        이 사진을 올렸어
+      </span>
+    ),
+  },
+  {
+    emoji: '💕',
+    roll: false,
+    render: () => (
+      <span>
+        오늘 <span style={{ color: C.gold }}>35쌍</span>의 <span style={{ color: C.gold }}>커플</span>이 매칭됐어
+      </span>
+    ),
+  },
+  {
+    emoji: '💛',
+    roll: false,
+    render: () => (
+      <span>
+        사진은 <span style={{ color: C.gold }}>1장</span>으로 충분해
+      </span>
+    ),
+  },
+  {
+    emoji: '💛',
+    roll: false,
+    render: () => (
+      <span>
+        사진은 <span style={{ color: C.gold }}>언제든 삭제</span>할 수 있어
+      </span>
+    ),
+  },
+];
+
+// 4개 문구를 순환하며 보여주고, 숫자 문구는 등장할 때마다 +1씩 누적해 롤업한다.
+function PhotoSocialToast() {
+  const [idx, setIdx] = useState(0);
+  const [visible, setVisible] = useState(false);
+  const [count, setCount] = useState(197);
+
+  useEffect(() => {
+    setVisible(true);
+    const { roll } = TOAST_ITEMS[idx];
+    const hold = roll ? TOAST_HOLD_ROLL : TOAST_HOLD_PLAIN;
+    const timers = [
+      roll && setTimeout(() => setCount((c) => c + 1), TOAST_ROLL_DELAY),
+      setTimeout(() => setVisible(false), hold),
+      setTimeout(() => setIdx((p) => (p + 1) % TOAST_ITEMS.length), hold + TOAST_GAP),
+    ];
+    return () => timers.forEach((t) => t && clearTimeout(t));
+  }, [idx]);
+
+  const cur = TOAST_ITEMS[idx];
+
+  return (
+    <div
+      aria-live="polite"
+      style={{
+        position: 'fixed',
+        left: '50%',
+        bottom: '28px',
+        transform: visible
+          ? 'translateX(-50%) translateY(0)'
+          : 'translateX(-50%) translateY(16px)',
+        opacity: visible ? 1 : 0,
+        transition: 'opacity 0.4s ease, transform 0.4s ease',
+        pointerEvents: 'none',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '6px',
+        padding: '10px 18px',
+        borderRadius: '9999px',
+        background: C.ink,
+        color: '#FFFFFF',
+        fontSize: '13px',
+        fontWeight: 700,
+        boxShadow: '0 6px 20px rgba(0,0,0,0.18)',
+        whiteSpace: 'nowrap',
+        maxWidth: '90vw',
+        zIndex: 50,
+      }}
+    >
+      <span aria-hidden>{cur.emoji}</span>
+      {cur.render(count)}
+    </div>
+  );
+}
+
+// 숫자 슬롯머신 롤링: 자리별 0~9 세로 스택, value가 바뀌면 해당 자리만 굴러감
+function RollingNumber({ value }: { value: number }) {
+  const [animate, setAnimate] = useState(false);
+  // 첫 렌더는 굴리지 않고 현재 값을 그대로 보여준 뒤, 이후 변경부터 애니메이션
+  useEffect(() => {
+    const r = requestAnimationFrame(() => setAnimate(true));
+    return () => cancelAnimationFrame(r);
+  }, []);
+
+  return (
+    <span style={{ display: 'inline-flex', verticalAlign: 'baseline' }}>
+      {String(value)
+        .split('')
+        .map((d, i) => (
+          <span
+            key={i}
+            style={{
+              display: 'inline-block',
+              height: '1em',
+              lineHeight: '1em',
+              overflow: 'hidden',
+            }}
+          >
+            <span
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                transform: `translateY(-${Number(d)}em)`,
+                transition: animate
+                  ? 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)'
+                  : 'none',
+              }}
+            >
+              {Array.from({ length: 10 }, (_, n) => (
+                <span key={n} style={{ height: '1em', lineHeight: '1em' }}>
+                  {n}
+                </span>
+              ))}
+            </span>
+          </span>
+        ))}
+    </span>
   );
 }
