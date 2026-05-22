@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { InviteAcquisitionPage } from '@/app/casting/_components/InviteAcquisitionPage';
 
 type PageProps = {
@@ -6,5 +7,9 @@ type PageProps = {
 
 export default async function CasterInvitePage({ params }: PageProps) {
   const { inviteToken } = await params;
-  return <InviteAcquisitionPage channel="caster" inviteToken={inviteToken} />;
+  return (
+    <Suspense fallback={null}>
+      <InviteAcquisitionPage channel="caster" inviteToken={inviteToken} />
+    </Suspense>
+  );
 }

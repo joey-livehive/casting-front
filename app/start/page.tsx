@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
@@ -381,7 +381,7 @@ async function api(path: string, options?: RequestInit) {
   throw new Error(`Unsupported casting api path: ${path} (${method})`);
 }
 
-export default function StartPage() {
+function StartPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const inviteToken = searchParams.get('inviteToken');
@@ -1586,5 +1586,13 @@ function RollingNumber({ value }: { value: number }) {
           </span>
         ))}
     </span>
+  );
+}
+
+export default function StartPage() {
+  return (
+    <Suspense fallback={null}>
+      <StartPageContent />
+    </Suspense>
   );
 }
