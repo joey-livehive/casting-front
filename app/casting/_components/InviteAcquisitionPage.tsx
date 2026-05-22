@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { castingFetch, setCastingSession, setCastingUserSession } from '@/lib/casting/api';
 
 type Channel = 'instagram' | 'caster';
@@ -37,15 +37,15 @@ const COPY: Record<Channel, {
 }> = {
   instagram: {
     eyebrow: 'Instagram Match',
-    title: '인스타에서 발견한 무료 매칭',
-    intro: '공개 프로필 분위기를 바탕으로, 잘 맞을 가능성이 높은 매칭을 먼저 열어드려요.',
-    save: '내 매칭함에 저장하기',
+    title: '인스타에서 시작하는 무료 매칭',
+    intro: '짧은 설문을 보고 지금 가장 잘 맞는 한 명을 무료로 골라드려요.',
+    save: '무료 매칭 받기',
   },
   caster: {
     eyebrow: 'Caster Pick',
-    title: '캐스터가 직접 추천한 매칭',
-    intro: '캐스터가 직접 보고 추천한 매칭이에요. 먼저 확인하고 마음에 들면 저장하세요.',
-    save: '추천 매칭 저장하기',
+    title: '캐스터 추천 무료 매칭',
+    intro: '설문 기준을 확인한 뒤 캐스터 풀에서 가장 가까운 한 명을 먼저 보여드려요.',
+    save: '추천 매칭 받기',
   },
 };
 
@@ -57,6 +57,8 @@ export function InviteAcquisitionPage({
   inviteToken: string;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const showClaim = searchParams.get('claim') === '1';
   const copy = COPY[channel];
   const [state, setState] = useState<LoadState>('loading');
   const [claimState, setClaimState] = useState<ClaimState>('idle');
@@ -66,6 +68,11 @@ export function InviteAcquisitionPage({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    if (showClaim) return;
+    router.replace(`/start?inviteToken=${encodeURIComponent(inviteToken)}&inviteChannel=${channel}`);
+  }, [channel, inviteToken, router, showClaim]);
 
   useEffect(() => {
     let mounted = true;
@@ -90,8 +97,6 @@ export function InviteAcquisitionPage({
       mounted = false;
     };
   }, [channel, inviteToken]);
-
-  const reportSummary = useMemo(() => summarizeReport(invite?.report), [invite?.report]);
 
   async function requestPhoneCode() {
     if (claimState === 'sending_code') return;
@@ -138,15 +143,8 @@ export function InviteAcquisitionPage({
     }
   }
 
-  async function decide(action: 'accept' | 'pass') {
-    await castingFetch(`/casting/invites/${encodeURIComponent(inviteToken)}/decision`, {
-      method: 'POST',
-      auth: false,
-      body: JSON.stringify({ action }),
-    }).catch(() => undefined);
-  }
-
-  if (state === 'loading') return <Centered>매칭을 여는 중...</Centered>;
+  if (!showClaim) return <Centered>설문으로 이동하는 중...</Centered>;
+  if (state === 'loading') return <Centered>매칭 저장 화면을 여는 중...</Centered>;
   if (state === 'error') return <Centered>{message}</Centered>;
 
   return (
@@ -158,108 +156,124 @@ export function InviteAcquisitionPage({
           <p className="mt-3 text-sm leading-6 text-[#6E5D4D]">{copy.intro}</p>
         </header>
 
-        <section className="rounded-[24px] border-2 border-[#211A12] bg-white p-5 shadow-[4px_4px_0_#211A12]">
-          <p className="text-xs font-bold text-[#D2642C]">무료 결과</p>
-          <h2 className="mt-2 text-xl font-black leading-snug">
-            {reportSummary.headline}
-          </h2>
-          <p className="mt-3 text-sm leading-6 text-[#4D4035]">
-            {reportSummary.body}
-          </p>
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            <Metric label="매칭 점수" value={reportSummary.score} />
-            <Metric label="출처" value={channel === 'instagram' ? '인스타' : '캐스터'} />
-          </div>
-        </section>
-
-        <section className="mt-5 rounded-[24px] border-2 border-[#211A12] bg-[#211A12] p-5 text-white">
-          <h2 className="text-lg font-black">마이페이지에 저장하기</h2>
-          <p className="mt-2 text-sm leading-6 text-white/75">
-            저장하면 이 매칭을 마이페이지에서 다시 볼 수 있고, 다음 추천도 이어서 받을 수 있어요.
-          </p>
-          <div className="mt-4 space-y-2">
-            <input
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="전화번호"
-              className="h-12 w-full rounded-2xl border border-white/25 bg-white px-4 text-sm text-[#211A12] outline-none"
-            />
-            <div className="flex gap-2">
-              <input
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder="인증번호"
-                className="h-12 min-w-0 flex-1 rounded-2xl border border-white/25 bg-white px-4 text-sm text-[#211A12] outline-none"
-              />
-              <button
-                type="button"
-                onClick={requestPhoneCode}
-                disabled={claimState === 'sending_code'}
-                className="h-12 shrink-0 rounded-2xl bg-[#F1C94A] px-4 text-sm font-black text-[#211A12] disabled:opacity-60"
-              >
-                {claimState === 'sending_code' ? '발송 중' : '인증'}
-              </button>
-            </div>
-            <input
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="이메일"
-              className="h-12 w-full rounded-2xl border border-white/25 bg-white px-4 text-sm text-[#211A12] outline-none"
-            />
-            <input
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="비밀번호"
-              type="password"
-              className="h-12 w-full rounded-2xl border border-white/25 bg-white px-4 text-sm text-[#211A12] outline-none"
-            />
-          </div>
-          {message && <p className="mt-3 text-xs text-[#F1C94A]">{message}</p>}
-          <button
-            type="button"
-            onClick={verifyCodeAndClaim}
-            disabled={claimState === 'claiming'}
-            className="mt-4 h-12 w-full rounded-2xl bg-[#F1C94A] px-5 text-sm font-black text-[#211A12] disabled:opacity-60"
-          >
-            {claimState === 'claiming' ? '저장 중...' : copy.save}
-          </button>
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <button type="button" onClick={() => decide('accept')} className="rounded-2xl border border-white/25 py-3 text-sm font-bold">
-              대화해볼래요
-            </button>
-            <button type="button" onClick={() => decide('pass')} className="rounded-2xl border border-white/25 py-3 text-sm font-bold text-white/70">
-              이번엔 패스
-            </button>
-          </div>
-        </section>
+        <ClaimCard
+          copy={copy}
+          channel={channel}
+          phone={phone}
+          code={code}
+          email={email}
+          password={password}
+          claimState={claimState}
+          message={message}
+          setPhone={setPhone}
+          setCode={setCode}
+          setEmail={setEmail}
+          setPassword={setPassword}
+          requestPhoneCode={requestPhoneCode}
+          verifyCodeAndClaim={verifyCodeAndClaim}
+        />
       </div>
     </main>
   );
 }
 
-function summarizeReport(report: Record<string, any> | null | undefined) {
-  const score = report?.radar?.score ?? report?.score ?? 80;
-  const headline =
-    report?.content?.opening?.split('.')?.[0] ||
-    report?.partner?.person_content?.casterHeadline ||
-    '잘 맞을 가능성이 높은 매칭이에요';
-  const body =
-    report?.content?.opening ||
-    report?.partner?.person_content?.datingStyle ||
-    '무료 결과를 먼저 확인하고, 마음에 들면 마이페이지에 저장해 이어서 진행할 수 있어요.';
-  return {
-    score: `${score}점`,
-    headline,
-    body,
-  };
-}
-
-function Metric({ label, value }: { label: string; value: string }) {
+function ClaimCard({
+  copy,
+  channel,
+  phone,
+  code,
+  email,
+  password,
+  claimState,
+  message,
+  setPhone,
+  setCode,
+  setEmail,
+  setPassword,
+  requestPhoneCode,
+  verifyCodeAndClaim,
+}: {
+  copy: (typeof COPY)[Channel];
+  channel: Channel;
+  phone: string;
+  code: string;
+  email: string;
+  password: string;
+  claimState: ClaimState;
+  message: string;
+  setPhone: (value: string) => void;
+  setCode: (value: string) => void;
+  setEmail: (value: string) => void;
+  setPassword: (value: string) => void;
+  requestPhoneCode: () => void;
+  verifyCodeAndClaim: () => void;
+}) {
+  const source = channel === 'instagram' ? '인스타' : '캐스터';
   return (
-    <div className="rounded-2xl bg-[#FFF8E8] p-3">
-      <p className="text-[11px] font-bold text-[#8A7663]">{label}</p>
-      <p className="mt-1 text-sm font-black">{value}</p>
-    </div>
+    <>
+      <section className="rounded-[24px] border-2 border-[#211A12] bg-white p-5 shadow-[4px_4px_0_#211A12]">
+        <p className="text-xs font-bold text-[#D2642C]">설문 완료</p>
+        <h2 className="mt-2 text-xl font-black leading-snug">
+          설문 기준으로 무료 매칭 1명을 준비했어요
+        </h2>
+        <p className="mt-3 text-sm leading-6 text-[#4D4035]">
+          {source} 유입 전용 무료 매칭이에요. 저장하면 바로 마이페이지에서 결과를 볼 수 있어요.
+        </p>
+      </section>
+
+      <section className="mt-5 rounded-[24px] border-2 border-[#211A12] bg-[#211A12] p-5 text-white">
+        <h2 className="text-lg font-black">마이페이지에 저장하기</h2>
+        <p className="mt-2 text-sm leading-6 text-white/75">
+          전화번호 인증 후 무료 매칭을 계정에 연결해둘게요.
+        </p>
+        <div className="mt-4 space-y-2">
+          <input
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="전화번호"
+            className="h-12 w-full rounded-2xl border border-white/25 bg-white px-4 text-sm text-[#211A12] outline-none"
+          />
+          <div className="flex gap-2">
+            <input
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="인증번호"
+              className="h-12 min-w-0 flex-1 rounded-2xl border border-white/25 bg-white px-4 text-sm text-[#211A12] outline-none"
+            />
+            <button
+              type="button"
+              onClick={requestPhoneCode}
+              disabled={claimState === 'sending_code'}
+              className="h-12 shrink-0 rounded-2xl bg-[#F1C94A] px-4 text-sm font-black text-[#211A12] disabled:opacity-60"
+            >
+              {claimState === 'sending_code' ? '발송 중' : '인증'}
+            </button>
+          </div>
+          <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="이메일"
+            className="h-12 w-full rounded-2xl border border-white/25 bg-white px-4 text-sm text-[#211A12] outline-none"
+          />
+          <input
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="비밀번호"
+            type="password"
+            className="h-12 w-full rounded-2xl border border-white/25 bg-white px-4 text-sm text-[#211A12] outline-none"
+          />
+        </div>
+        {message && <p className="mt-3 text-xs text-[#F1C94A]">{message}</p>}
+        <button
+          type="button"
+          onClick={verifyCodeAndClaim}
+          disabled={claimState === 'claiming'}
+          className="mt-4 h-12 w-full rounded-2xl bg-[#F1C94A] px-5 text-sm font-black text-[#211A12] disabled:opacity-60"
+        >
+          {claimState === 'claiming' ? '매칭 중...' : copy.save}
+        </button>
+      </section>
+    </>
   );
 }
 

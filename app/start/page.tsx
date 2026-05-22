@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   trackPageView,
   trackAnswer,
@@ -383,6 +383,10 @@ async function api(path: string, options?: RequestInit) {
 
 export default function StartPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get('inviteToken');
+  const inviteChannel = searchParams.get('inviteChannel') === 'caster' ? 'caster' : 'instagram';
+  const isInviteFlow = Boolean(inviteToken);
   const [phase, setPhase] = useState<Phase>('chapter1');
   const [step, setStep] = useState(0);
   const [ch1Answers, setCh1Answers] = useState<string[]>([]);
@@ -392,6 +396,7 @@ export default function StartPage() {
   const [message, setMessage] = useState('');
   const [guestUid, setGuestUid] = useState<string | null>(null);
   const guestPromiseRef = useRef<Promise<string> | null>(null);
+  const answerWriteRef = useRef<Promise<void>>(Promise.resolve());
   const [mbti, setMbti] = useState<string[]>(['', '', '', '']);
   const [age, setAge] = useState('');
   const [height, setHeight] = useState('');
@@ -416,11 +421,21 @@ export default function StartPage() {
   const ensureGuest = useCallback((): Promise<string> => {
     if (guestUid) return Promise.resolve(guestUid);
     if (!guestPromiseRef.current) {
-      guestPromiseRef.current = api('/start', { method: 'POST' }).then((data: any) => {
+      const guestRequest = inviteToken
+        ? castingFetch(`/casting/invites/${encodeURIComponent(inviteToken)}/open`, {
+            method: 'POST',
+            auth: false,
+          })
+        : api('/start', { method: 'POST' });
+      guestPromiseRef.current = guestRequest.then((data: any) => {
         setGuestUid(data.guest_uid);
         setTrackingGuestUid(data.guest_uid);
         if (typeof window !== 'undefined') {
           sessionStorage.setItem('sto_guest_uid', data.guest_uid);
+          if (inviteToken) {
+            sessionStorage.setItem('casting_invite_token', inviteToken);
+            sessionStorage.setItem('casting_invite_channel', inviteChannel);
+          }
         }
         if (data.access_token) {
           setCastingSession(data.guest_uid, data.access_token);
@@ -429,17 +444,25 @@ export default function StartPage() {
       });
     }
     return guestPromiseRef.current;
-  }, [guestUid]);
+  }, [guestUid, inviteChannel, inviteToken]);
 
-  function persistAnswer(question: string, answer: string) {
-    ensureGuest()
-      .then((uid) => {
-        api(`/${uid}/answer`, {
+  function saveAnswer(question: string, answer: string): Promise<void> {
+    const write = answerWriteRef.current
+      .catch(() => undefined)
+      .then(async () => {
+        const uid = await ensureGuest();
+        await api(`/${uid}/answer`, {
           method: 'PATCH',
           body: JSON.stringify({ question, answer }),
-        }).catch(() => {});
+        });
       })
-      .catch(() => {});
+      .catch(() => undefined);
+    answerWriteRef.current = write;
+    return write;
+  }
+
+  function persistAnswer(question: string, answer: string) {
+    saveAnswer(question, answer);
     trackAnswer(question, answer, phase);
   }
 
@@ -750,14 +773,16 @@ export default function StartPage() {
     setPhase('message');
   }
 
-  function handleMessageSubmit() {
-    if (message.trim() && guestUid) {
-      api(`/${guestUid}/answer`, {
-        method: 'PATCH',
-        body: JSON.stringify({ question: '나한테 하고 싶은 말', answer: message.trim() }),
-      }).catch(() => {});
+  async function handleMessageSubmit() {
+    if (message.trim()) {
+      saveAnswer('나한테 하고 싶은 말', message.trim());
     }
     trackMessage(!!message.trim());
+    if (isInviteFlow && inviteToken) {
+      await answerWriteRef.current.catch(() => undefined);
+      router.push(`/casting/${inviteChannel}/${encodeURIComponent(inviteToken)}?claim=1`);
+      return;
+    }
     router.push('/loading');
   }
 
