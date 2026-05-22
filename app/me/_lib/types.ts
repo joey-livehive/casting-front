@@ -53,6 +53,8 @@ export type DashboardMatch = {
   partner_job?: string | null;
   partner_tagline?: string | null;
   partner_image_url?: string | null;
+  viewer_role?: 'owner' | 'partner' | string;
+  access_type?: 'paid' | 'free_invite' | string;
   created_at: string;
   updated_at: string;
 };

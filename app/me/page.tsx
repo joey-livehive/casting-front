@@ -16,6 +16,7 @@ import type { DashboardResponse, Match } from './_lib/types';
 import { CreditWithRecharge } from './_components/CreditWithRecharge';
 import { EmptyMatchesState } from './_components/EmptyMatchesState';
 import { MatchProgress } from './_components/MatchProgress';
+import { MatchCard } from './_components/MatchCard';
 import { OrderRow } from './_components/OrderRow';
 import { PhoneVerificationCard, type PhoneState } from './_components/PhoneVerificationCard';
 import { RechargeCta } from './_components/RechargeCta';
@@ -106,14 +107,19 @@ function MeInner() {
     if (state === 'unauth') router.replace('/casting/auth/login?next=/me');
   }, [router, state]);
 
-  const { active, ended } = useMemo(() => {
+  const { active, ended, free } = useMemo(() => {
     const a: Match[] = [];
     const e: Match[] = [];
+    const f: Match[] = [];
     for (const m of (data?.matches || []) as Match[]) {
+      if (m.access_type === 'free_invite' || m.viewer_role === 'partner') {
+        f.push(m);
+        continue;
+      }
       if (isEnded(m)) e.push(m);
       else a.push(m);
     }
-    return { active: a, ended: e };
+    return { active: a, ended: e, free: f };
   }, [data]);
 
   async function requestPhoneCode() {
@@ -290,6 +296,8 @@ function MeInner() {
           )}
         </Section>
 
+        <FreeInviteSection matches={free} />
+
         <MatchProgress active={active} ended={ended} phoneVerified={data.phone_verified} />
 
         <RechargeCta
@@ -378,6 +386,21 @@ function RechargeSheet(props: {
 
 function paidOrders(data: DashboardResponse) {
   return data.orders.filter((o) => o.status === 'paid');
+}
+
+function FreeInviteSection({ matches }: { matches: Match[] }) {
+  if (matches.length === 0) return null;
+  return (
+    <Section title="무료로 받은 매칭" count={matches.length}>
+      <div
+        className="rounded-2xl bg-white p-4 text-sm"
+        style={{ border: `2px solid ${C.ink}`, color: C.ink }}
+      >
+        저장된 무료 매칭이에요. 마음에 드는 결과가 있으면 다음 추천을 이어서 받을 수 있어요.
+      </div>
+      {matches.map((m) => <MatchCard key={m.matching_uid || m.report_uid} match={m} />)}
+    </Section>
+  );
 }
 
 function Section({

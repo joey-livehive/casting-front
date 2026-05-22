@@ -1,0 +1,272 @@
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
+import { castingFetch, setCastingSession, setCastingUserSession } from '@/lib/casting/api';
+
+type Channel = 'instagram' | 'caster';
+type LoadState = 'loading' | 'ready' | 'error';
+type ClaimState = 'idle' | 'sending_code' | 'code_sent' | 'claiming' | 'claimed' | 'error';
+
+type InviteOpenResponse = {
+  invite_token: string;
+  channel: Channel;
+  status: string;
+  display_name?: string | null;
+  claimed: boolean;
+  guest_uid: string;
+  access_token: string;
+  report_uid?: string | null;
+  report?: Record<string, any> | null;
+};
+
+type ClaimResponse = {
+  user_uid: string;
+  guest_uid: string;
+  auth_token: string;
+  email: string;
+  redirect_to: string;
+};
+
+const COPY: Record<Channel, {
+  eyebrow: string;
+  title: string;
+  intro: string;
+  save: string;
+}> = {
+  instagram: {
+    eyebrow: 'Instagram Match',
+    title: '인스타에서 발견한 무료 매칭',
+    intro: '공개 프로필 분위기를 바탕으로, 잘 맞을 가능성이 높은 매칭을 먼저 열어드려요.',
+    save: '내 매칭함에 저장하기',
+  },
+  caster: {
+    eyebrow: 'Caster Pick',
+    title: '캐스터가 직접 추천한 매칭',
+    intro: '캐스터가 직접 보고 추천한 매칭이에요. 먼저 확인하고 마음에 들면 저장하세요.',
+    save: '추천 매칭 저장하기',
+  },
+};
+
+export function InviteAcquisitionPage({
+  channel,
+  inviteToken,
+}: {
+  channel: Channel;
+  inviteToken: string;
+}) {
+  const router = useRouter();
+  const copy = COPY[channel];
+  const [state, setState] = useState<LoadState>('loading');
+  const [claimState, setClaimState] = useState<ClaimState>('idle');
+  const [invite, setInvite] = useState<InviteOpenResponse | null>(null);
+  const [phone, setPhone] = useState('');
+  const [code, setCode] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    let mounted = true;
+    setState('loading');
+    castingFetch<InviteOpenResponse>(`/casting/invites/${encodeURIComponent(inviteToken)}/open`, {
+      method: 'POST',
+      auth: false,
+    })
+      .then((data) => {
+        if (!mounted) return;
+        if (data.channel !== channel) throw new Error('channel_mismatch');
+        setInvite(data);
+        setCastingSession(data.guest_uid, data.access_token);
+        setState('ready');
+      })
+      .catch(() => {
+        if (!mounted) return;
+        setMessage('초대 링크를 확인하지 못했어요.');
+        setState('error');
+      });
+    return () => {
+      mounted = false;
+    };
+  }, [channel, inviteToken]);
+
+  const reportSummary = useMemo(() => summarizeReport(invite?.report), [invite?.report]);
+
+  async function requestPhoneCode() {
+    if (claimState === 'sending_code') return;
+    setClaimState('sending_code');
+    setMessage('');
+    try {
+      await castingFetch('/casting/auth/phone/request', {
+        method: 'POST',
+        body: JSON.stringify({ phone }),
+      });
+      setClaimState('code_sent');
+      setMessage('인증번호를 보냈어요.');
+    } catch {
+      setClaimState('error');
+      setMessage('인증번호 발송에 실패했어요.');
+    }
+  }
+
+  async function verifyCodeAndClaim() {
+    if (!invite || claimState === 'claiming') return;
+    setClaimState('claiming');
+    setMessage('');
+    try {
+      const verified = await castingFetch<{ phone_verification_token: string }>('/casting/auth/phone/verify', {
+        method: 'POST',
+        body: JSON.stringify({ phone, code }),
+      });
+      const claimed = await castingFetch<ClaimResponse>(`/casting/invites/${encodeURIComponent(inviteToken)}/claim`, {
+        method: 'POST',
+        auth: false,
+        body: JSON.stringify({
+          email,
+          phone,
+          password,
+          phone_verification_token: verified.phone_verification_token,
+        }),
+      });
+      setCastingUserSession(claimed.user_uid, claimed.auth_token);
+      setClaimState('claimed');
+      router.replace(claimed.redirect_to || '/me');
+    } catch {
+      setClaimState('error');
+      setMessage('저장하지 못했어요. 입력값을 확인해 주세요.');
+    }
+  }
+
+  async function decide(action: 'accept' | 'pass') {
+    await castingFetch(`/casting/invites/${encodeURIComponent(inviteToken)}/decision`, {
+      method: 'POST',
+      auth: false,
+      body: JSON.stringify({ action }),
+    }).catch(() => undefined);
+  }
+
+  if (state === 'loading') return <Centered>매칭을 여는 중...</Centered>;
+  if (state === 'error') return <Centered>{message}</Centered>;
+
+  return (
+    <main className="min-h-dvh bg-[#FFF8E8] text-[#211A12]">
+      <div className="mx-auto flex min-h-dvh max-w-xl flex-col px-5 py-8">
+        <header className="mb-7">
+          <p className="text-[11px] font-black uppercase tracking-[0.12em] text-[#D2642C]">{copy.eyebrow}</p>
+          <h1 className="mt-2 text-[30px] font-black leading-tight">{copy.title}</h1>
+          <p className="mt-3 text-sm leading-6 text-[#6E5D4D]">{copy.intro}</p>
+        </header>
+
+        <section className="rounded-[24px] border-2 border-[#211A12] bg-white p-5 shadow-[4px_4px_0_#211A12]">
+          <p className="text-xs font-bold text-[#D2642C]">무료 결과</p>
+          <h2 className="mt-2 text-xl font-black leading-snug">
+            {reportSummary.headline}
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-[#4D4035]">
+            {reportSummary.body}
+          </p>
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            <Metric label="매칭 점수" value={reportSummary.score} />
+            <Metric label="출처" value={channel === 'instagram' ? '인스타' : '캐스터'} />
+          </div>
+        </section>
+
+        <section className="mt-5 rounded-[24px] border-2 border-[#211A12] bg-[#211A12] p-5 text-white">
+          <h2 className="text-lg font-black">마이페이지에 저장하기</h2>
+          <p className="mt-2 text-sm leading-6 text-white/75">
+            저장하면 이 매칭을 마이페이지에서 다시 볼 수 있고, 다음 추천도 이어서 받을 수 있어요.
+          </p>
+          <div className="mt-4 space-y-2">
+            <input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="전화번호"
+              className="h-12 w-full rounded-2xl border border-white/25 bg-white px-4 text-sm text-[#211A12] outline-none"
+            />
+            <div className="flex gap-2">
+              <input
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="인증번호"
+                className="h-12 min-w-0 flex-1 rounded-2xl border border-white/25 bg-white px-4 text-sm text-[#211A12] outline-none"
+              />
+              <button
+                type="button"
+                onClick={requestPhoneCode}
+                disabled={claimState === 'sending_code'}
+                className="h-12 shrink-0 rounded-2xl bg-[#F1C94A] px-4 text-sm font-black text-[#211A12] disabled:opacity-60"
+              >
+                {claimState === 'sending_code' ? '발송 중' : '인증'}
+              </button>
+            </div>
+            <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="이메일"
+              className="h-12 w-full rounded-2xl border border-white/25 bg-white px-4 text-sm text-[#211A12] outline-none"
+            />
+            <input
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="비밀번호"
+              type="password"
+              className="h-12 w-full rounded-2xl border border-white/25 bg-white px-4 text-sm text-[#211A12] outline-none"
+            />
+          </div>
+          {message && <p className="mt-3 text-xs text-[#F1C94A]">{message}</p>}
+          <button
+            type="button"
+            onClick={verifyCodeAndClaim}
+            disabled={claimState === 'claiming'}
+            className="mt-4 h-12 w-full rounded-2xl bg-[#F1C94A] px-5 text-sm font-black text-[#211A12] disabled:opacity-60"
+          >
+            {claimState === 'claiming' ? '저장 중...' : copy.save}
+          </button>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <button type="button" onClick={() => decide('accept')} className="rounded-2xl border border-white/25 py-3 text-sm font-bold">
+              대화해볼래요
+            </button>
+            <button type="button" onClick={() => decide('pass')} className="rounded-2xl border border-white/25 py-3 text-sm font-bold text-white/70">
+              이번엔 패스
+            </button>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+}
+
+function summarizeReport(report: Record<string, any> | null | undefined) {
+  const score = report?.radar?.score ?? report?.score ?? 80;
+  const headline =
+    report?.content?.opening?.split('.')?.[0] ||
+    report?.partner?.person_content?.casterHeadline ||
+    '잘 맞을 가능성이 높은 매칭이에요';
+  const body =
+    report?.content?.opening ||
+    report?.partner?.person_content?.datingStyle ||
+    '무료 결과를 먼저 확인하고, 마음에 들면 마이페이지에 저장해 이어서 진행할 수 있어요.';
+  return {
+    score: `${score}점`,
+    headline,
+    body,
+  };
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl bg-[#FFF8E8] p-3">
+      <p className="text-[11px] font-bold text-[#8A7663]">{label}</p>
+      <p className="mt-1 text-sm font-black">{value}</p>
+    </div>
+  );
+}
+
+function Centered({ children }: { children: ReactNode }) {
+  return (
+    <main className="flex min-h-dvh items-center justify-center bg-[#FFF8E8] px-5 text-center text-sm text-[#6E5D4D]">
+      {children}
+    </main>
+  );
+}
